@@ -18,16 +18,16 @@
   },
   "functions": {
     "src/app/api/*/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 10
     },
     "src/app/api/analyze-video/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 30
     },
     "src/app/api/generate-video-file/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 60
     },
     "src/app/api/upload-youtube/route.ts": {
-      "maxDuration": 120
+      "maxDuration": 30
     }
   },
   "regions": ["nrt1"],
