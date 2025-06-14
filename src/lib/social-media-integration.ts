@@ -470,11 +470,14 @@ export class SocialMediaIntegration {
   // Storage Management
   private loadStoredCredentials(): void {
     try {
-      const stored = localStorage.getItem('social_media_credentials')
-      if (stored) {
-        const credentials = JSON.parse(stored)
-        for (const [platform, creds] of Object.entries(credentials)) {
-          this.credentials.set(platform, creds as AuthCredentials)
+      // Check if we're running in browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const stored = localStorage.getItem('social_media_credentials')
+        if (stored) {
+          const credentials = JSON.parse(stored)
+          for (const [platform, creds] of Object.entries(credentials)) {
+            this.credentials.set(platform, creds as AuthCredentials)
+          }
         }
       }
     } catch (error) {
@@ -484,13 +487,16 @@ export class SocialMediaIntegration {
 
   private saveCredentials(): void {
     try {
-      const allCredentials: Record<string, AuthCredentials> = {}
-      
-      for (const [key, value] of this.credentials.entries()) {
-        allCredentials[key] = value
+      // Check if we're running in browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const allCredentials: Record<string, AuthCredentials> = {}
+        
+        for (const [key, value] of this.credentials.entries()) {
+          allCredentials[key] = value
+        }
+        
+        localStorage.setItem('social_media_credentials', JSON.stringify(allCredentials))
       }
-      
-      localStorage.setItem('social_media_credentials', JSON.stringify(allCredentials))
     } catch (error) {
       console.warn('Failed to save credentials:', error)
     }
@@ -513,15 +519,18 @@ export class SocialMediaIntegration {
     }
     
     try {
-      if (platform) {
-        const stored = localStorage.getItem('social_media_credentials')
-        if (stored) {
-          const credentials = JSON.parse(stored)
-          delete credentials[platform]
-          localStorage.setItem('social_media_credentials', JSON.stringify(credentials))
+      // Check if we're running in browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        if (platform) {
+          const stored = localStorage.getItem('social_media_credentials')
+          if (stored) {
+            const credentials = JSON.parse(stored)
+            delete credentials[platform]
+            localStorage.setItem('social_media_credentials', JSON.stringify(credentials))
+          }
+        } else {
+          localStorage.removeItem('social_media_credentials')
         }
-      } else {
-        localStorage.removeItem('social_media_credentials')
       }
     } catch (error) {
       console.warn('Failed to clear credentials:', error)

@@ -1,65 +1,26 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import { Header } from '@/components/ui/Header'
 import { VideoUploader } from '@/components/ui/VideoUploader'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { useAuth } from '@/hooks/useAuth'
 
 function UploadContent() {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+  const { user } = useAuth({ required: true })
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
 
   const handleUploadComplete = (videoId: string) => {
     // Navigate to analysis page with video ID
-    router.push(`/analyze/${videoId}`)
+    window.location.href = `/analyze/${videoId}`
   }
 
   const handleUploadProgress = (progress: number) => {
     setUploadProgress(progress)
   }
 
-  if (status === 'loading') {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Header />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-        </div>
-      </div>
-    )
-  }
-
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Header />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="max-w-md w-full mx-auto text-center">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl">🔐</span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                サインインが必要です
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                動画アップロード機能を利用するには、サインインしてください。
-              </p>
-              <button
-                onClick={() => router.push('/auth/signin')}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-              >
-                サインインページへ
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // Protected route handles authentication automatically
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -151,15 +112,17 @@ function UploadContent() {
 
 export default function Upload() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Header />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+    <ProtectedRoute>
+      <Suspense fallback={
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+          <Header />
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+          </div>
         </div>
-      </div>
-    }>
-      <UploadContent />
-    </Suspense>
+      }>
+        <UploadContent />
+      </Suspense>
+    </ProtectedRoute>
   )
 }

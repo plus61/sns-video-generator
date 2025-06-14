@@ -1,0 +1,29 @@
+<testsuites id="" name="" tests="7" failures="0" skipped="0" errors="0" time="26.536807999999997">
+<testsuite name="local/01-homepage.spec.ts" timestamp="2025-06-14T12:19:40.509Z" hostname="chromium-desktop" tests="7" failures="0" skipped="0" time="43.345" errors="0">
+<testcase name="Homepage Tests - AI動画生成プラットフォーム › should load homepage successfully" classname="local/01-homepage.spec.ts" time="7.921">
+</testcase>
+<testcase name="Homepage Tests - AI動画生成プラットフォーム › should display main navigation elements" classname="local/01-homepage.spec.ts" time="3.98">
+</testcase>
+<testcase name="Homepage Tests - AI動画生成プラットフォーム › should navigate to key pages from homepage" classname="local/01-homepage.spec.ts" time="15.185">
+<system-out>
+<![CDATA[
+[[ATTACHMENT|local-01-homepage-Homepage-1bb33--to-key-pages-from-homepage-chromium-desktop/test-failed-1.png]]
+
+[[ATTACHMENT|local-01-homepage-Homepage-1bb33--to-key-pages-from-homepage-chromium-desktop/video.webm]]
+
+[[ATTACHMENT|local-01-homepage-Homepage-1bb33--to-key-pages-from-homepage-chromium-desktop/error-context.md]]
+
+[[ATTACHMENT|local-01-homepage-Homepage-1bb33--to-key-pages-from-homepage-chromium-desktop/trace.zip]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Homepage Tests - AI動画生成プラットフォーム › should display key content sections" classname="local/01-homepage.spec.ts" time="8.525">
+</testcase>
+<testcase name="Homepage Tests - AI動画生成プラットフォーム › should have no critical console errors" classname="local/01-homepage.spec.ts" time="3.105">
+</testcase>
+<testcase name="Homepage Tests - AI動画生成プラットフォーム › should be responsive on different screen sizes" classname="local/01-homepage.spec.ts" time="2.137">
+</testcase>
+<testcase name="Homepage Tests - AI動画生成プラットフォーム › should load CSS and JavaScript resources" classname="local/01-homepage.spec.ts" time="2.492">
+</testcase>
+</testsuite>
+</testsuites>

@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Header } from '@/components/ui/Header'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
+import { useAuth } from '@/hooks/useAuth'
 import { VideoProjectCard } from '@/components/ui/VideoProjectCard'
 import { VideoUploadCard } from '@/components/ui/VideoUploadCard'
 import { UsageCard } from '@/components/ui/UsageCard'
@@ -17,8 +18,8 @@ interface UserUsage {
   reset_date: string
 }
 
-export default function Dashboard() {
-  const { data: session, status } = useSession()
+function DashboardContent() {
+  const { user, session } = useAuth({ required: true })
   const router = useRouter()
   const [projects, setProjects] = useState<VideoProject[]>([])
   const [videoUploads, setVideoUploads] = useState<VideoUpload[]>([])
@@ -61,7 +62,7 @@ export default function Dashboard() {
     }
   }
 
-  if (status === 'loading' || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />
@@ -72,34 +73,7 @@ export default function Dashboard() {
     )
   }
 
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Header />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="max-w-md w-full mx-auto text-center">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-xl">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-2xl">📊</span>
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                ダッシュボードアクセスにはサインインが必要
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-6">
-                プロジェクト管理機能を利用するには、サインインしてください。
-              </p>
-              <button
-                onClick={() => router.push('/auth/signin')}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-6 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-              >
-                サインインページへ
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // Protected route handles authentication automatically
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -240,5 +214,13 @@ export default function Dashboard() {
         )}
       </main>
     </div>
+  )
+}
+
+export default function Dashboard() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
   )
 }

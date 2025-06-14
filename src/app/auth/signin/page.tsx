@@ -1,8 +1,9 @@
 'use client'
 
-import { signIn, getSession } from 'next-auth/react'
+import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { useRedirectIfAuthenticated } from '@/hooks/useAuth'
 
 export default function SignIn() {
   const router = useRouter()
@@ -12,15 +13,8 @@ export default function SignIn() {
   const [isEmailMode, setIsEmailMode] = useState(false)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    const checkSession = async () => {
-      const session = await getSession()
-      if (session) {
-        router.push('/')
-      }
-    }
-    checkSession()
-  }, [router])
+  // Redirect to dashboard if already authenticated
+  useRedirectIfAuthenticated('/dashboard')
 
   const handleSignIn = async (provider: string) => {
     setIsLoading(true)

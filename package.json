@@ -9,7 +9,14 @@
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:production": "playwright test --config=playwright.production.config.ts",
+    "test:e2e:local": "playwright test --config=playwright.local.config.ts",
+    "test:e2e:local:ui": "playwright test --config=playwright.local.config.ts --ui",
+    "test:e2e:local:headed": "playwright test --config=playwright.local.config.ts --headed"
   },
   "dependencies": {
     "@ffmpeg/ffmpeg": "^0.12.15",
@@ -29,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.53.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
