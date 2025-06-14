@@ -1,15 +1,21 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, Suspense, useEffect } from 'react'
 import { Header } from '@/components/ui/Header'
 import { VideoUploader } from '@/components/ui/VideoUploader'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { useAuth } from '@/hooks/useAuth'
+import { measureComponentRender } from '@/lib/performance-monitor'
 
 function UploadContent() {
   const { user } = useAuth({ required: true })
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
+
+  useEffect(() => {
+    const stopMeasurement = measureComponentRender('UploadPage')
+    return stopMeasurement
+  }, [])
 
   const handleUploadComplete = (videoId: string) => {
     // Navigate to analysis page with video ID

@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google"
 import GitHubProvider from "next-auth/providers/github"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { createClient } from '@supabase/supabase-js'
+import { errorReporter } from './error-reporting'
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -27,7 +28,20 @@ export const authOptions: NextAuthOptions = {
       },
     },
   },
-  debug: process.env.NODE_ENV === 'development',
+  debug: process.env.NODE_ENV === 'development' || process.env.NEXTAUTH_DEBUG === 'true',
+  logger: {
+    error(code, metadata) {
+      console.error('NextAuth Error:', { code, metadata })
+    },
+    warn(code) {
+      console.warn('NextAuth Warning:', code)
+    },
+    debug(code, metadata) {
+      if (process.env.NODE_ENV === 'development' || process.env.NEXTAUTH_DEBUG === 'true') {
+        console.log('NextAuth Debug:', { code, metadata })
+      }
+    },
+  },
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -64,8 +78,14 @@ export const authOptions: NextAuthOptions = {
             password: credentials.password,
           })
 
-          if (error || !data.user) {
-            console.error('NextAuth: Supabase auth failed:', error?.message || 'No user data')
+          if (error) {
+            const authError = new Error(`Supabase auth failed: ${error.message}`)
+            errorReporter.reportAuthError(authError, 'credentials', credentials.email)
+            return null
+          }
+
+          if (!data.user) {
+            console.error('NextAuth: No user data returned from Supabase')
             return null
           }
 
@@ -99,7 +119,8 @@ export const authOptions: NextAuthOptions = {
           console.log('NextAuth: Returning user object:', { id: user.id, email: user.email })
           return user
         } catch (error) {
-          console.error('NextAuth: Authorization exception:', error)
+          const authError = error instanceof Error ? error : new Error(String(error))
+          errorReporter.reportAuthError(authError, 'credentials', credentials.email)
           return null
         }
       }
@@ -157,7 +178,12 @@ export const authOptions: NextAuthOptions = {
                 onConflict: 'id'
               })
           } catch (error) {
-            console.error('Profile creation error:', error)
+            const profileError = error instanceof Error ? error : new Error(String(error))
+            errorReporter.reportError(profileError, {
+              category: 'profile_creation',
+              provider: account?.provider,
+              userId: user.id
+            })
             // Don't fail auth if profile creation fails
           }
         }

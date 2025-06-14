@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
+import { performanceMonitor } from '@/lib/performance-monitor'
 
 interface VideoUploaderProps {
   onUploadComplete: (videoId: string) => void
@@ -30,42 +31,47 @@ export function VideoUploader({
     onUploadStart()
 
     try {
-      // Validate file
-      if (!file.type.startsWith('video/')) {
-        throw new Error('選択されたファイルは動画ファイルではありません')
-      }
-
-      // Create FormData
-      const formData = new FormData()
-      formData.append('video', file)
-      formData.append('filename', file.name)
-      formData.append('filesize', file.size.toString())
-
-      // Upload with progress tracking
-      const xhr = new XMLHttpRequest()
-
-      xhr.upload.addEventListener('progress', (event) => {
-        if (event.lengthComputable) {
-          const progress = (event.loaded / event.total) * 100
-          onUploadProgress(progress)
+      await performanceMonitor.measureAsyncOperation('video_upload', async () => {
+        // Validate file
+        if (!file.type.startsWith('video/')) {
+          throw new Error('選択されたファイルは動画ファイルではありません')
         }
-      })
 
-      xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
-          const response = JSON.parse(xhr.responseText)
-          onUploadComplete(response.videoId)
-        } else {
-          throw new Error('アップロードに失敗しました')
-        }
-      })
+        // Create FormData
+        const formData = new FormData()
+        formData.append('video', file)
+        formData.append('filename', file.name)
+        formData.append('filesize', file.size.toString())
 
-      xhr.addEventListener('error', () => {
-        throw new Error('ネットワークエラーが発生しました')
-      })
+        // Upload with progress tracking using Promise wrapper
+        return new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest()
 
-      xhr.open('POST', '/api/upload-video')
-      xhr.send(formData)
+          xhr.upload.addEventListener('progress', (event) => {
+            if (event.lengthComputable) {
+              const progress = (event.loaded / event.total) * 100
+              onUploadProgress(progress)
+            }
+          })
+
+          xhr.addEventListener('load', () => {
+            if (xhr.status === 200) {
+              const response = JSON.parse(xhr.responseText)
+              onUploadComplete(response.videoId)
+              resolve()
+            } else {
+              reject(new Error('アップロードに失敗しました'))
+            }
+          })
+
+          xhr.addEventListener('error', () => {
+            reject(new Error('ネットワークエラーが発生しました'))
+          })
+
+          xhr.open('POST', '/api/upload-video')
+          xhr.send(formData)
+        })
+      }, { fileSize: file.size, fileName: file.name })
 
     } catch (error) {
       console.error('Upload error:', error)
@@ -102,20 +108,22 @@ export function VideoUploader({
     onUploadStart()
 
     try {
-      const response = await fetch('/api/upload-youtube', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: youtubeUrl }),
-      })
+      await performanceMonitor.measureAsyncOperation('youtube_upload', async () => {
+        const response = await fetch('/api/upload-youtube', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url: youtubeUrl }),
+        })
 
-      if (!response.ok) {
-        throw new Error('YouTube動画の取得に失敗しました')
-      }
+        if (!response.ok) {
+          throw new Error('YouTube動画の取得に失敗しました')
+        }
 
-      const data = await response.json()
-      onUploadComplete(data.videoId)
+        const data = await response.json()
+        onUploadComplete(data.videoId)
+      }, { url: youtubeUrl })
 
     } catch (error) {
       console.error('YouTube upload error:', error)
