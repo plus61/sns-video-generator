@@ -63,6 +63,16 @@ export default function Home() {
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
             Create engaging social media videos with AI. Simply describe your content and let our AI generate the perfect video script and title.
           </p>
+          
+          {/* Database Test Link */}
+          <div className="mt-6">
+            <a 
+              href="/database-test" 
+              className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            >
+              🧪 Test Database Connection
+            </a>
+          </div>
         </div>
 
         <VideoTemplateSelector 
