@@ -15,12 +15,15 @@ export const authOptions: NextAuthOptions = {
   },
   cookies: {
     sessionToken: {
-      name: `next-auth.session-token`,
+      name: process.env.NODE_ENV === 'production' 
+        ? '__Secure-next-auth.session-token' 
+        : 'next-auth.session-token',
       options: {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
         secure: process.env.NODE_ENV === 'production',
+        domain: process.env.NODE_ENV === 'production' ? '.vercel.app' : undefined
       },
     },
   },
@@ -34,18 +37,27 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log('NextAuth: Missing email or password')
+          return null
+        }
+
+        // Validate environment variables
+        if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+          console.error('NextAuth: Missing Supabase environment variables')
           return null
         }
 
         const supabase = createClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.SUPABASE_SERVICE_ROLE_KEY!,
+          process.env.NEXT_PUBLIC_SUPABASE_URL,
+          process.env.SUPABASE_SERVICE_ROLE_KEY,
           {
             auth: { autoRefreshToken: false, persistSession: false }
           }
         )
 
         try {
+          console.log('NextAuth: Attempting Supabase auth for:', credentials.email)
+          
           // Sign in with Supabase Auth
           const { data, error } = await supabase.auth.signInWithPassword({
             email: credentials.email,
@@ -53,53 +65,109 @@ export const authOptions: NextAuthOptions = {
           })
 
           if (error || !data.user) {
-            console.error('Supabase auth error:', error)
+            console.error('NextAuth: Supabase auth failed:', error?.message || 'No user data')
             return null
           }
 
-          // Get user profile
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', data.user.id)
-            .single()
+          console.log('NextAuth: Supabase auth successful for user:', data.user.id)
 
-          return {
+          // Get user profile with error handling
+          let profile = null
+          try {
+            const { data: profileData, error: profileError } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', data.user.id)
+              .single()
+            
+            if (profileError) {
+              console.warn('NextAuth: Profile fetch failed:', profileError.message)
+            } else {
+              profile = profileData
+            }
+          } catch (profileErr) {
+            console.warn('NextAuth: Profile fetch error:', profileErr)
+          }
+
+          const user = {
             id: data.user.id,
             email: data.user.email!,
             name: profile?.full_name || data.user.email,
             image: profile?.avatar_url || null,
           }
+
+          console.log('NextAuth: Returning user object:', { id: user.id, email: user.email })
+          return user
         } catch (error) {
-          console.error('Authorization error:', error)
+          console.error('NextAuth: Authorization exception:', error)
           return null
         }
       }
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-    }),
-    GitHubProvider({
-      clientId: process.env.GITHUB_ID || '',
-      clientSecret: process.env.GITHUB_SECRET || '',
-    }),
+    // OAuth providers - only if environment variables are set
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? [
+      GoogleProvider({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        authorization: {
+          params: {
+            prompt: "consent",
+            access_type: "offline",
+            response_type: "code"
+          }
+        }
+      })
+    ] : []),
+    ...(process.env.GITHUB_ID && process.env.GITHUB_SECRET ? [
+      GitHubProvider({
+        clientId: process.env.GITHUB_ID,
+        clientSecret: process.env.GITHUB_SECRET,
+      })
+    ] : []),
   ],
   callbacks: {
     async jwt({ token, user, account }) {
-      // Initial sign in
+      // Initial sign in - store user data in JWT
       if (user) {
         token.id = user.id
         token.email = user.email
         token.name = user.name
         token.picture = user.image
+        
+        // For OAuth providers, create/update profile in Supabase
+        if (account && (account.provider === 'google' || account.provider === 'github')) {
+          try {
+            const supabase = createClient(
+              process.env.NEXT_PUBLIC_SUPABASE_URL!,
+              process.env.SUPABASE_SERVICE_ROLE_KEY!,
+              { auth: { autoRefreshToken: false, persistSession: false } }
+            )
+            
+            // Create or update user profile
+            await supabase
+              .from('profiles')
+              .upsert({
+                id: user.id,
+                email: user.email,
+                full_name: user.name,
+                avatar_url: user.image,
+                subscription_tier: 'free',
+                updated_at: new Date().toISOString()
+              }, {
+                onConflict: 'id'
+              })
+          } catch (error) {
+            console.error('Profile creation error:', error)
+            // Don't fail auth if profile creation fails
+          }
+        }
       }
       
-      // Return previous token if the access token has not expired yet
       return token
     },
+    
     async session({ session, token }) {
-      // Send properties to the client
+      // Pass JWT data to session
       if (token && session.user) {
         session.user.id = token.id as string
         session.user.email = token.email as string
@@ -108,12 +176,17 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
+    
+    async signIn({ user, account, profile }) {
+      // Allow all sign-ins for JWT strategy
+      return true
+    },
+    
     async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
+      // Handle redirects properly
       if (url.startsWith("/")) return `${baseUrl}${url}`
-      // Allows callback URLs on the same origin
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
+      if (new URL(url).origin === baseUrl) return url
+      return `${baseUrl}/dashboard`
     },
   },
   pages: {
