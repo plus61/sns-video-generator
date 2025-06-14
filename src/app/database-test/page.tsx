@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient(
@@ -12,7 +12,7 @@ interface TestResult {
   test: string
   status: 'success' | 'error' | 'pending'
   message: string
-  data?: any
+  data?: unknown
 }
 
 export default function DatabaseTestPage() {
@@ -43,11 +43,11 @@ export default function DatabaseTestPage() {
         message: `Found ${data.length} audio tracks`,
         data: data
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       addResult({
         test: 'Audio Library',
         status: 'error',
-        message: error.message
+        message: error instanceof Error ? error.message : 'Unknown error'
       })
     }
 
@@ -67,18 +67,18 @@ export default function DatabaseTestPage() {
         message: `Found ${data.length} templates`,
         data: data
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       addResult({
         test: 'Video Templates',
         status: 'error',
-        message: error.message
+        message: error instanceof Error ? error.message : 'Unknown error'
       })
     }
 
     // Test 3: Profiles Table Schema
     try {
       addResult({ test: 'Profiles Schema', status: 'pending', message: 'Testing...' })
-      const { error } = await supabase
+      await supabase
         .from('profiles')
         .select('count')
         .limit(1)
@@ -88,8 +88,8 @@ export default function DatabaseTestPage() {
         status: 'success',
         message: 'Schema accessible (no auth user yet)'
       })
-    } catch (error: any) {
-      if (error.message.includes('JWT')) {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.message.includes('JWT')) {
         addResult({
           test: 'Profiles Schema',
           status: 'success',
@@ -99,7 +99,7 @@ export default function DatabaseTestPage() {
         addResult({
           test: 'Profiles Schema',
           status: 'error',
-          message: error.message
+          message: error instanceof Error ? error.message : 'Unknown error'
         })
       }
     }
@@ -107,7 +107,7 @@ export default function DatabaseTestPage() {
     // Test 4: Database Connection
     try {
       addResult({ test: 'Database Connection', status: 'pending', message: 'Testing...' })
-      const { data, error } = await supabase
+      await supabase
         .from('audio_library')
         .select('count')
         .limit(1)
@@ -117,11 +117,11 @@ export default function DatabaseTestPage() {
         status: 'success',
         message: 'Successfully connected to Supabase'
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       addResult({
         test: 'Database Connection',
         status: 'error',
-        message: error.message
+        message: error instanceof Error ? error.message : 'Unknown error'
       })
     }
 
@@ -203,7 +203,7 @@ export default function DatabaseTestPage() {
 
           {results.length === 0 && (
             <div className="text-center py-8 text-gray-500">
-              Click "Run Database Tests" to start testing the database connection
+              Click &quot;Run Database Tests&quot; to start testing the database connection
             </div>
           )}
         </div>
