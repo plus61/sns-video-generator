@@ -11,9 +11,6 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium mb-6">
-            🚀 klap.app の完全代替プラットフォーム
-          </div>
           
           <h2 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
             AI動画生成プラットフォーム

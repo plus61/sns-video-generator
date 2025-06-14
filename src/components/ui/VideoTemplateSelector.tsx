@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import type { VideoTemplate } from '@/types'
 
 interface VideoTemplateSelectorProps {
@@ -113,9 +114,11 @@ export function VideoTemplateSelector({ selectedTemplate, onTemplateSelect }: Vi
             } bg-white dark:bg-gray-800`}
           >
             {template.thumbnail_url ? (
-              <img
+              <Image
                 src={template.thumbnail_url}
                 alt={template.name}
+                width={300}
+                height={128}
                 className="w-full h-32 object-cover rounded-lg mb-3"
               />
             ) : (
