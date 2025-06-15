@@ -2,6 +2,7 @@ import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from "next-auth/providers/credentials"
 import { createClient } from '@supabase/supabase-js'
 
+// Create a simplified, production-ready auth configuration
 export const authOptions: NextAuthOptions = {
   // Use JWT strategy for simplicity and reliability
   session: {
@@ -19,6 +20,7 @@ export const authOptions: NextAuthOptions = {
   
   // Simplified cookie configuration
   useSecureCookies: process.env.NEXTAUTH_URL?.startsWith('https://'),
+  
   // Simplified provider configuration
   providers: [
     CredentialsProvider({
@@ -77,6 +79,7 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
+  
   // Simplified callbacks
   callbacks: {
     async jwt({ token, user }) {
@@ -108,6 +111,7 @@ export const authOptions: NextAuthOptions = {
       return `${baseUrl}/dashboard`
     }
   },
+  
   // Custom pages
   pages: {
     signIn: '/auth/signin',
