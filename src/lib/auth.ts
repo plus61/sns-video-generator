@@ -14,6 +14,8 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
+  trustHost: true,
+  useSecureCookies: process.env.NODE_ENV === 'production',
   cookies: {
     sessionToken: {
       name: process.env.NODE_ENV === 'production' 
@@ -23,9 +25,7 @@ export const authOptions: NextAuthOptions = {
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        secure: process.env.NODE_ENV === 'production',
-        // Remove domain restriction that might cause issues
-        domain: undefined
+        secure: process.env.NODE_ENV === 'production'
       },
     },
   },
