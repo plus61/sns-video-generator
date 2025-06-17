@@ -20,7 +20,7 @@ export default function SignIn() {
     setIsLoading(true)
     setError('')
     try {
-      await signIn(provider, { callbackUrl: '/' })
+      await signIn(provider, { callbackUrl: '/dashboard' })
     } catch (error) {
       console.error('Sign in error:', error)
       setError('サインインに失敗しました')
@@ -44,7 +44,7 @@ export default function SignIn() {
       if (result?.error) {
         setError('メールアドレスまたはパスワードが正しくありません')
       } else {
-        router.push('/')
+        router.push('/dashboard')
       }
     } catch (error) {
       console.error('Email sign in error:', error)
