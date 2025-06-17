@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
-import { YouTubeDownloader } from '@/lib/youtube-downloader'
+import { YouTubeDownloader, DownloadErrorType } from '@/lib/youtube-downloader'
 
 export async function POST(request: NextRequest) {
   try {
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Background processing function with actual implementation
+// Background processing function with enhanced error handling
 async function processYouTubeVideo(videoId: string, youtubeUrl: string) {
   const downloader = new YouTubeDownloader()
   
@@ -99,5 +99,48 @@ async function processYouTubeVideo(videoId: string, youtubeUrl: string) {
     await downloader.processYouTubeVideo(videoId, youtubeUrl)
   } catch (error) {
     console.error('YouTube processing failed:', error)
+    
+    // Update database with specific error information
+    let errorMessage = 'Unknown error occurred'
+    let userFriendlyMessage = 'Sorry, we could not process this video.'
+    
+    if (error.name === 'YouTubeDownloadError') {
+      switch (error.errorType) {
+        case DownloadErrorType.PRIVATE_VIDEO:
+          userFriendlyMessage = 'This video is private and cannot be processed.'
+          break
+        case DownloadErrorType.VIDEO_UNAVAILABLE:
+          userFriendlyMessage = 'This video is unavailable or has been removed.'
+          break
+        case DownloadErrorType.GEOBLOCKED:
+          userFriendlyMessage = 'This video is not available in your region.'
+          break
+        case DownloadErrorType.FILE_TOO_LARGE:
+          userFriendlyMessage = 'This video file is too large to process.'
+          break
+        case DownloadErrorType.QUOTA_EXCEEDED:
+          userFriendlyMessage = 'Service temporarily unavailable. Please try again later.'
+          break
+        case DownloadErrorType.NETWORK_ERROR:
+          userFriendlyMessage = 'Network error. Please check your connection and try again.'
+          break
+        default:
+          userFriendlyMessage = 'Unable to process this video. Please try with a different video.'
+      }
+      errorMessage = error.message
+    } else {
+      errorMessage = error.message || 'Unknown error'
+    }
+    
+    // Update database with error details
+    await supabaseAdmin
+      .from('video_uploads')
+      .update({ 
+        status: 'error',
+        error_message: userFriendlyMessage,
+        error_details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', videoId)
   }
 }

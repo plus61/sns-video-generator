@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions)
     
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Test table structure
-    const { data: tableInfo, error: tableError } = await supabaseAdmin
+    const { error: tableError } = await supabaseAdmin
       .from('video_uploads')
       .select('*')
       .limit(0)
