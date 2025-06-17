@@ -24,7 +24,7 @@
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "*"
+          "value": "https://sns-video-generator.vercel.app"
         },
         {
           "key": "Access-Control-Allow-Methods",

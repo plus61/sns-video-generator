@@ -14,7 +14,7 @@ import { SocialMediaPostPanel } from '@/components/ui/SocialMediaPostPanel'
 import type { VideoTemplate } from '@/types'
 
 function StudioContent() {
-  const { user } = useAuth({ required: true })
+  useAuth({ required: true })
   const searchParams = useSearchParams()
   
   const [selectedTemplate, setSelectedTemplate] = useState<VideoTemplate | null>(null)

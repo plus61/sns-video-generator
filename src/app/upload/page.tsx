@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { measureComponentRender } from '@/lib/performance-monitor'
 
 function UploadContent() {
-  const { user } = useAuth({ required: true })
+  useAuth({ required: true })
   const [uploadProgress, setUploadProgress] = useState(0)
   const [isUploading, setIsUploading] = useState(false)
 

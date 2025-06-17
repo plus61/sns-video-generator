@@ -135,9 +135,9 @@ export class PerformanceMonitor {
           if (entry.entryType === entryType) {
             let value = 0
             
-            if ('value' in entry) {
+            if ('value' in entry && typeof entry.value === 'number') {
               value = entry.value
-            } else if ('startTime' in entry) {
+            } else if ('startTime' in entry && typeof entry.startTime === 'number') {
               value = entry.startTime
             }
 

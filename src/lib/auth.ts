@@ -14,10 +14,7 @@ export const authOptions: NextAuthOptions = {
     maxAge: 7 * 24 * 60 * 60, // 7 days
   },
   
-  // Essential for Vercel deployments
-  trustHost: true,
-  
-  // Simplified cookie configuration
+  // Simplified cookie configuration  
   useSecureCookies: process.env.NEXTAUTH_URL?.startsWith('https://'),
   // Simplified provider configuration
   providers: [
@@ -32,15 +29,7 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
-        // Simple test user check first
-        if (credentials.email === 'test@sns-video-generator.com' && credentials.password === 'test123456') {
-          return {
-            id: 'test-user-id',
-            email: 'test@sns-video-generator.com',
-            name: 'Test User',
-            image: null
-          }
-        }
+        // Remove hardcoded test user for production security
 
         // Supabase authentication for real users
         try {

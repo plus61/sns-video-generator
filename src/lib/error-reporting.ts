@@ -6,7 +6,7 @@ export interface ErrorContext {
   url?: string
   timestamp: string
   environment: string
-  [key: string]: any
+  [key: string]: string | number | boolean | undefined
 }
 
 export interface ErrorReport {
@@ -58,7 +58,7 @@ export class ErrorReporter {
   public reportApiError(
     error: Error, 
     req: NextApiRequest,
-    additionalContext: Record<string, any> = {}
+    additionalContext: Record<string, string | number | boolean | undefined> = {}
   ) {
     const context: Partial<ErrorContext> = {
       url: req.url,

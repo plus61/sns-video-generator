@@ -19,7 +19,7 @@ interface UserUsage {
 }
 
 function DashboardContent() {
-  const { user, session } = useAuth({ required: true })
+  const { session, status } = useAuth({ required: true })
   const router = useRouter()
   const [projects, setProjects] = useState<VideoProject[]>([])
   const [videoUploads, setVideoUploads] = useState<VideoUpload[]>([])
@@ -85,7 +85,7 @@ function DashboardContent() {
             Dashboard
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Welcome back, {session.user?.name || session.user?.email}!
+            Welcome back, {session?.user?.name || session?.user?.email}!
           </p>
         </div>
 

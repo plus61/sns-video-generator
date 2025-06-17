@@ -71,7 +71,7 @@ export function VideoUploader({
           xhr.open('POST', '/api/upload-video')
           xhr.send(formData)
         })
-      }, { fileSize: file.size, fileName: file.name })
+      }, { fileSize: file.size.toString(), fileName: file.name })
 
     } catch (error) {
       console.error('Upload error:', error)

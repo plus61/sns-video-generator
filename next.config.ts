@@ -14,10 +14,10 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   // Ignore specific build warnings that might cause issues
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   }
 };
 

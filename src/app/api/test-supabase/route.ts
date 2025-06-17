@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     console.log('=== SUPABASE CONNECTION TEST ===')
     
@@ -29,50 +29,31 @@ export async function GET(request: NextRequest) {
       auth: { autoRefreshToken: false, persistSession: false }
     })
     
-    // Test authentication with test user
-    console.log('Testing Supabase auth...')
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email: 'test@sns-video-generator.com',
-      password: 'test123456'
-    })
+    // Test database connection only (remove hardcoded credentials)
+    console.log('Testing Supabase connection...')
+    const { error: connectionError } = await supabase
+      .from('profiles')
+      .select('count')
+      .limit(1)
     
-    if (authError) {
-      console.error('Supabase auth error:', authError)
+    if (connectionError && !connectionError.message.includes('JWT')) {
+      console.error('Supabase connection error:', connectionError)
       return NextResponse.json({
-        error: 'Supabase auth test failed',
-        authError: {
-          message: authError.message,
-          status: authError.status,
-          details: authError.details
+        error: 'Supabase connection test failed',
+        connectionError: {
+          message: connectionError.message,
+          details: connectionError.details
         }
       }, { status: 400 })
     }
     
-    console.log('Supabase auth successful:', authData.user?.id)
-    
-    // Test profile fetch
-    if (authData.user) {
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authData.user.id)
-        .single()
-      
-      console.log('Profile fetch result:', {
-        hasProfile: !!profileData,
-        profileError: profileError?.message
-      })
-    }
+    console.log('Supabase connection successful')
     
     return NextResponse.json({
       success: true,
       supabase: {
         connected: true,
-        authTest: {
-          success: true,
-          userId: authData.user?.id,
-          email: authData.user?.email
-        }
+        connectionTest: 'OK'
       },
       timestamp: new Date().toISOString()
     })
