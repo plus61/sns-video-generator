@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
+import { YouTubeDownloader } from '@/lib/youtube-downloader'
 
 export async function POST(request: NextRequest) {
   try {
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Start background processing (in a real app, this would be a queue job)
-    processYouTubeVideo(videoId).catch(console.error)
+    processYouTubeVideo(videoId, url).catch(console.error)
 
     return NextResponse.json({
       success: true,
@@ -90,46 +91,13 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Background processing function (simplified)
-async function processYouTubeVideo(videoId: string) {
+// Background processing function with actual implementation
+async function processYouTubeVideo(videoId: string, youtubeUrl: string) {
+  const downloader = new YouTubeDownloader()
+  
   try {
-    // Update status to processing
-    await supabaseAdmin
-      .from('video_uploads')
-      .update({ status: 'processing' })
-      .eq('id', videoId)
-
-    // In a real implementation, you would:
-    // 1. Use youtube-dl or similar to download the video
-    // 2. Extract metadata (title, description, duration)
-    // 3. Upload to storage
-    // 4. Update database with file info
-
-    // For now, we'll simulate the process and mark as ready for analysis
-    setTimeout(async () => {
-      await supabaseAdmin
-        .from('video_uploads')
-        .update({ 
-          status: 'ready_for_analysis',
-          // In real implementation, add actual metadata:
-          // original_filename: extractedTitle + '.mp4',
-          // file_size: actualFileSize,
-          // duration: actualDuration,
-          // public_url: actualStorageUrl
-        })
-        .eq('id', videoId)
-    }, 5000) // Simulate 5 second processing
-
+    await downloader.processYouTubeVideo(videoId, youtubeUrl)
   } catch (error) {
-    console.error('YouTube processing error:', error)
-    
-    // Update status to error
-    await supabaseAdmin
-      .from('video_uploads')
-      .update({ 
-        status: 'error',
-        error_message: error instanceof Error ? error.message : 'Unknown error'
-      })
-      .eq('id', videoId)
+    console.error('YouTube processing failed:', error)
   }
 }
