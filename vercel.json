@@ -24,7 +24,7 @@
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "https://sns-video-generator.vercel.app"
+          "value": "https://sns-video-generator-burtegpwi-plus62s-projects.vercel.app"
         },
         {
           "key": "Access-Control-Allow-Methods",
