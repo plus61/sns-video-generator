@@ -44,7 +44,25 @@ export async function POST(request: NextRequest) {
 
     if (dbError) {
       console.error('Database insert error:', dbError)
-      return NextResponse.json({ error: 'Failed to save video metadata' }, { status: 500 })
+      console.error('Error details:', {
+        code: dbError.code,
+        message: dbError.message,
+        details: dbError.details,
+        hint: dbError.hint
+      })
+      
+      // Check for common errors
+      if (dbError.code === '23503') {
+        return NextResponse.json({ 
+          error: 'User authentication error. Please sign in again.',
+          details: process.env.NODE_ENV === 'development' ? dbError.message : undefined
+        }, { status: 400 })
+      }
+      
+      return NextResponse.json({ 
+        error: 'Failed to save video metadata',
+        details: process.env.NODE_ENV === 'development' ? dbError.message : undefined
+      }, { status: 500 })
     }
 
     // Start background processing (in a real app, this would be a queue job)
@@ -58,8 +76,15 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Upload YouTube error:', error)
+    console.error('Error type:', error instanceof Error ? error.constructor.name : typeof error)
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error',
+        details: process.env.NODE_ENV === 'development' ? String(error) : undefined
+      },
       { status: 500 }
     )
   }

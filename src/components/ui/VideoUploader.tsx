@@ -118,10 +118,15 @@ export function VideoUploader({
         })
 
         if (!response.ok) {
-          throw new Error('YouTube動画の取得に失敗しました')
+          const errorData = await response.json()
+          throw new Error(errorData.error || errorData.message || 'YouTube動画の取得に失敗しました')
         }
 
         const data = await response.json()
+        
+        if (data.error) {
+          throw new Error(data.error)
+        }
         onUploadComplete(data.videoId)
       }, { url: youtubeUrl })
 

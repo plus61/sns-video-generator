@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- Video projects table
 CREATE TABLE IF NOT EXISTS video_projects (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     title VARCHAR(255),
     description TEXT,
     prompt TEXT NOT NULL,
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS video_templates (
 -- User video usage tracking
 CREATE TABLE IF NOT EXISTS user_usage (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     videos_generated INTEGER DEFAULT 0,
     last_generation_at TIMESTAMP WITH TIME ZONE,
     monthly_limit INTEGER DEFAULT 10,
@@ -73,7 +73,7 @@ $$ language 'plpgsql';
 -- Create video_uploads table for long-form video analysis
 CREATE TABLE IF NOT EXISTS video_uploads (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     original_filename TEXT,
     file_size BIGINT,
     file_type TEXT,
@@ -120,7 +120,7 @@ CREATE INDEX IF NOT EXISTS idx_video_segments_engagement_score ON video_segments
 CREATE INDEX IF NOT EXISTS idx_video_segments_content_type ON video_segments(content_type);
 
 -- Create triggers for updated_at
-CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+-- CREATE TRIGGER update_users_updated_at BEFORE UPDATE ON auth.users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); -- Disabled as auth.users is managed by Supabase
 CREATE TRIGGER update_video_projects_updated_at BEFORE UPDATE ON video_projects FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_video_templates_updated_at BEFORE UPDATE ON video_templates FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_user_usage_updated_at BEFORE UPDATE ON user_usage FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
