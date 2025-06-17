@@ -2,6 +2,103 @@
 
 # 🚀 自律実行型BOSS管理システム - Agent間メッセージ送信スクリプト
 
+# === Claude Multi-Agent System: モデル選択・役割分担 ===
+# President/Boss: Claude Opus 4（戦略・統括・分割）
+# Worker1/2/3: Claude Sonnet 4（並列実行・専門処理）
+# 公式: https://www.anthropic.com/engineering/built-multi-agent-research-system
+
+# モデル選択（将来のAPI連携用変数例）
+PRESIDENT_MODEL="claude-3-opus-20240229"
+BOSS_MODEL="claude-3-opus-20240229"
+WORKER_MODEL="claude-3-sonnet-20240229"
+
+# === 並列処理最適化 ===
+MAX_PARALLEL_WORKERS=3  # Sonnet4の推奨並列数
+
+# 並列タスク実行（例: 並列ワーカー起動）
+parallel_worker_exec() {
+    local tasks=("$@")
+    local pids=()
+    local i=0
+    for task in "${tasks[@]}"; do
+        if [ $i -ge $MAX_PARALLEL_WORKERS ]; then
+            wait -n  # 1つ完了を待つ
+            i=$((i-1))
+        fi
+        eval "$task" &
+        pids+=($!)
+        i=$((i+1))
+    done
+    wait  # 全完了待ち
+}
+
+# === コンテキスト管理・圧縮 ===
+compress_context() {
+    local context="$1"
+    # ここで要約や外部保存を実装可能
+    echo "[圧縮] $context" > /tmp/context_summary.txt
+}
+
+distribute_context() {
+    local main_context="$1"
+    # サブタスク分割例
+    for idx in 1 2 3; do
+        echo "Worker$idx: $main_context の一部を担当" >> /tmp/context_assign.txt
+    done
+}
+
+# === エージェント間通信・同期 ===
+prioritize_message() {
+    local message="$1"; local sender="$2"
+    local priority=0
+    case "$sender" in
+        "president") priority=3 ;;
+        "boss1") priority=2 ;;
+        *) priority=1 ;;
+    esac
+    echo "$priority:$message"
+}
+
+set_sync_point() {
+    local point="$1"
+    echo "$point" > /tmp/sync_point.txt
+}
+
+wait_for_sync() {
+    local point="$1"
+    while [ "$(cat /tmp/sync_point.txt 2>/dev/null)" != "$point" ]; do sleep 1; done
+}
+
+# === エラー処理・自動回復 ===
+error_detection() {
+    local error_type="$1"; local context="$2"
+    case "$error_type" in
+        "context_overflow") echo "[回復] コンテキスト圧縮"; compress_context "$context" ;;
+        "resource_exhaustion") echo "[回復] リソース最適化" ;;
+        "communication_failure") echo "[回復] 通信再試行" ;;
+    esac
+}
+
+auto_recovery() {
+    local error="$1"
+    case "$error" in
+        "retry") echo "[回復] 再試行" ;;
+        "fallback") echo "[回復] フォールバック" ;;
+        "degrade") echo "[回復] 機能縮退" ;;
+    esac
+}
+
+# === パフォーマンス監視 ===
+collect_metrics() {
+    echo "CPU:$(top -l 1 | grep 'CPU usage' | awk '{print $3}') MEM:$(vm_stat | grep 'Pages active' | awk '{print $3}')"
+}
+
+optimize_performance() {
+    local cpu="$1"; local mem="$2"
+    if [ "$cpu" -gt 80 ]; then echo "[最適化] CPU負荷軽減"; fi
+    if [ "$mem" -gt 80 ]; then echo "[最適化] メモリ解放"; fi
+}
+
 # エージェント→tmuxターゲット マッピング
 get_agent_target() {
     case "$1" in
