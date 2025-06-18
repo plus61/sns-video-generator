@@ -1,21 +1,22 @@
 # Production Dockerfile for SNS Video Generator
-FROM node:18-alpine AS base
+FROM node:18-slim AS base
 
 # Install system dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     ffmpeg \
     python3 \
     make \
     g++ \
-    cairo-dev \
-    jpeg-dev \
-    pango-dev \
-    musl-dev \
-    giflib-dev \
-    pixman-dev \
-    pangomm-dev \
-    libjpeg-turbo-dev \
-    freetype-dev
+    libcairo2-dev \
+    libjpeg-dev \
+    libpango1.0-dev \
+    libgif-dev \
+    libpixman-1-dev \
+    libpangomm-1.4-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /app
@@ -37,24 +38,24 @@ ENV NODE_ENV=production
 ENV DISABLE_CANVAS=true
 ENV DISABLE_BULLMQ=false
 # Use Railway-specific config for build
-RUN cp next.config.railway.js next.config.js && npm run build
+RUN if [ -f next.config.railway.js ]; then cp next.config.railway.js next.config.js; fi && npm run build
 
 # Production stage
-FROM node:18-alpine AS runner
+FROM node:18-slim AS runner
 WORKDIR /app
 
 # Install runtime dependencies
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y \
     ffmpeg \
-    cairo \
-    jpeg \
-    pango \
-    musl \
-    giflib \
-    pixman \
-    libjpeg-turbo \
-    freetype \
+    libcairo2 \
+    libjpeg62-turbo \
+    libpango-1.0-0 \
+    libgif7 \
+    libpixman-1-0 \
+    libpangocairo-1.0-0 \
+    libfreetype6 \
     curl \
+    && rm -rf /var/lib/apt/lists/* \
     && addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs
 

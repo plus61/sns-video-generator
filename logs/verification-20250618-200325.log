@@ -1,0 +1,108 @@
+最新コミット: a89330b9d6766accd77c9e53bd49fbb97f5cff54 Fix: Remove --omit=optional flag from npm ci in Dockerfile
+[1;33m⚠️  未コミットの変更があります[0m
+
+[0;34m=== package-lock.json同期チェック ===[0m
+[0;32m✅ package-lock.jsonは同期されています[0m
+
+[0;34m=== 依存関係チェック ===[0m
+[0;32m✅ youtube-dl-execは正しく記録されています[0m
+
+[0;34m=== Dockerfile設定チェック ===[0m
+[0;32m✅ Dockerfileから--omit=optionalフラグが削除されています[0m
+[0;32m✅ USE_MOCK_DOWNLOADER環境変数が設定されています[0m
+
+[0;34m=== ローカルビルドテスト ===[0m
+ビルドを実行中...
+[0;31m❌ ローカルビルドが失敗しました[0m
+エラーログ:
+    at async /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js:52:40
+    at async Span.traceAsyncFn (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/trace/trace.js:157:20)
+    at Object.<anonymous> (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/src/app/globals.css:1:7)
+    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:962742
+    at Hook.eval [as call] (eval at create (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:14:9002), <anonymous>:7:1)
+    at Hook.CALL_DELEGATE [as _call] (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:14:6272)
+    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:131581
+    at tryRunOrWebpackError (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:316096)
+    at __webpack_require_module__ (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
+    at __nested_webpack_require_161494__ (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
+    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:131840
+    at symbolIterator (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+
+Generated code for /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/src/app/globals.css
+
+Import trace for requested module:
+./src/app/globals.css
+
+
+> Build failed because of webpack errors
+
+[0;34m=== 環境変数チェック ===[0m
+[1;33m⚠️  NEXT_PUBLIC_SUPABASE_URL が設定されていません[0m
+[1;33m⚠️  NEXT_PUBLIC_SUPABASE_ANON_KEY が設定されていません[0m
+[1;33m⚠️  SUPABASE_SERVICE_ROLE_KEY が設定されていません[0m
+[1;33m⚠️  OPENAI_API_KEY が設定されていません[0m
+[1;33m⚠️  NEXTAUTH_URL が設定されていません[0m
+[1;33m⚠️  NEXTAUTH_SECRET が設定されていません[0m
+
+[0;34m=== 互換性レイヤーチェック ===[0m
+[0;32m✅ src/lib/compatibility-layer.ts が存在します[0m
+[0;32m✅ src/lib/video-processor-vercel.ts が存在します[0m
+[0;32m✅ src/lib/youtube-downloader.ts が存在します[0m
+
+[0;34m=== Dockerビルドテスト ===[0m
+Dockerイメージをビルド中...
+[0;31m❌ Dockerビルドが失敗しました[0m
+エラーログ:
+0.616    Creating an optimized production build ...
+0.869 
+0.869 > Build error occurred
+0.873 Error: Cannot find module 'lightningcss-linux-x64-musl'
+0.873 Require stack:
+0.873 - /app/next.config.js
+0.873     at Object.webpack (next.config.js:34:48) {
+0.873   code: 'MODULE_NOT_FOUND',
+0.873   requireStack: [Array]
+0.873 }
+------
+Dockerfile:41
+--------------------
+  39 |     ENV DISABLE_BULLMQ=false
+  40 |     # Use Railway-specific config for build
+  41 | >>> RUN if [ -f next.config.railway.js ]; then cp next.config.railway.js next.config.js; fi && npm run build
+  42 |     
+  43 |     # Production stage
+--------------------
+ERROR: failed to solve: process "/bin/sh -c if [ -f next.config.railway.js ]; then cp next.config.railway.js next.config.js; fi && npm run build" did not complete successfully: exit code: 1
+
+[0;34m=== TypeScriptコンパイルチェック ===[0m
+[1;33m⚠️  TypeScriptコンパイルエラーがあります[0m
+__tests__/api/upload-youtube.test.ts(33,51): error TS2322: Type 'unknown' is not assignable to type 'Body | undefined'.
+__tests__/api/upload-youtube.test.ts(321,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+__tests__/api/upload-youtube.test.ts(326,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+__tests__/api/upload-youtube.test.ts(355,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+__tests__/auth/authentication.test.ts(319,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+__tests__/auth/authentication.test.ts(324,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+src/app/api/billing/webhook/route.ts(16,35): error TS2339: Property 'get' does not exist on type 'Promise<ReadonlyHeaders>'.
+src/app/api/health/route.ts(58,32): error TS2353: Object literal may only specify known properties, and 'responseTime' does not exist in type '{ status: "up" | "down"; waiting: number; active: number; failed: number; completed: number; error?: string | undefined; }'.
+src/app/api/health/route.ts(98,7): error TS2353: Object literal may only specify known properties, and 'responseTime' does not exist in type '{ status: "up" | "down"; waiting: number; active: number; failed: number; completed: number; error?: string | undefined; }'.
+src/app/api/health/route.ts(113,7): error TS2353: Object literal may only specify known properties, and 'responseTime' does not exist in type '{ status: "up" | "down"; waiting: number; active: number; failed: number; completed: number; error?: string | undefined; }'.
+src/app/api/queue/stats/route.ts(86,54): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(90,48): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(96,15): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(100,34): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(100,39): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(116,25): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(126,39): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(134,41): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(145,37): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(166,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+
+[0;34m=== 検証結果サマリー ===[0m
+
+検証完了時刻: #午後
+エラー数: 2
+[0;31m⚠️  2 個のエラーが検出されました[0m
+
+上記のエラーを修正してから再度検証を実行してください
+
+詳細ログ: ./logs/verification-20250618-200325.log

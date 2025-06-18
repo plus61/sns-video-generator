@@ -23,8 +23,16 @@ const nextConfig = {
     if (isServer) {
       config.externals = config.externals || []
       config.externals.push({
-        'youtube-dl-exec': 'youtube-dl-exec'
+        'youtube-dl-exec': 'youtube-dl-exec',
+        'lightningcss': 'lightningcss',
+        'lightningcss-linux-x64-musl': 'lightningcss-linux-x64-musl'
       })
+      
+      // Force lightningcss to use the correct binary
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'lightningcss-linux-x64-musl': require.resolve('lightningcss-linux-x64-musl')
+      }
     } else {
       // Exclude problematic packages from client bundle
       config.resolve.fallback = {
@@ -33,8 +41,18 @@ const nextConfig = {
         child_process: false,
         worker_threads: false,
         'utf-8-validate': false,
-        'bufferutil': false
+        'bufferutil': false,
+        'lightningcss': false,
+        'lightningcss-linux-x64-gnu': false,
+        'lightningcss-linux-x64-musl': false
       }
+    }
+    
+    // Add externals for lightningcss
+    if (isServer) {
+      config.externals.push('lightningcss')
+      config.externals.push('lightningcss-linux-x64-gnu')
+      config.externals.push('lightningcss-linux-x64-musl')
     }
 
     return config

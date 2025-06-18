@@ -1,0 +1,114 @@
+__tests__/api/upload-youtube.test.ts(33,51): error TS2322: Type 'unknown' is not assignable to type 'Body | undefined'.
+__tests__/api/upload-youtube.test.ts(321,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+__tests__/api/upload-youtube.test.ts(326,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+__tests__/api/upload-youtube.test.ts(355,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+__tests__/auth/authentication.test.ts(319,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+__tests__/auth/authentication.test.ts(324,19): error TS2540: Cannot assign to 'NODE_ENV' because it is a read-only property.
+src/app/api/billing/webhook/route.ts(16,35): error TS2339: Property 'get' does not exist on type 'Promise<ReadonlyHeaders>'.
+src/app/api/health/route.ts(58,32): error TS2353: Object literal may only specify known properties, and 'responseTime' does not exist in type '{ status: "up" | "down"; waiting: number; active: number; failed: number; completed: number; error?: string | undefined; }'.
+src/app/api/health/route.ts(98,7): error TS2353: Object literal may only specify known properties, and 'responseTime' does not exist in type '{ status: "up" | "down"; waiting: number; active: number; failed: number; completed: number; error?: string | undefined; }'.
+src/app/api/health/route.ts(113,7): error TS2353: Object literal may only specify known properties, and 'responseTime' does not exist in type '{ status: "up" | "down"; waiting: number; active: number; failed: number; completed: number; error?: string | undefined; }'.
+src/app/api/queue/stats/route.ts(86,54): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(90,48): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(96,15): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(100,34): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(100,39): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(116,25): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(126,39): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(134,41): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(145,37): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/app/api/queue/stats/route.ts(166,9): error TS2322: Type 'unknown' is not assignable to type 'number'.
+src/app/api/queue/stats/route.ts(166,64): error TS18046: 'sum' is of type 'unknown'.
+src/components/social/SocialPublishPanel.tsx(75,37): error TS2339: Property 'getOptimalPostingTimes' does not exist on type 'PostScheduler'.
+src/components/social/SocialPublishPanel.tsx(417,15): error TS2322: Type '"error" | "completed" | "publishing" | "idle"' is not assignable to type '"error" | "processing" | "completed" | "analyzing" | "uploading" | "idle"'.
+  Type '"publishing"' is not assignable to type '"error" | "processing" | "completed" | "analyzing" | "uploading" | "idle"'.
+src/lib/billing-service.ts(75,17): error TS18047: 'stripe' is possibly 'null'.
+src/lib/billing-service.ts(110,29): error TS18047: 'stripe' is possibly 'null'.
+src/lib/billing-service.ts(172,29): error TS18047: 'stripe' is possibly 'null'.
+src/lib/billing-service.ts(196,15): error TS18047: 'stripe' is possibly 'null'.
+src/lib/billing-service.ts(198,15): error TS18047: 'stripe' is possibly 'null'.
+src/lib/billing-service.ts(221,13): error TS18047: 'stripe' is possibly 'null'.
+src/lib/billing-service.ts(251,38): error TS18047: 'stripe' is possibly 'null'.
+src/lib/billing-service.ts(258,55): error TS2339: Property 'current_period_start' does not exist on type 'Response<Subscription>'.
+src/lib/billing-service.ts(259,53): error TS2339: Property 'current_period_end' does not exist on type 'Response<Subscription>'.
+src/lib/compatibility-layer.ts(80,15): error TS2451: Cannot redeclare block-scoped variable 'VercelVideoProcessor'.
+src/lib/compatibility-layer.ts(91,56): error TS2307: Cannot find module './video-processor-railway' or its corresponding type declarations.
+src/lib/compatibility-layer.ts(110,15): error TS2451: Cannot redeclare block-scoped variable 'VercelVideoProcessor'.
+src/lib/compatibility-layer.ts(111,18): error TS2454: Variable 'VercelVideoProcessor' is used before being assigned.
+src/lib/compatibility-layer.ts(241,15): error TS2339: Property 'getVideoProcessingQueue' does not exist on type 'typeof import("/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/src/lib/queues/video-processing-queue")'.
+src/lib/compatibility-layer.ts(283,15): error TS2339: Property 'createTextElement' does not exist on type 'typeof import("/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/src/lib/video-text-editor")'.
+src/lib/compatibility-layer.ts(283,34): error TS2339: Property 'updateTextElement' does not exist on type 'typeof import("/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/src/lib/video-text-editor")'.
+src/lib/post-scheduler.ts(67,10): error TS2551: Property 'scheduleInMemory' does not exist on type 'PostScheduler'. Did you mean 'scheduleTimer'?
+src/lib/post-scheduler.ts(87,29): error TS2339: Property 'postData' does not exist on type 'ScheduledPost'.
+src/lib/post-scheduler.ts(95,27): error TS2554: Expected 6 arguments, but got 3.
+src/lib/post-scheduler.ts(96,20): error TS2345: Argument of type 'Promise<ScheduledPost>' is not assignable to parameter of type 'string'.
+src/lib/post-scheduler.ts(146,23): error TS2551: Property 'scheduledPosts' does not exist on type 'PostScheduler'. Did you mean 'schedulePost'?
+src/lib/post-scheduler.ts(161,42): error TS2344: Type '"platforms" | "scheduledTime" | "postData"' does not satisfy the constraint 'keyof ScheduledPost'.
+  Type '"postData"' is not assignable to type 'keyof ScheduledPost'.
+src/lib/post-scheduler.ts(163,23): error TS2551: Property 'scheduledPosts' does not exist on type 'PostScheduler'. Did you mean 'schedulePost'?
+src/lib/post-scheduler.ts(183,5): error TS2322: Type 'unknown[]' is not assignable to type 'ScheduledPost[]'.
+  Type 'unknown' is not assignable to type 'ScheduledPost'.
+src/lib/post-scheduler.ts(183,28): error TS2551: Property 'scheduledPosts' does not exist on type 'PostScheduler'. Did you mean 'schedulePost'?
+src/lib/post-scheduler.ts(184,17): error TS18046: 'a' is of type 'unknown'.
+src/lib/post-scheduler.ts(184,45): error TS18046: 'b' is of type 'unknown'.
+src/lib/post-scheduler.ts(207,23): error TS2551: Property 'scheduledPosts' does not exist on type 'PostScheduler'. Did you mean 'schedulePost'?
+src/lib/post-scheduler.ts(307,12): error TS2339: Property 'timers' does not exist on type 'PostScheduler'.
+src/lib/post-scheduler.ts(310,10): error TS2339: Property 'timers' does not exist on type 'PostScheduler'.
+src/lib/post-scheduler.ts(314,24): error TS2339: Property 'timers' does not exist on type 'PostScheduler'.
+src/lib/post-scheduler.ts(317,12): error TS2339: Property 'timers' does not exist on type 'PostScheduler'.
+src/lib/post-scheduler.ts(323,14): error TS2339: Property 'isRunning' does not exist on type 'PostScheduler'.
+src/lib/post-scheduler.ts(325,10): error TS2339: Property 'isRunning' does not exist on type 'PostScheduler'.
+src/lib/post-scheduler.ts(328,10): error TS2551: Property 'scheduledPosts' does not exist on type 'PostScheduler'. Did you mean 'schedulePost'?
+src/lib/post-scheduler.ts(328,34): error TS7006: Parameter 'post' implicitly has an 'any' type.
+src/lib/post-scheduler.ts(328,40): error TS7006: Parameter 'postId' implicitly has an 'any' type.
+src/lib/post-scheduler.ts(341,10): error TS2339: Property 'isRunning' does not exist on type 'PostScheduler'.
+src/lib/post-scheduler.ts(344,10): error TS2339: Property 'timers' does not exist on type 'PostScheduler'.
+src/lib/post-scheduler.ts(344,25): error TS7006: Parameter 'timer' implicitly has an 'any' type.
+src/lib/post-scheduler.ts(345,10): error TS2339: Property 'timers' does not exist on type 'PostScheduler'.
+src/lib/post-scheduler.ts(352,10): error TS2551: Property 'scheduledPosts' does not exist on type 'PostScheduler'. Did you mean 'schedulePost'?
+src/lib/post-scheduler.ts(352,34): error TS7006: Parameter 'post' implicitly has an 'any' type.
+src/lib/post-scheduler.ts(352,40): error TS7006: Parameter 'postId' implicitly has an 'any' type.
+src/lib/post-scheduler.ts(355,14): error TS2551: Property 'scheduledPosts' does not exist on type 'PostScheduler'. Did you mean 'schedulePost'?
+src/lib/post-scheduler.ts(378,41): error TS2551: Property 'scheduledPosts' does not exist on type 'PostScheduler'. Did you mean 'schedulePost'?
+src/lib/post-scheduler.ts(378,71): error TS2345: Argument of type '([, post]: [any, any]) => any' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => any'.
+  Types of parameters '__0' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type '[any, any]'.
+src/lib/post-scheduler.ts(404,14): error TS2551: Property 'scheduledPosts' does not exist on type 'PostScheduler'. Did you mean 'schedulePost'?
+src/lib/post-scheduler.ts(437,11): error TS2367: This comparison appears to be unintentional because the types '"failed" | "published" | "cancelled" | "pending" | "publishing"' and '"completed"' have no overlap.
+src/lib/post-scheduler.ts(447,37): error TS2339: Property 'results' does not exist on type 'ScheduledPost'.
+src/lib/post-scheduler.ts(447,51): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/lib/post-template-manager.ts(416,36): error TS2339: Property 'raw' does not exist on type 'SupabaseClient<any, "public", any>'.
+src/lib/queue-wrapper.ts(45,65): error TS18046: 'error' is of type 'unknown'.
+src/lib/queues/video-processing-queue.ts(1,25): error TS2305: Module '"../queue-wrapper"' has no exported member 'Job'.
+src/lib/queues/video-processing-queue.ts(58,37): error TS7006: Parameter 'jobId' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(62,36): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(66,39): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(66,44): error TS7006: Parameter 'result' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(70,36): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(70,41): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(74,37): error TS7006: Parameter 'jobId' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(95,22): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(99,25): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(99,30): error TS7006: Parameter 'result' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(103,22): error TS7006: Parameter 'job' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(103,27): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/lib/queues/video-processing-queue.ts(107,21): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/lib/railway-api-proxy.ts(271,5): error TS2451: Cannot redeclare block-scoped variable 'railwayApiProxy'.
+src/lib/railway-api-proxy.ts(281,14): error TS2451: Cannot redeclare block-scoped variable 'railwayApiProxy'.
+src/lib/stripe-config.ts(6,7): error TS2322: Type '"2024-06-20"' is not assignable to type '"2025-05-28.basil"'.
+src/lib/thumbnail-generator.ts(206,21): error TS2345: Argument of type '(value: Blob | PromiseLike<Blob>) => void' is not assignable to parameter of type 'BlobCallback'.
+  Types of parameters 'value' and 'blob' are incompatible.
+    Type 'Blob | null' is not assignable to type 'Blob | PromiseLike<Blob>'.
+      Type 'null' is not assignable to type 'Blob | PromiseLike<Blob>'.
+src/lib/video-chunk-optimizer.ts(170,31): error TS2683: 'this' implicitly has type 'any' because it does not have a type annotation.
+src/lib/video-chunk-optimizer.ts(198,69): error TS2345: Argument of type 'string | number | symbol | undefined' is not assignable to parameter of type 'string | undefined'.
+  Type 'number' is not assignable to type 'string'.
+src/lib/vision-analyzer.ts(238,9): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(body: ChatCompletionCreateParamsNonStreaming, options?: RequestOptions | undefined): APIPromise<ChatCompletion>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'ChatCompletionCreateParamsNonStreaming'.
+  Overload 2 of 3, '(body: ChatCompletionCreateParamsStreaming, options?: RequestOptions | undefined): APIPromise<Stream<ChatCompletionChunk>>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'ChatCompletionCreateParamsStreaming'.
+  Overload 3 of 3, '(body: ChatCompletionCreateParamsBase, options?: RequestOptions | undefined): APIPromise<ChatCompletion | Stream<...>>', gave the following error.
+    Object literal may only specify known properties, and 'timeout' does not exist in type 'ChatCompletionCreateParamsBase'.
+tests/local/08-form-validation.spec.ts(306,33): error TS2352: Conversion of type 'HTMLElement | SVGElement' to type 'NodeListOf<HTMLInputElement>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Type 'SVGElement' is missing the following properties from type 'NodeListOf<HTMLInputElement>': item, forEach, entries, keys, and 3 more.
