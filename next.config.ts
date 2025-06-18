@@ -3,7 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: false,
   experimental: {
-    optimizePackageImports: ['@supabase/supabase-js']
+    optimizePackageImports: ['@supabase/supabase-js'],
+    // Disable CSS optimization to prevent lightningcss issues
+    optimizeCss: false
   },
   env: {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
