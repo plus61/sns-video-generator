@@ -37,8 +37,8 @@ ENV USE_MOCK_DOWNLOADER=true
 ENV NODE_ENV=production
 ENV DISABLE_CANVAS=true
 ENV DISABLE_BULLMQ=false
-# Use Railway-specific config for build
-RUN if [ -f next.config.railway.js ]; then cp next.config.railway.js next.config.js; fi && npm run build
+# Build the application
+RUN npm run build
 
 # Production stage
 FROM node:18-slim AS runner
