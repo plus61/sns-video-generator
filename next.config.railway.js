@@ -23,16 +23,8 @@ const nextConfig = {
     if (isServer) {
       config.externals = config.externals || []
       config.externals.push({
-        'youtube-dl-exec': 'youtube-dl-exec',
-        'lightningcss': 'lightningcss',
-        'lightningcss-linux-x64-musl': 'lightningcss-linux-x64-musl'
+        'youtube-dl-exec': 'youtube-dl-exec'
       })
-      
-      // Force lightningcss to use the correct binary
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'lightningcss-linux-x64-musl': require.resolve('lightningcss-linux-x64-musl')
-      }
     } else {
       // Exclude problematic packages from client bundle
       config.resolve.fallback = {
