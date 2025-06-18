@@ -1,0 +1,150 @@
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm run build"
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+
+[env]
+# Node.js Configuration
+NODE_VERSION = "18"
+NPM_VERSION = "9"
+NODE_ENV = "production"
+
+# Next.js Configuration
+NEXT_TELEMETRY_DISABLED = "1"
+NEXT_OPTIMIZE_FONTS = "false"
+
+# Application Settings
+PORT = "3000"
+HOST = "0.0.0.0"
+
+# Database Configuration (from Railway variables)
+DATABASE_URL = "${{ POSTGRES_URL }}"
+REDIS_URL = "${{ REDIS_URL }}"
+
+# External Services
+SUPABASE_URL = "${{ SUPABASE_URL }}"
+SUPABASE_SERVICE_KEY = "${{ SUPABASE_SERVICE_KEY }}"
+OPENAI_API_KEY = "${{ OPENAI_API_KEY }}"
+YOUTUBE_API_KEY = "${{ YOUTUBE_API_KEY }}"
+
+# Authentication
+NEXTAUTH_URL = "${{ RAILWAY_PUBLIC_DOMAIN ? RAILWAY_PUBLIC_DOMAIN : 'http://localhost:3000' }}"
+NEXTAUTH_SECRET = "${{ NEXTAUTH_SECRET }}"
+GOOGLE_CLIENT_ID = "${{ GOOGLE_CLIENT_ID }}"
+GOOGLE_CLIENT_SECRET = "${{ GOOGLE_CLIENT_SECRET }}"
+
+# Video Processing Configuration
+MAX_VIDEO_SIZE = "500MB"
+MAX_PROCESSING_TIME = "1800000" # 30 minutes in ms
+CONCURRENT_JOBS = "3"
+CHUNK_SIZE = "50MB"
+
+# Job Queue Configuration
+BULLMQ_REDIS_URL = "${{ REDIS_URL }}"
+QUEUE_CONCURRENCY = "5"
+JOB_ATTEMPTS = "3"
+JOB_BACKOFF_DELAY = "5000"
+
+# Webhook Configuration
+WEBHOOK_SECRET = "${{ WEBHOOK_SECRET }}"
+WEBHOOK_TIMEOUT = "30000"
+WEBHOOK_RETRY_ATTEMPTS = "3"
+
+# Storage Configuration
+STORAGE_PROVIDER = "supabase" # supabase, s3, railway-volume
+TEMP_STORAGE_PATH = "/tmp/video-processing"
+MAX_STORAGE_SIZE = "10GB"
+
+# Performance Settings
+UV_THREADPOOL_SIZE = "16"
+NODE_OPTIONS = "--max-old-space-size=2048"
+
+# Monitoring & Logging
+LOG_LEVEL = "info"
+ENABLE_METRICS = "true"
+HEALTH_CHECK_INTERVAL = "30000"
+
+[services.redis]
+image = "redis:7-alpine"
+restartPolicyType = "ALWAYS"
+
+[services.postgres]
+image = "postgres:15-alpine"
+restartPolicyType = "ALWAYS"
+
+[healthcheck]
+path = "/api/health"
+interval = 30
+timeout = 10
+retries = 3
+
+[scaling]
+minInstances = 1
+maxInstances = 5
+targetCPU = 70
+targetMemory = 80
+
+[regions]
+primary = "us-west1"
+fallback = ["us-east1", "eu-west1"]
+
+[volumes]
+"/tmp/video-processing" = "10GB"
+"/app/uploads" = "50GB"
+
+# Custom nixpacks configuration
+[nixpacks]
+pkgs = ["nodejs-18_x", "ffmpeg", "imagemagick"]
+
+[nixpacks.phases.setup]
+cmds = [
+  "mkdir -p /tmp/video-processing",
+  "mkdir -p /app/uploads",
+  "chmod 755 /tmp/video-processing",
+  "chmod 755 /app/uploads"
+]
+
+[nixpacks.phases.install]
+cmds = [
+  "npm ci --only=production",
+  "npm run build"
+]
+
+[nixpacks.phases.start]
+cmd = "npm start"
+
+# Environment-specific overrides
+[environments.development]
+NODE_ENV = "development"
+LOG_LEVEL = "debug"
+CONCURRENT_JOBS = "1"
+QUEUE_CONCURRENCY = "2"
+
+[environments.staging]
+NODE_ENV = "staging"
+LOG_LEVEL = "debug"
+CONCURRENT_JOBS = "2"
+QUEUE_CONCURRENCY = "3"
+
+[environments.production]
+NODE_ENV = "production"
+LOG_LEVEL = "info"
+CONCURRENT_JOBS = "5"
+QUEUE_CONCURRENCY = "10"
+
+# Resource limits
+[resources]
+memory = "2GB"
+cpu = "2vCPU"
+disk = "20GB"
+
+# Backup configuration
+[backup]
+enabled = true
+schedule = "0 2 * * *" # Daily at 2 AM
+retention = "30d"
+exclude = ["/tmp/*", "/app/uploads/temp/*"]
