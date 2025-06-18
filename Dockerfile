@@ -39,6 +39,8 @@ ENV DISABLE_CANVAS=true
 ENV DISABLE_BULLMQ=false
 ENV CI=false
 ENV SKIP_ENV_VALIDATION=true
+ENV NEXT_PRIVATE_SKIP_CSS_MINIFY=true
+ENV NEXT_DISABLE_LIGHTNINGCSS=true
 # Build the application (force rebuild)
 RUN npm run build
 
