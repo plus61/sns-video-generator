@@ -48,11 +48,11 @@ const nextConfig = {
       }
     }
     
-    // Add externals for lightningcss
+    // Add externals for lightningcss (Debian/glibc compatible)
     if (isServer) {
       config.externals.push('lightningcss')
       config.externals.push('lightningcss-linux-x64-gnu')
-      config.externals.push('lightningcss-linux-x64-musl')
+      // Note: musl variant removed as we're using Debian slim
     }
 
     return config
