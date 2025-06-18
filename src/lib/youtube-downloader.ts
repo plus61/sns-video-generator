@@ -1,13 +1,64 @@
-// Environment-specific imports
+// Dynamic import for youtube-dl-exec with fallback
 let youtubedl: unknown = null
-try {
-  // Only import youtube-dl-exec in non-Vercel environments
-  if (!process.env.VERCEL && !process.env.USE_MOCK_DOWNLOADER) {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    youtubedl = require('youtube-dl-exec')
+let youtubedlLoadError: string | null = null
+
+/**
+ * Dynamically load youtube-dl-exec with proper error handling
+ * Supports both require and import patterns for maximum compatibility
+ */
+async function loadYoutubeDl(): Promise<unknown> {
+  if (youtubedl) return youtubedl
+  if (youtubedlLoadError) return null
+  
+  // Skip loading in browser environment
+  if (typeof window !== 'undefined') {
+    youtubedlLoadError = 'Browser environment - using mock implementation'
+    return null
   }
-} catch {
-  console.warn('youtube-dl-exec not available, using mock implementation')
+  
+  // Skip loading in Vercel environment
+  if (process.env.VERCEL || process.env.VERCEL_ENV) {
+    youtubedlLoadError = 'Vercel environment - using mock implementation'
+    return null
+  }
+  
+  // Use mock if explicitly configured
+  if (process.env.USE_MOCK_DOWNLOADER === 'true') {
+    youtubedlLoadError = 'Mock downloader explicitly enabled'
+    return null
+  }
+  
+  try {
+    // First try dynamic import (preferred for ES modules)
+    try {
+      const importedModule = await import('youtube-dl-exec')
+      youtubedl = importedModule.default || importedModule
+      console.log('✅ youtube-dl-exec loaded via dynamic import')
+      return youtubedl
+    } catch (importError) {
+      // Fallback to require for CommonJS environments
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        youtubedl = require('youtube-dl-exec')
+        console.log('✅ youtube-dl-exec loaded via require')
+        return youtubedl
+      } catch (requireError) {
+        throw new Error(`Both import and require failed: ${importError}, ${requireError}`)
+      }
+    }
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error)
+    youtubedlLoadError = errorMessage
+    console.warn('⚠️ youtube-dl-exec not available, using mock implementation:', errorMessage)
+    return null
+  }
+}
+
+// Initialize on module load (non-blocking)
+if (typeof window === 'undefined') {
+  loadYoutubeDl().catch(() => {
+    // Silent catch - errors are handled in loadYoutubeDl
+  })
 }
 
 import path from 'path'
@@ -66,14 +117,40 @@ export class YouTubeDownloader {
     this.retryDelay = 2000 // 2 seconds
     this.maxFileSize = 500 * 1024 * 1024 // 500MB
     
-    // Use mock implementation in Vercel or when explicitly configured
-    this.useMockImplementation = !!(
-      process.env.VERCEL || 
-      process.env.USE_MOCK_DOWNLOADER === 'true' ||
-      !youtubedl
-    )
+    // Determine if we should use mock implementation
+    this.useMockImplementation = this.shouldUseMockImplementation()
     
     console.log(`YouTubeDownloader initialized - Mock mode: ${this.useMockImplementation}`)
+    if (this.useMockImplementation && youtubedlLoadError) {
+      console.log(`Mock mode reason: ${youtubedlLoadError}`)
+    }
+  }
+
+  /**
+   * Determine if mock implementation should be used
+   */
+  private shouldUseMockImplementation(): boolean {
+    // Always use mock in Vercel
+    if (process.env.VERCEL || process.env.VERCEL_ENV) {
+      return true
+    }
+    
+    // Use mock if explicitly configured
+    if (process.env.USE_MOCK_DOWNLOADER === 'true') {
+      return true
+    }
+    
+    // Use mock if youtube-dl-exec failed to load
+    if (youtubedlLoadError) {
+      return true
+    }
+    
+    // Use mock if no youtubedl instance available
+    if (!youtubedl) {
+      return true
+    }
+    
+    return false
   }
 
   async ensureTempDir() {
@@ -159,11 +236,21 @@ export class YouTubeDownloader {
     
     const outputPath = path.join(this.tempDir, `${videoId}.mp4`)
     
+    // Ensure youtube-dl is available
+    const youtubedlInstance = await loadYoutubeDl()
+    if (!youtubedlInstance) {
+      throw new YouTubeDownloadError(
+        DownloadErrorType.UNKNOWN_ERROR,
+        new Error(youtubedlLoadError || 'youtube-dl-exec not available'),
+        'YouTube downloader not available - using mock implementation'
+      )
+    }
+    
     // Get video info with retry
     const info = await this.retryOperation(async () => {
       console.log(`Getting video info for ${youtubeUrl}`)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return await (youtubedl as any)(youtubeUrl, {
+      return await (youtubedlInstance as any)(youtubeUrl, {
         dumpSingleJson: true,
         noCheckCertificates: true,
         noWarnings: true,
@@ -203,7 +290,7 @@ export class YouTubeDownloader {
     await this.retryOperation(async () => {
       console.log(`Starting download for ${youtubeUrl}`)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (youtubedl as any)(youtubeUrl, {
+      await (youtubedlInstance as any)(youtubeUrl, {
         output: outputPath,
         format: 'best[ext=mp4][filesize<500M]/best[ext=mp4]/best',
         noCheckCertificates: true,

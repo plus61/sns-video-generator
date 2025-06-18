@@ -38,6 +38,9 @@
     "stripe": "^18.2.1",
     "uuid": "^11.1.0"
   },
+  "optionalDependencies": {
+    "youtube-dl-exec": "^3.0.12"
+  },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.53.0",

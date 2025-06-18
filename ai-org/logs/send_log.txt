@@ -190,3 +190,83 @@ Vercel（フロントエンド）+ Railway（バックエンド）のハイブ�
 [2025-06-18 13:11:03] BOSS: リアルタイム報告監視システム実装完了
 [2025-06-18 13:11:03] BOSS: Worker報告を待たずに即座に処理可能
 [2025-06-18 13:11:03] BOSS: 非同期処理により効率的な対応を実現
+[2025-06-18 16:17:11] user: ERROR - "【緊急】Railwayビルドエラーの修正指示（Vercel互換性維持）
+
+【問題】
+RailwayでDockerfileビルドが失敗（npm run build でexit code 1）
+
+【原因】
+1. Tailwind CSS v4では不要なtailwind.config.tsをCOPYしようとしている
+2. youtube-dl-execがビルド時にインストールできない
+3. ビルド時の環境変数が不足
+
+【修正内容】
+1. Dockerfile修正
+   - tailwind.config.tsのCOPY行を削除（36行目）
+   - ビルド時の環境変数追加：
+     ENV USE_MOCK_DOWNLOADER=true
+     ENV NODE_ENV=production
+   - npm ciコマンドに --omit=optional を追加
+
+2. package.json修正
+   - youtube-dl-execをoptionalDependenciesに移動
+   
+3. src/lib/youtube-downloader.ts修正
+   - 動的インポートでビルドエラー回避
+   - try-catchで依存関係エラーをハンドリング
+
+【重要】
+- Vercelは現在正常にビルドできているので、その状態を維持
+- 両環境で動作する解決策を実装
+- テスト済みの修正内容
+
+【対応手順】
+1. 上記ファイルを修正
+2. git add/commit/push
+3. Railwayの自動ビルドを確認
+4. Vercelのビルドも引き続き成功することを確認
+
+両環境での安定動作を確保してください。"
+[2025-06-18 16:17:11] BOSS: AUTO_HANDLE_ERROR for user
+[2025-06-18 16:17:14] boss1: MESSAGE - "【緊急】Railwayビルドエラーの修正指示（Vercel互換性維持）
+
+【問題】
+RailwayでDockerfileビルドが失敗（npm run build でexit code 1）
+
+【原因】
+1. Tailwind CSS v4では不要なtailwind.config.tsをCOPYしようとしている
+2. youtube-dl-execがビルド時にインストールできない
+3. ビルド時の環境変数が不足
+
+【修正内容】
+1. Dockerfile修正
+   - tailwind.config.tsのCOPY行を削除（36行目）
+   - ビルド時の環境変数追加：
+     ENV USE_MOCK_DOWNLOADER=true
+     ENV NODE_ENV=production
+   - npm ciコマンドに --omit=optional を追加
+
+2. package.json修正
+   - youtube-dl-execをoptionalDependenciesに移動
+   
+3. src/lib/youtube-downloader.ts修正
+   - 動的インポートでビルドエラー回避
+   - try-catchで依存関係エラーをハンドリング
+
+【重要】
+- Vercelは現在正常にビルドできているので、その状態を維持
+- 両環境で動作する解決策を実装
+- テスト済みの修正内容
+
+【対応手順】
+1. 上記ファイルを修正
+2. git add/commit/push
+3. Railwayの自動ビルドを確認
+4. Vercelのビルドも引き続き成功することを確認
+
+両環境での安定動作を確保してください。"
+[2025-06-18 16:38:53] BOSS: 緊急Railwayビルドエラー対応開始
+[2025-06-18 16:38:53] BOSS: Worker1 - Dockerfile修正指示送信
+[2025-06-18 16:38:53] BOSS: Worker2 - package.json修正指示送信
+[2025-06-18 16:38:53] BOSS: Worker3 - youtube-downloader.ts修正指示送信
+[2025-06-18 16:38:53] BOSS: Vercel互換性維持を前提とした修正を指示

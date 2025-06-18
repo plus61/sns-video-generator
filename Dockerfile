@@ -23,19 +23,21 @@ WORKDIR /app
 # Install dependencies
 FROM base AS deps
 COPY package*.json ./
-RUN npm ci --only=production --ignore-scripts && npm cache clean --force
+RUN npm ci --only=production --ignore-scripts --omit=optional && npm cache clean --force
 
 # Build stage
 FROM base AS builder
 COPY package*.json ./
-RUN npm ci
+RUN npm ci --omit=optional --ignore-scripts
 COPY . .
-# Ensure TypeScript config is available
-COPY tsconfig.json ./
-COPY next.config.ts ./
-COPY tailwind.config.ts ./
-ENV NEXT_TELEMETRY_DISABLED 1
-RUN npm run build
+# Set build-time environment variables for Railway compatibility
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV USE_MOCK_DOWNLOADER=true
+ENV NODE_ENV=production
+ENV DISABLE_CANVAS=true
+ENV DISABLE_BULLMQ=false
+# Use Railway-specific config for build
+RUN cp next.config.railway.js next.config.js && npm run build
 
 # Production stage
 FROM node:18-alpine AS runner

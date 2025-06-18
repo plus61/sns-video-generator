@@ -3,15 +3,16 @@
 
 // Environment detection
 const isVercel = process.env.VERCEL === '1' || process.env.DISABLE_BULLMQ === 'true'
-const isRailway = !!process.env.REDIS_URL && !isVercel
+const isBuildTime = process.env.NODE_ENV === 'production' && !process.env.REDIS_URL
+const isRailway = !!process.env.REDIS_URL && !isVercel && !isBuildTime
 
 // Dynamic imports based on environment
 let QueueImpl: any
 let WorkerImpl: any  
 let RedisImpl: any
 
-if (isVercel) {
-  // Vercel: Use mock implementations
+if (isVercel || isBuildTime) {
+  // Vercel/Build: Use mock implementations
   const mockModule = require('./queues/video-processing-queue-vercel')
   QueueImpl = mockModule.MockQueue || class MockQueue {
     constructor(name: string) {
@@ -66,7 +67,7 @@ export const Redis = RedisImpl
 
 // Queue configuration
 export const getQueueConfig = () => {
-  if (isVercel) {
+  if (isVercel || isBuildTime) {
     return {
       connection: null, // No Redis connection needed for mock
       defaultJobOptions: {
@@ -82,7 +83,7 @@ export const getQueueConfig = () => {
       port: parseInt(process.env.REDIS_PORT || '6379'),
       password: process.env.REDIS_PASSWORD,
       db: parseInt(process.env.REDIS_DB || '0'),
-      maxRetriesPerRequest: 3,
+      maxRetriesPerRequest: null, // Required by BullMQ
       retryDelayOnFailover: 100,
       enableReadyCheck: true,
       maxLoadingTimeout: 5000,
@@ -120,10 +121,11 @@ export const getQueueConfig = () => {
 
 // Environment info logging
 console.log(`🔧 Queue Wrapper Environment:`)
-console.log(`   Platform: ${isVercel ? 'Vercel' : isRailway ? 'Railway' : 'Local'}`)
+console.log(`   Platform: ${isVercel ? 'Vercel' : isRailway ? 'Railway' : isBuildTime ? 'Build' : 'Local'}`)
 console.log(`   VERCEL: ${process.env.VERCEL}`)
+console.log(`   NODE_ENV: ${process.env.NODE_ENV}`)
 console.log(`   DISABLE_BULLMQ: ${process.env.DISABLE_BULLMQ}`)
 console.log(`   REDIS_URL: ${process.env.REDIS_URL ? 'Set' : 'Not set'}`)
-console.log(`   Implementation: ${isVercel ? 'Mock Queue' : 'BullMQ'}`)
+console.log(`   Implementation: ${(isVercel || isBuildTime) ? 'Mock Queue' : 'BullMQ'}`)
 
-export { isVercel, isRailway }
+export { isVercel, isRailway, isBuildTime }

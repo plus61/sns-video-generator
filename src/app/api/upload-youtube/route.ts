@@ -3,7 +3,8 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
-import { YouTubeDownloader, DownloadErrorType } from '@/lib/youtube-downloader'
+import { getYouTubeDownloader } from '@/lib/youtube-downloader-dynamic'
+import { DownloadErrorType } from '@/lib/youtube-downloader'
 import { YouTubeAPIService, YouTubeAPIErrorType } from '@/lib/youtube-api-service'
 
 export async function POST(request: NextRequest) {
@@ -108,6 +109,7 @@ export async function POST(request: NextRequest) {
 
 // Background processing function with enhanced error handling
 async function processYouTubeVideo(videoId: string, youtubeUrl: string) {
+  const YouTubeDownloader = await getYouTubeDownloader()
   const downloader = new YouTubeDownloader()
   
   try {
