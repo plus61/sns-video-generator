@@ -1,19 +1,21 @@
 import Stripe from 'stripe'
 
-// Initialize Stripe
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-  typescript: true,
-  telemetry: false
-})
+// Initialize Stripe only if API key is available
+export const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-06-20',
+      typescript: true,
+      telemetry: false
+    })
+  : null
 
 // Stripe configuration
 export const STRIPE_CONFIG = {
-  publishableKey: process.env.STRIPE_PUBLISHABLE_KEY!,
-  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+  publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || '',
+  webhookSecret: process.env.STRIPE_WEBHOOK_SECRET || '',
   currency: 'usd',
-  successUrl: process.env.NEXT_PUBLIC_APP_URL + '/dashboard/billing/success',
-  cancelUrl: process.env.NEXT_PUBLIC_APP_URL + '/dashboard/billing/canceled'
+  successUrl: (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000') + '/dashboard/billing/success',
+  cancelUrl: (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000') + '/dashboard/billing/canceled'
 }
 
 // Subscription plans configuration

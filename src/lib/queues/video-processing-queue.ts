@@ -1,5 +1,4 @@
-import { Queue, Worker, Job } from 'bullmq'
-import { Redis } from 'ioredis'
+import { Queue, Worker, Job, Redis, getQueueConfig } from '../queue-wrapper'
 import { supabaseAdmin } from '@/lib/supabase'
 import { getVideoProcessor } from '@/lib/video-processor'
 import { getThumbnailGenerator } from '@/lib/thumbnail-generator'
@@ -49,45 +48,11 @@ interface ProcessingResult {
   error?: string
 }
 
-// Redis connection configuration
-const redisConfig = {
-  host: process.env.REDIS_HOST || 'localhost',
-  port: parseInt(process.env.REDIS_PORT || '6379'),
-  password: process.env.REDIS_PASSWORD,
-  db: parseInt(process.env.REDIS_DB || '0'),
-  maxRetriesPerRequest: 3,
-  retryDelayOnFailover: 100,
-  enableReadyCheck: true,
-  maxLoadingTimeout: 5000,
-  lazyConnect: true,
-}
-
-// Parse Railway Redis URL if available
-if (process.env.REDIS_URL) {
-  const redisUrl = new URL(process.env.REDIS_URL)
-  redisConfig.host = redisUrl.hostname
-  redisConfig.port = parseInt(redisUrl.port || '6379')
-  if (redisUrl.password) {
-    redisConfig.password = redisUrl.password
-  }
-}
-
-// Create Redis connection
-const redis = new Redis(redisConfig)
+// Get queue configuration (real or mock based on environment)
+const queueConfig = getQueueConfig()
 
 // Create queue
-export const videoProcessingQueue = new Queue('video-processing', {
-  connection: redis,
-  defaultJobOptions: {
-    removeOnComplete: 50,
-    removeOnFail: 100,
-    attempts: 3,
-    backoff: {
-      type: 'exponential',
-      delay: 5000,
-    },
-  },
-})
+export const videoProcessingQueue = new Queue('video-processing', queueConfig)
 
 // Queue event handlers
 videoProcessingQueue.on('waiting', (jobId) => {
@@ -117,7 +82,7 @@ const worker = new Worker(
     return await processVideoJob(job)
   },
   {
-    connection: redis,
+    connection: queueConfig.connection,
     concurrency: parseInt(process.env.QUEUE_CONCURRENCY || '3'),
     maxStalledCount: 1,
     stalledInterval: 30000,
@@ -441,14 +406,14 @@ async function saveProcessingResults(jobId: string, videoId: string, result: Pro
 process.on('SIGINT', async () => {
   console.log('🛑 Shutting down worker gracefully...')
   await worker.close()
-  await redis.disconnect()
+  await queueConfig.connection.disconnect()
   process.exit(0)
 })
 
 process.on('SIGTERM', async () => {
   console.log('🛑 Shutting down worker gracefully...')
   await worker.close()
-  await redis.disconnect()
+  await queueConfig.connection.disconnect()
   process.exit(0)
 })
 

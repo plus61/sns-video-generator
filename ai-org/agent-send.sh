@@ -69,6 +69,122 @@ wait_for_sync() {
     while [ "$(cat /tmp/sync_point.txt 2>/dev/null)" != "$point" ]; do sleep 1; done
 }
 
+# === リアルタイム報告監視システム ===
+REPORT_QUEUE="/tmp/worker_reports_queue"
+PROCESSED_REPORTS="/tmp/processed_reports.log"
+
+# 報告キューの初期化
+init_report_queue() {
+    mkdir -p "$(dirname "$REPORT_QUEUE")"
+    touch "$REPORT_QUEUE"
+    touch "$PROCESSED_REPORTS"
+}
+
+# Worker報告をキューに追加
+queue_worker_report() {
+    local from_agent="$1"
+    local message="$2"
+    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
+    local report_id="$(date +%s%N)_${from_agent}"
+    
+    echo "${report_id}|${timestamp}|${from_agent}|${message}" >> "$REPORT_QUEUE"
+}
+
+# リアルタイム報告監視デーモン
+start_report_monitor() {
+    echo "📡 リアルタイム報告監視システム起動"
+    
+    # バックグラウンドで監視プロセス起動
+    (
+        while true; do
+            if [ -f "$REPORT_QUEUE" ] && [ -s "$REPORT_QUEUE" ]; then
+                # 未処理の報告を1件ずつ処理
+                while IFS= read -r report_line; do
+                    if [ -n "$report_line" ]; then
+                        # 既に処理済みかチェック
+                        local report_id=$(echo "$report_line" | cut -d'|' -f1)
+                        if ! grep -q "$report_id" "$PROCESSED_REPORTS" 2>/dev/null; then
+                            # 報告を処理
+                            process_single_report "$report_line"
+                            # 処理済みマーク
+                            echo "$report_id" >> "$PROCESSED_REPORTS"
+                        fi
+                    fi
+                done < "$REPORT_QUEUE"
+                
+                # 処理済み報告をキューから削除
+                > "$REPORT_QUEUE"
+            fi
+            sleep 1
+        done
+    ) &
+    
+    MONITOR_PID=$!
+    echo "監視プロセスPID: $MONITOR_PID"
+    echo "$MONITOR_PID" > /tmp/report_monitor.pid
+}
+
+# 個別報告の処理
+process_single_report() {
+    local report_line="$1"
+    local report_id=$(echo "$report_line" | cut -d'|' -f1)
+    local timestamp=$(echo "$report_line" | cut -d'|' -f2)
+    local from_agent=$(echo "$report_line" | cut -d'|' -f3)
+    local message=$(echo "$report_line" | cut -d'|' -f4-)
+    
+    echo "🔔 [$timestamp] 報告受信: $from_agent"
+    echo "   内容: $message"
+    
+    # Boss Brain Systemで分析
+    if type deep_analyze_report >/dev/null 2>&1; then
+        local analysis=$(deep_analyze_report "$from_agent" "$message")
+        echo "   🧠 分析完了"
+        
+        # 即座に対応が必要な場合は処理
+        if [[ "$message" =~ (緊急|エラー|失敗|critical|urgent) ]]; then
+            echo "   🚨 緊急対応実行"
+            boss_autonomous_decision "$from_agent" "$message"
+        elif [[ "$message" =~ (完了|完成|done|completed) ]]; then
+            echo "   ✅ 完了報告確認"
+            boss_autonomous_decision "$from_agent" "$message"
+        else
+            echo "   📝 通常報告として記録"
+            log_message "$from_agent" "$message"
+        fi
+    else
+        # Boss Brain Systemが利用できない場合は基本処理
+        boss_autonomous_decision "$from_agent" "$message"
+    fi
+}
+
+# 監視システム停止
+stop_report_monitor() {
+    if [ -f /tmp/report_monitor.pid ]; then
+        local pid=$(cat /tmp/report_monitor.pid)
+        if kill -0 "$pid" 2>/dev/null; then
+            kill "$pid"
+            echo "📡 報告監視システム停止"
+        fi
+        rm -f /tmp/report_monitor.pid
+    fi
+}
+
+# Worker報告の非同期受信
+async_receive_report() {
+    local from_agent="$1"
+    local message="$2"
+    
+    # 報告をキューに追加
+    queue_worker_report "$from_agent" "$message"
+    
+    # 監視システムが動作していない場合は起動
+    if [ ! -f /tmp/report_monitor.pid ] || ! kill -0 "$(cat /tmp/report_monitor.pid 2>/dev/null)" 2>/dev/null; then
+        start_report_monitor
+    fi
+    
+    echo "📨 報告をキューに追加: $from_agent"
+}
+
 # === エラー処理・自動回復 ===
 error_detection() {
     local error_type="$1"; local context="$2"
@@ -126,6 +242,12 @@ boss_autonomous_decision() {
     echo "🤖 [$timestamp] BOSS自律判断システム起動"
     echo "   From: $from_agent"
     echo "   Message: $message"
+    
+    # リアルタイム処理モードの場合は非同期処理
+    if [ "$3" = "--async" ]; then
+        async_receive_report "$from_agent" "$message"
+        return 0
+    fi
     
     # === 深い分析フェーズ ===
     echo "🧠 深い思考プロセス開始..."
@@ -686,6 +808,9 @@ show_usage() {
   $0 [エージェント名] [メッセージ]
   $0 --list
   $0 --auto [from_agent] [message]    # BOSS自律判断モード
+  $0 --async [from_agent] [message]   # 非同期報告受信
+  $0 --monitor                        # リアルタイム監視開始
+  $0 --stop-monitor                   # 監視停止
 
 利用可能エージェント:
   president - プロジェクト統括責任者
@@ -702,10 +827,17 @@ show_usage() {
   - 統合テスト自動実行
   - 最終報告自動生成
 
+📡 リアルタイム報告監視:
+  - Worker報告を即座に受信・処理
+  - 優先度に基づく自動対応
+  - 非同期処理で待ち時間なし
+
 使用例:
   $0 president "指示書に従って"
   $0 boss1 "Hello World プロジェクト開始指示"
   $0 --auto worker1 "TypeScript修正完了しました"
+  $0 --monitor  # リアルタイム監視開始
+  $0 --async worker2 "BullMQ互換レイヤー実装中"
 EOF
 }
 
@@ -779,6 +911,31 @@ main() {
             exit 1
         fi
         boss_autonomous_decision "$2" "$3"
+        exit 0
+    fi
+    
+    # --monitor オプション (リアルタイム監視モード)
+    if [[ "$1" == "--monitor" ]]; then
+        init_report_queue
+        start_report_monitor
+        echo "📡 リアルタイム報告監視を開始しました"
+        echo "   監視を停止するには: $0 --stop-monitor"
+        exit 0
+    fi
+    
+    # --stop-monitor オプション
+    if [[ "$1" == "--stop-monitor" ]]; then
+        stop_report_monitor
+        exit 0
+    fi
+    
+    # --async オプション (非同期報告受信)
+    if [[ "$1" == "--async" ]]; then
+        if [[ $# -lt 3 ]]; then
+            echo "❌ --asyncモード使用方法: $0 --async [from_agent] [message]"
+            exit 1
+        fi
+        boss_autonomous_decision "$2" "$3" "--async"
         exit 0
     fi
     

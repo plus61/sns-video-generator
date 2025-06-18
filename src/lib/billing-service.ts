@@ -25,6 +25,11 @@ export class BillingService {
    * Create Stripe customer for user
    */
   async createCustomer(userId: string, email: string, name?: string): Promise<string> {
+    if (!stripe) {
+      console.warn('Stripe not initialized, returning mock customer ID')
+      return `cus_mock_${userId}`
+    }
+    
     try {
       const customer = await stripe.customers.create({
         email,

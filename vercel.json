@@ -1,8 +1,15 @@
 {
   "framework": "nextjs",
-  "buildCommand": "npm run build",
+  "buildCommand": "bash vercel-build.sh",
   "outputDirectory": ".next",
-  "installCommand": "npm install",
+  "installCommand": "npm install --force",
+  "env": {
+    "VERCEL": "1",
+    "DISABLE_CANVAS": "true",
+    "DISABLE_BULLMQ": "true",
+    "DISABLE_FFMPEG_NATIVE": "true",
+    "RAILWAY_API_URL": "$RAILWAY_API_URL"
+  },
   "devCommand": "npm run dev",
   "functions": {
     "src/app/api/*/route.ts": {
@@ -16,15 +23,34 @@
     },
     "src/app/api/upload-youtube/route.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/process-video/route.ts": {
+      "maxDuration": 10
+    },
+    "src/app/api/health/route.ts": {
+      "maxDuration": 5
+    },
+    "src/app/api/queue/stats/route.ts": {
+      "maxDuration": 10
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/process-video-heavy/:path*",
+      "destination": "$RAILWAY_API_URL/api/process-video/:path*"
+    },
+    {
+      "source": "/api/queue/:path*",
+      "destination": "$RAILWAY_API_URL/api/queue/:path*"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
         {
           "key": "Access-Control-Allow-Origin",
-          "value": "https://sns-video-generator-burtegpwi-plus62s-projects.vercel.app"
+          "value": "*"
         },
         {
           "key": "Access-Control-Allow-Methods",

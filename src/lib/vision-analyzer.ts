@@ -1,7 +1,7 @@
 import OpenAI from 'openai'
 import fs from 'fs/promises'
 import path from 'path'
-import { createCanvas, loadImage } from 'canvas'
+import { createCanvas, loadImage } from './canvas-wrapper'
 
 // Initialize OpenAI with optimal settings for video analysis
 const openai = new OpenAI({

@@ -4,6 +4,12 @@ import { stripe, STRIPE_CONFIG } from '@/lib/stripe-config'
 import { billingService } from '@/lib/billing-service'
 
 export async function POST(request: NextRequest) {
+  // Return early if Stripe is not configured
+  if (!stripe) {
+    console.warn('Stripe webhook received but Stripe not configured')
+    return NextResponse.json({ received: true }, { status: 200 })
+  }
+
   try {
     const body = await request.text()
     const headersList = headers()
