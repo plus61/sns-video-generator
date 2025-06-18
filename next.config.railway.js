@@ -41,18 +41,8 @@ const nextConfig = {
         child_process: false,
         worker_threads: false,
         'utf-8-validate': false,
-        'bufferutil': false,
-        'lightningcss': false,
-        'lightningcss-linux-x64-gnu': false,
-        'lightningcss-linux-x64-musl': false
+        'bufferutil': false
       }
-    }
-    
-    // Add externals for lightningcss (Debian/glibc compatible)
-    if (isServer) {
-      config.externals.push('lightningcss')
-      config.externals.push('lightningcss-linux-x64-gnu')
-      // Note: musl variant removed as we're using Debian slim
     }
 
     return config
