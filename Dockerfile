@@ -41,6 +41,8 @@ ENV CI=false
 ENV SKIP_ENV_VALIDATION=true
 ENV NEXT_PRIVATE_SKIP_CSS_MINIFY=true
 ENV NEXT_DISABLE_LIGHTNINGCSS=true
+# Force cache invalidation with timestamp
+RUN echo "Cache bust: $(date)" > /tmp/cachebust.txt
 # Build the application (force rebuild)
 RUN npm run build
 
