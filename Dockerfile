@@ -45,6 +45,12 @@ ENV NEXT_DISABLE_LIGHTNINGCSS=true
 ENV NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co
 ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-anon-key
 ENV SUPABASE_SERVICE_ROLE_KEY=dummy-service-role-key
+ENV OPENAI_API_KEY=dummy-openai-api-key
+ENV NEXTAUTH_URL=http://localhost:3000
+ENV NEXTAUTH_SECRET=dummy-nextauth-secret
+ENV STRIPE_SECRET_KEY=dummy-stripe-secret-key
+ENV STRIPE_WEBHOOK_SECRET=dummy-stripe-webhook-secret
+ENV YOUTUBE_API_KEY=dummy-youtube-api-key
 # Force cache invalidation with timestamp
 RUN echo "Cache bust: $(date)" > /tmp/cachebust.txt
 # Build the application (force rebuild)

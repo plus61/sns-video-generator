@@ -1,11 +1,15 @@
 import OpenAI from 'openai'
 
+// Skip validation during build time
 if (!process.env.OPENAI_API_KEY) {
-  throw new Error('OPENAI_API_KEY is not set in environment variables')
+  if (process.env.NODE_ENV === 'production' && !process.env.CI) {
+    throw new Error('OPENAI_API_KEY is not set in environment variables')
+  }
+  console.warn('OpenAI API key not set - using dummy value for build')
 }
 
 export const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey: process.env.OPENAI_API_KEY || 'dummy-openai-api-key',
 })
 
 export async function generateVideoScript(prompt: string) {
