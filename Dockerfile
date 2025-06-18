@@ -41,6 +41,10 @@ ENV CI=false
 ENV SKIP_ENV_VALIDATION=true
 ENV NEXT_PRIVATE_SKIP_CSS_MINIFY=true
 ENV NEXT_DISABLE_LIGHTNINGCSS=true
+# Dummy environment variables for build time
+ENV NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co
+ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-anon-key
+ENV SUPABASE_SERVICE_ROLE_KEY=dummy-service-role-key
 # Force cache invalidation with timestamp
 RUN echo "Cache bust: $(date)" > /tmp/cachebust.txt
 # Build the application (force rebuild)
