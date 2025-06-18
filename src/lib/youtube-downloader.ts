@@ -1,11 +1,12 @@
 // Environment-specific imports
-let youtubedl: any = null
+let youtubedl: unknown = null
 try {
   // Only import youtube-dl-exec in non-Vercel environments
   if (!process.env.VERCEL && !process.env.USE_MOCK_DOWNLOADER) {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     youtubedl = require('youtube-dl-exec')
   }
-} catch (error) {
+} catch {
   console.warn('youtube-dl-exec not available, using mock implementation')
 }
 
@@ -42,7 +43,7 @@ enum DownloadErrorType {
 export class YouTubeDownloadError extends Error {
   constructor(
     public errorType: DownloadErrorType,
-    public originalError?: any,
+    public originalError?: unknown,
     message?: string
   ) {
     super(message || `YouTube download failed: ${errorType}`)
@@ -125,7 +126,7 @@ export class YouTubeDownloader {
         lastError = error
         
         const errorType = this.classifyError(error)
-        console.warn(`${errorContext} failed (attempt ${attempt}/${this.maxRetries}):`, error.message)
+        console.warn(`${errorContext} failed (attempt ${attempt}/${this.maxRetries}):`, error instanceof Error ? error.message : String(error))
         
         // Don't retry for certain error types
         if ([
@@ -161,7 +162,8 @@ export class YouTubeDownloader {
     // Get video info with retry
     const info = await this.retryOperation(async () => {
       console.log(`Getting video info for ${youtubeUrl}`)
-      return await youtubedl(youtubeUrl, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      return await (youtubedl as any)(youtubeUrl, {
         dumpSingleJson: true,
         noCheckCertificates: true,
         noWarnings: true,
@@ -200,7 +202,8 @@ export class YouTubeDownloader {
     // Download video with retry
     await this.retryOperation(async () => {
       console.log(`Starting download for ${youtubeUrl}`)
-      await youtubedl(youtubeUrl, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (youtubedl as any)(youtubeUrl, {
         output: outputPath,
         format: 'best[ext=mp4][filesize<500M]/best[ext=mp4]/best',
         noCheckCertificates: true,

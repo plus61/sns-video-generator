@@ -1,75 +1,84 @@
-// Post Scheduler - Handles scheduled social media posts
-// Provides functionality for scheduling, queuing, and managing posts
-
-export interface ScheduledPost {
-  id: string
-  platforms: string[]
-  postData: {
-    title: string
-    description: string
-    tags: string[]
-    videoFile: File | Blob
-    thumbnail?: File | Blob
-    visibility: 'public' | 'private' | 'unlisted'
-  }
-  scheduledTime: Date
-  status: 'pending' | 'posting' | 'completed' | 'failed' | 'cancelled'
-  createdAt: Date
-  results?: Array<{
-    platform: string
-    success: boolean
-    postId?: string
-    url?: string
-    error?: string
-  }>
-  retryCount: number
-  maxRetries: number
-}
+import { 
+  ScheduledPost, 
+  PostContent, 
+  SocialPlatform, 
+  SocialMediaAccount 
+} from '@/types/social-platform'
+import { SocialPublisher } from './social-publisher'
+import { supabaseAdmin } from './supabase'
 
 export interface ScheduleOptions {
-  timezone?: string
-  recurring?: {
-    frequency: 'daily' | 'weekly' | 'monthly'
-    interval: number
-    endDate?: Date
-  }
-  optimalTiming?: boolean // Use AI to determine best posting times
+  timezone: string
+  repeatType?: 'none' | 'daily' | 'weekly' | 'monthly'
+  repeatUntil?: Date
+  retryAttempts: number
+  retryDelay: number
+}
+
+export interface OptimalPostingTime {
+  platform: SocialPlatform
+  dayOfWeek: number
+  hour: number
+  engagementScore: number
+  audienceSize: number
 }
 
 export class PostScheduler {
-  private scheduledPosts: Map<string, ScheduledPost> = new Map()
-  private timers: Map<string, NodeJS.Timeout> = new Map()
-  private isRunning: boolean = false
+  private static instance: PostScheduler
+  private scheduledTasks: Map<string, NodeJS.Timeout> = new Map()
+  private isProcessing = false
 
-  constructor() {
-    this.loadScheduledPosts()
-    this.startScheduler()
+  public static getInstance(): PostScheduler {
+    if (!PostScheduler.instance) {
+      PostScheduler.instance = new PostScheduler()
+    }
+    return PostScheduler.instance
   }
 
-  // Schedule a post
-  schedulePost(
-    platforms: string[],
-    postData: ScheduledPost['postData'],
-    scheduledTime: Date
-  ): string {
-    const postId = this.generatePostId()
-    
-    const scheduledPost: ScheduledPost = {
-      id: postId,
-      platforms,
-      postData,
-      scheduledTime,
-      status: 'pending',
-      createdAt: new Date(),
-      retryCount: 0,
-      maxRetries: 3
+  async schedulePost(
+    userId: string,
+    segmentId: string,
+    platforms: SocialPlatform[],
+    content: PostContent,
+    scheduledTime: Date,
+    options: ScheduleOptions
+  ): Promise<ScheduledPost> {
+    const { data: scheduledPost, error } = await supabaseAdmin
+      .from('scheduled_posts')
+      .insert({
+        user_id: userId,
+        segment_id: segmentId,
+        platforms: platforms,
+        content: content,
+        scheduled_time: scheduledTime.toISOString(),
+        timezone: options.timezone,
+        status: 'pending',
+        retry_count: 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single()
+
+    if (error) {
+      throw new Error(`Failed to schedule post: ${error.message}`)
     }
 
-    this.scheduledPosts.set(postId, scheduledPost)
-    this.scheduleTimer(postId, scheduledTime)
-    this.saveScheduledPosts()
+    this.scheduleInMemory(scheduledPost.id, scheduledTime)
 
-    return postId
+    return {
+      id: scheduledPost.id,
+      userId,
+      segmentId,
+      platforms,
+      content,
+      scheduledTime,
+      timezone: options.timezone,
+      status: 'pending',
+      createdAt: new Date(scheduledPost.created_at),
+      updatedAt: new Date(scheduledPost.updated_at),
+      retryCount: 0
+    }
   }
 
   // Schedule multiple posts for optimal timing

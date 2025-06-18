@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { supabaseAdmin } from '@/lib/supabase'
-import { v4 as uuidv4 } from 'uuid'
+import { createStorageService } from '@/lib/supabase-storage'
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,80 +13,81 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData()
     const videoFile = formData.get('video') as File
-    const filename = formData.get('filename') as string
-    const filesize = parseInt(formData.get('filesize') as string)
 
     if (!videoFile) {
       return NextResponse.json({ error: 'No video file provided' }, { status: 400 })
     }
 
-    // Validate file type
-    if (!videoFile.type.startsWith('video/')) {
-      return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
-    }
+    // Create storage service instance for the authenticated user
+    const storageService = createStorageService(session.user.id)
 
-    // Validate file size (max 5GB)
-    if (filesize > 5 * 1024 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File too large' }, { status: 400 })
-    }
+    // Upload video with progress tracking
+    const uploadResult = await storageService.uploadVideo(videoFile, {
+      chunkSize: 10 * 1024 * 1024, // 10MB chunks
+      maxRetries: 3,
+      onProgress: (progress) => {
+        // Progress tracking could be implemented with WebSockets or SSE
+        console.log(`Upload progress: ${progress}%`)
+      }
+    })
 
-    const videoId = uuidv4()
-    const fileExtension = filename.split('.').pop()
-    const storagePath = `videos/${session.user.id}/${videoId}.${fileExtension}`
-
-    // Convert File to ArrayBuffer then to Buffer
-    const arrayBuffer = await videoFile.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
-
-    // Upload to Supabase Storage
-    const { error: uploadError } = await supabaseAdmin.storage
-      .from('videos')
-      .upload(storagePath, buffer, {
-        contentType: videoFile.type,
-        cacheControl: '3600',
-      })
-
-    if (uploadError) {
-      console.error('Storage upload error:', uploadError)
-      return NextResponse.json({ error: 'Failed to upload video' }, { status: 500 })
-    }
-
-    // Get public URL
-    const { data: urlData } = supabaseAdmin.storage
-      .from('videos')
-      .getPublicUrl(storagePath)
-
-    // Save video metadata to database
-    const { error: dbError } = await supabaseAdmin
-      .from('video_uploads')
-      .insert({
-        id: videoId,
-        user_id: session.user.id,
-        original_filename: filename,
-        file_size: filesize,
-        file_type: videoFile.type,
-        storage_path: storagePath,
-        public_url: urlData.publicUrl,
-        upload_source: 'file',
-        status: 'uploaded',
-        created_at: new Date().toISOString(),
-      })
-
-    if (dbError) {
-      console.error('Database insert error:', dbError)
-      // Try to clean up uploaded file
-      await supabaseAdmin.storage.from('videos').remove([storagePath])
-      return NextResponse.json({ error: 'Failed to save video metadata' }, { status: 500 })
+    if (!uploadResult.success) {
+      return NextResponse.json(
+        { error: uploadResult.error || 'Upload failed' }, 
+        { status: 400 }
+      )
     }
 
     return NextResponse.json({
       success: true,
-      videoId,
+      videoId: uploadResult.videoId,
+      publicUrl: uploadResult.publicUrl,
+      storagePath: uploadResult.storagePath,
+      metadata: uploadResult.metadata,
       message: 'Video uploaded successfully'
     })
 
   } catch (error) {
     console.error('Upload video error:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+    
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const videoId = searchParams.get('videoId')
+
+    if (!videoId) {
+      return NextResponse.json({ error: 'Video ID required' }, { status: 400 })
+    }
+
+    const storageService = createStorageService(session.user.id)
+    const deleteResult = await storageService.deleteVideo(videoId)
+
+    if (!deleteResult.success) {
+      return NextResponse.json(
+        { error: deleteResult.error || 'Delete failed' }, 
+        { status: 400 }
+      )
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Video deleted successfully'
+    })
+
+  } catch (error) {
+    console.error('Delete video error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

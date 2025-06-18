@@ -3,12 +3,14 @@
 import { useState, useRef, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { performanceMonitor } from '@/lib/performance-monitor'
+import { ProgressBar } from './ProgressBar'
+import { ErrorAlert } from './ErrorAlert'
 
 interface VideoUploaderProps {
   onUploadComplete: (videoId: string) => void
-  onUploadProgress: (progress: number) => void
-  onUploadStart: () => void
-  onUploadEnd: () => void
+  onUploadProgress?: (progress: number) => void
+  onUploadStart?: () => void
+  onUploadEnd?: () => void
 }
 
 export function VideoUploader({
@@ -21,6 +23,9 @@ export function VideoUploader({
   const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file')
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'processing' | 'analyzing' | 'completed' | 'error'>('idle')
+  const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleFileUpload = useCallback(async (file: File) => {
@@ -28,7 +33,9 @@ export function VideoUploader({
 
     setIsUploading(true)
     setError(null)
-    onUploadStart()
+    setUploadProgress(0)
+    setUploadStatus('uploading')
+    onUploadStart?.()
 
     try {
       await performanceMonitor.measureAsyncOperation('video_upload', async () => {
@@ -49,17 +56,24 @@ export function VideoUploader({
 
           xhr.upload.addEventListener('progress', (event) => {
             if (event.lengthComputable) {
-              const progress = (event.loaded / event.total) * 100
-              onUploadProgress(progress)
+              const progress = Math.round((event.loaded / event.total) * 100)
+              setUploadProgress(progress)
+              onUploadProgress?.(progress)
             }
           })
 
           xhr.addEventListener('load', () => {
             if (xhr.status === 200) {
               const response = JSON.parse(xhr.responseText)
-              onUploadComplete(response.videoId)
+              setUploadProgress(100)
+              setUploadStatus('processing')
+              setTimeout(() => {
+                setUploadStatus('completed')
+                onUploadComplete(response.videoId)
+              }, 1000)
               resolve()
             } else {
+              setUploadStatus('error')
               reject(new Error('アップロードに失敗しました'))
             }
           })
@@ -76,9 +90,10 @@ export function VideoUploader({
     } catch (error) {
       console.error('Upload error:', error)
       setError(error instanceof Error ? error.message : 'アップロードエラーが発生しました')
+      setUploadStatus('error')
     } finally {
       setIsUploading(false)
-      onUploadEnd()
+      onUploadEnd?.()
     }
   }, [onUploadComplete, onUploadProgress, onUploadStart, onUploadEnd])
 
@@ -90,11 +105,14 @@ export function VideoUploader({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
+    onDragEnter: () => setDragActive(true),
+    onDragLeave: () => setDragActive(false),
     accept: {
       'video/*': ['.mp4', '.avi', '.mov', '.mkv', '.webm']
     },
     maxFiles: 1,
     maxSize: 5 * 1024 * 1024 * 1024, // 5GB
+    disabled: isUploading
   })
 
   const handleYouTubeUpload = async () => {
@@ -105,7 +123,9 @@ export function VideoUploader({
 
     setIsUploading(true)
     setError(null)
-    onUploadStart()
+    setUploadProgress(0)
+    setUploadStatus('processing')
+    onUploadStart?.()
 
     try {
       await performanceMonitor.measureAsyncOperation('youtube_upload', async () => {
@@ -127,15 +147,17 @@ export function VideoUploader({
         if (data.error) {
           throw new Error(data.error)
         }
+        setUploadStatus('completed')
         onUploadComplete(data.videoId)
       }, { url: youtubeUrl })
 
     } catch (error) {
       console.error('YouTube upload error:', error)
       setError(error instanceof Error ? error.message : 'YouTube動画の処理でエラーが発生しました')
+      setUploadStatus('error')
     } finally {
       setIsUploading(false)
-      onUploadEnd()
+      onUploadEnd?.()
     }
   }
 
@@ -169,9 +191,43 @@ export function VideoUploader({
         </button>
       </div>
 
+      {/* Progress Bar */}
+      {(isUploading || uploadStatus !== 'idle') && (
+        <div className="mb-6">
+          <ProgressBar 
+            progress={uploadProgress}
+            status={uploadStatus}
+            size="md"
+            animated={true}
+          />
+        </div>
+      )}
+
+      {/* Error Display - Enhanced */}
       {error && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-red-800 dark:text-red-200">{error}</p>
+        <div className="mb-6">
+          <ErrorAlert
+            error={error}
+            variant="error"
+            title="アップロードエラー"
+            onClose={() => {
+              setError(null)
+              setUploadStatus('idle')
+              setUploadProgress(0)
+            }}
+            actionLabel="再試行"
+            onAction={() => {
+              setError(null)
+              setUploadStatus('idle')
+              setUploadProgress(0)
+              // Re-trigger upload if we have a file
+              if (uploadMode === 'file' && fileInputRef.current?.files?.[0]) {
+                handleFileUpload(fileInputRef.current.files[0])
+              } else if (uploadMode === 'url' && youtubeUrl.trim()) {
+                handleYouTubeUpload()
+              }
+            }}
+          />
         </div>
       )}
 
@@ -180,40 +236,65 @@ export function VideoUploader({
         <div className="space-y-6">
           <div
             {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors duration-200 cursor-pointer ${
-              isDragActive
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+            className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 cursor-pointer transform ${
+              isDragActive || dragActive
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-105 shadow-lg'
+                : isUploading 
+                  ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 cursor-not-allowed opacity-60'
+                  : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-gray-50 dark:hover:bg-gray-800/50'
             }`}
           >
             <input {...getInputProps()} ref={fileInputRef} />
             <div className="space-y-4">
-              <div className="w-16 h-16 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                </svg>
+              <div className={`w-16 h-16 mx-auto rounded-full flex items-center justify-center transition-all duration-300 ${
+                isDragActive || dragActive 
+                  ? 'bg-blue-100 dark:bg-blue-900/30 animate-bounce' 
+                  : 'bg-gray-100 dark:bg-gray-800'
+              }`}>
+                {isUploading ? (
+                  <div className="animate-spin w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full" />
+                ) : (
+                  <svg className={`w-8 h-8 transition-colors duration-300 ${
+                    isDragActive || dragActive ? 'text-blue-500' : 'text-gray-400'
+                  }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                )}
               </div>
               
               <div>
                 <p className="text-lg font-medium text-gray-900 dark:text-white">
-                  {isDragActive ? '動画をドロップしてください' : '動画ファイルをドラッグ&ドロップ'}
+                  {isUploading 
+                    ? 'アップロード中です...' 
+                    : isDragActive || dragActive 
+                      ? '📁 動画をドロップしてください' 
+                      : '🎬 動画ファイルをドラッグ&ドロップ'
+                  }
                 </p>
-                <p className="text-gray-600 dark:text-gray-400 mt-1">
-                  または
-                  <button
-                    type="button"
-                    onClick={handleFileSelect}
-                    className="text-blue-600 hover:text-blue-700 dark:text-blue-400 ml-1"
-                  >
-                    ファイルを選択
-                  </button>
-                </p>
+                {!isUploading && (
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">
+                    または
+                    <button
+                      type="button"
+                      onClick={handleFileSelect}
+                      className="text-blue-600 hover:text-blue-700 dark:text-blue-400 ml-1 underline transition-colors duration-200"
+                    >
+                      ファイルを選択
+                    </button>
+                  </p>
+                )}
               </div>
               
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                <p>対応形式: MP4, AVI, MOV, MKV, WebM</p>
-                <p>最大サイズ: 5GB</p>
-              </div>
+              {!isUploading && (
+                <div className="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+                  <p className="flex items-center justify-center gap-2">
+                    <span>📹</span> MP4, AVI, MOV, MKV, WebM
+                  </p>
+                  <p className="flex items-center justify-center gap-2">
+                    <span>💾</span> 最大サイズ: 5GB
+                  </p>
+                </div>
+              )}
             </div>
           </div>
 

@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { supabaseAdmin } from '@/lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
 import { YouTubeDownloader, DownloadErrorType } from '@/lib/youtube-downloader'
+import { YouTubeAPIService, YouTubeAPIErrorType } from '@/lib/youtube-api-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,6 +30,20 @@ export async function POST(request: NextRequest) {
 
     const videoId = uuidv4()
     const youtubeVideoId = match[4]
+
+    // Pre-validate video with YouTube Data API
+    const youtubeAPI = new YouTubeAPIService()
+    try {
+      const isAccessible = await youtubeAPI.isVideoAccessible(url)
+      if (!isAccessible) {
+        return NextResponse.json({ 
+          error: 'Video is not accessible or may be private/deleted' 
+        }, { status: 400 })
+      }
+    } catch (error) {
+      console.warn('YouTube API pre-validation failed, proceeding with download:', error)
+      // Continue with processing even if API validation fails
+    }
 
     // Save YouTube video metadata to database
     const { error: dbError } = await supabaseAdmin
@@ -104,8 +119,10 @@ async function processYouTubeVideo(videoId: string, youtubeUrl: string) {
     let errorMessage = 'Unknown error occurred'
     let userFriendlyMessage = 'Sorry, we could not process this video.'
     
-    if (error.name === 'YouTubeDownloadError') {
-      switch (error.errorType) {
+    if (error && typeof error === 'object' && 'name' in error) {
+      if (error.name === 'YouTubeDownloadError') {
+        const downloadError = error as unknown as { errorType: string; message: string }
+        switch (downloadError.errorType) {
         case DownloadErrorType.PRIVATE_VIDEO:
           userFriendlyMessage = 'This video is private and cannot be processed.'
           break
@@ -126,10 +143,32 @@ async function processYouTubeVideo(videoId: string, youtubeUrl: string) {
           break
         default:
           userFriendlyMessage = 'Unable to process this video. Please try with a different video.'
+        }
+        errorMessage = downloadError.message
+      } else if (error.name === 'YouTubeAPIError') {
+        const apiError = error as unknown as { errorType: string; message: string }
+        switch (apiError.errorType) {
+          case YouTubeAPIErrorType.INVALID_API_KEY:
+            userFriendlyMessage = 'Service configuration error. Please try again later.'
+            break
+          case YouTubeAPIErrorType.VIDEO_NOT_FOUND:
+            userFriendlyMessage = 'Video not found or has been removed.'
+            break
+          case YouTubeAPIErrorType.QUOTA_EXCEEDED:
+            userFriendlyMessage = 'Service temporarily unavailable due to high demand.'
+            break
+          case YouTubeAPIErrorType.PRIVATE_VIDEO:
+            userFriendlyMessage = 'This video is private and cannot be processed.'
+            break
+          default:
+            userFriendlyMessage = 'Unable to retrieve video information.'
+        }
+        errorMessage = apiError.message
+      } else {
+        errorMessage = (error && typeof error === 'object' && 'message' in error ? error.message as string : 'Unknown error')
       }
-      errorMessage = error.message
     } else {
-      errorMessage = error.message || 'Unknown error'
+      errorMessage = (error && typeof error === 'object' && 'message' in error ? error.message as string : 'Unknown error')
     }
     
     // Update database with error details
