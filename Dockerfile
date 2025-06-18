@@ -23,12 +23,12 @@ WORKDIR /app
 # Install dependencies
 FROM base AS deps
 COPY package*.json ./
-RUN npm ci --only=production --ignore-scripts --omit=optional && npm cache clean --force
+RUN npm ci --only=production --ignore-scripts && npm cache clean --force
 
 # Build stage
 FROM base AS builder
 COPY package*.json ./
-RUN npm ci --omit=optional --ignore-scripts
+RUN npm ci --ignore-scripts
 COPY . .
 # Set build-time environment variables for Railway compatibility
 ENV NEXT_TELEMETRY_DISABLED=1

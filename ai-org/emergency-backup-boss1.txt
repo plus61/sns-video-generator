@@ -1,0 +1,25 @@
+
+     LANG="ja_JP.UTF-8"
+     … +7 lines (ctrl+r to expand)
+
+⏺ Bash(tmux show-options -g | grep -E "(utf8|charset)")
+  ⎿  Error: Error
+
+⏺ Bash(tmux -V)
+  ⎿  Running…
+
+╭───────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Bash command                                                                                              │
+│                                                                                                           │
+│   tmux -V                                                                                                 │
+│   tmuxバージョン確認                                                                                      │
+│                                                                                                           │
+│ Do you want to proceed?                                                                                   │
+│ ❯ 1. Yes                                                                                                  │
+│   2. Yes, and don't ask again for tmux commands in                                                        │
+│   /Users/yuichiroooosuger/sns-video-generator/sns-video-generator                                         │
+│   3. No, and tell Claude what to do differently (esc)                                                     │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+
+
+
