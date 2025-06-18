@@ -39,3 +39,40 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# video processing
+/tmp/
+/uploads/
+/processed/
+
+# logs
+*.log
+logs/
+/logs/
+
+# Railway/deployment specific
+railway-build-*.log
+build-error*.log
+/test-build.sh
+
+# AI organization files (team communication)
+/ai-org/messages/outbox/
+/ai-org/messages/processed/
+/ai-org/emergency-backup-*.txt
+/ai-org/monitor.log
+/ai-org/response-monitor.pid
+/ai-org/TEAM_SYSTEM_STATUS.md
+/ai-org/COMMUNICATION_SYSTEM_ANALYSIS.md
+
+# Temporary build verification
+/build-error-detailed.log
+/railway-build.log
+
+# Keep these important files
+!CLAUDE.md
+!CLAUDE_CODE_DEPLOYMENT_RULES.md
+!verify-railway-build.sh
+!pre-push-checklist.sh
+!.claude/context.md
+!.claude/project-improvements.md
+!.claude/project-knowledge.md
