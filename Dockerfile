@@ -37,7 +37,7 @@ ENV USE_MOCK_DOWNLOADER=true
 ENV NODE_ENV=production
 ENV DISABLE_CANVAS=true
 ENV DISABLE_BULLMQ=false
-# Build the application
+# Build the application (force rebuild)
 RUN npm run build
 
 # Production stage
