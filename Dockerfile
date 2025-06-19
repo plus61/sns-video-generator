@@ -93,13 +93,17 @@ RUN mkdir -p /tmp/video-uploads /tmp/video-analysis && \
 # Switch to non-root user
 USER nextjs
 
-# Expose port
-EXPOSE 3000
+# Expose port (Railway will provide PORT env var)
+EXPOSE $PORT
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:${PORT:-3000}/api/health || exit 1
 
-# Start command - Use Railway custom start script
-ENV PORT=3000
+# Railway-specific environment variables
+ENV PORT=${PORT:-3000}
+ENV HOSTNAME="0.0.0.0"
+ENV NODE_ENV=production
+
+# Start command - Use Railway custom start script  
 CMD ["node", "start-railway.js"]

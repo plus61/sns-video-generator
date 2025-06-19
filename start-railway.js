@@ -49,70 +49,77 @@ try {
 console.log('\n🚀 Starting Next.js Server...');
 const serverPath = path.join(process.cwd(), 'server.js');
 
-if (!fs.existsSync(serverPath)) {
-  console.error('❌ server.js not found! Using alternative startup...');
-  
-  // Try alternative startup methods
-  const alternatives = [
-    'npm start',
-    'node .next/standalone/server.js',
-    'npx next start'
-  ];
-  
-  for (const alt of alternatives) {
-    console.log(`🔄 Trying: ${alt}`);
-    try {
-      const [cmd, ...args] = alt.split(' ');
-      const child = spawn(cmd, args, {
-        stdio: 'inherit',
-        env: { ...process.env, PORT: process.env.PORT || '3000' }
-      });
-      
-      child.on('error', (error) => {
-        console.error(`❌ ${alt} failed:`, error.message);
-      });
-      
-      child.on('exit', (code) => {
-        if (code === 0) {
-          console.log(`✅ ${alt} started successfully`);
-        } else {
-          console.error(`❌ ${alt} exited with code ${code}`);
-        }
-      });
-      
-      // If process doesn't exit immediately, assume it's running
-      setTimeout(() => {
-        console.log(`🎯 ${alt} appears to be running`);
-        return;
-      }, 3000);
-      
-      break;
-    } catch (error) {
-      console.error(`❌ Failed to start with ${alt}:`, error.message);
-    }
+// Ensure PORT is available
+const port = process.env.PORT || '3000';
+const hostname = process.env.HOSTNAME || '0.0.0.0';
+
+console.log(`🎯 Target: ${hostname}:${port}`);
+
+// Try to find the correct server file
+const serverOptions = [
+  path.join(process.cwd(), 'server.js'),
+  path.join(process.cwd(), '.next/standalone/server.js'),
+  path.join(process.cwd(), '.next/server.js')
+];
+
+let serverFound = false;
+
+for (const serverOption of serverOptions) {
+  if (fs.existsSync(serverOption)) {
+    console.log(`✅ Found server at: ${serverOption}`);
+    serverFound = true;
+    
+    const child = spawn('node', [serverOption], {
+      stdio: 'inherit',
+      env: { 
+        ...process.env, 
+        PORT: port,
+        HOSTNAME: hostname
+      }
+    });
+    
+    child.on('error', (error) => {
+      console.error('❌ Server startup failed:', error);
+      process.exit(1);
+    });
+    
+    child.on('exit', (code) => {
+      console.log(`🏁 Server exited with code ${code}`);
+      process.exit(code || 0);
+    });
+    
+    break;
   }
-} else {
-  // Standard server.js startup
-  console.log('✅ server.js found, starting...');
-  const child = spawn('node', ['server.js'], {
+}
+
+if (!serverFound) {
+  console.error('❌ No server.js found! Trying npm start as fallback...');
+  
+  const child = spawn('npm', ['start'], {
     stdio: 'inherit',
-    env: { ...process.env, PORT: process.env.PORT || '3000' }
+    env: { 
+      ...process.env, 
+      PORT: port,
+      HOSTNAME: hostname
+    }
   });
   
   child.on('error', (error) => {
-    console.error('❌ Server startup failed:', error);
+    console.error('❌ npm start failed:', error);
     process.exit(1);
   });
   
   child.on('exit', (code) => {
-    console.log(`🏁 Server exited with code ${code}`);
-    process.exit(code);
+    console.log(`🏁 npm start exited with code ${code}`);
+    process.exit(code || 0);
   });
 }
 
 // Health check endpoint logging
 setTimeout(() => {
   console.log('\n🏥 Health Check Information:');
-  console.log(`- Health endpoint: http://localhost:${process.env.PORT || 3000}/api/health`);
-  console.log(`- External URL: ${process.env.RAILWAY_PUBLIC_URL || 'Not set'}`);
+  console.log(`- Health endpoint: http://${hostname}:${port}/api/health`);
+  console.log(`- Railway Public Domain: ${process.env.RAILWAY_PUBLIC_DOMAIN || 'Not set'}`);
+  console.log(`- Railway Static URL: ${process.env.RAILWAY_STATIC_URL || 'Not set'}`);
+  console.log(`- Railway Environment: ${process.env.RAILWAY_ENVIRONMENT || 'Not set'}`);
 }, 5000);

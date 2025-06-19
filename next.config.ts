@@ -11,6 +11,33 @@ const nextConfig: NextConfig = {
       rules: {}
     }
   },
+  // CORS configuration for Railway deployment
+  async headers() {
+    return [
+      {
+        // Apply CORS headers to API routes
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: process.env.CORS_ORIGIN || '*',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization, X-Requested-With',
+          },
+          {
+            key: 'Access-Control-Allow-Credentials',
+            value: 'true',
+          },
+        ],
+      },
+    ];
+  },
   // Simplify for Railway compatibility
   // Remove turbopack config that may cause issues
   env: {
