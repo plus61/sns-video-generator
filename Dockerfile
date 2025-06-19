@@ -29,7 +29,7 @@ RUN npm ci --only=production --ignore-scripts && npm cache clean --force
 # Build stage
 FROM base AS builder
 COPY package*.json ./
-RUN npm ci --ignore-scripts
+RUN npm ci --include=dev --ignore-scripts
 COPY . .
 # Set build-time environment variables for Railway compatibility
 ENV NEXT_TELEMETRY_DISABLED=1

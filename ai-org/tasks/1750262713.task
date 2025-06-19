@@ -1,0 +1,10 @@
+{
+  "id": "1750262713",
+  "priority": "medium",
+  "category": "testing",
+  "description": "デプロイメント検証スクリプトのテスト",
+  "status": "completed",
+  "created": "#午後",
+  "assigned_role": "QA思考",
+  "updated": "#午後"
+}

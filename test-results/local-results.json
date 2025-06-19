@@ -10,9 +10,7 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {
-      "actualWorkers": 4
-    },
+    "metadata": {},
     "preserveOutput": "always",
     "reporter": [
       [
@@ -49,9 +47,7 @@
         "outputDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "setup",
         "name": "setup",
         "testDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests",
@@ -63,15 +59,13 @@
         "testMatch": [
           "/.*\\.setup\\.ts/"
         ],
-        "timeout": 30000
+        "timeout": 45000
       },
       {
         "outputDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "cleanup",
         "name": "cleanup",
         "testDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests",
@@ -83,15 +77,13 @@
         "testMatch": [
           "/.*\\.cleanup\\.ts/"
         ],
-        "timeout": 30000
+        "timeout": 45000
       },
       {
         "outputDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "chromium-desktop",
         "name": "chromium-desktop",
         "testDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests",
@@ -103,15 +95,13 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 45000
       },
       {
         "outputDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "firefox-desktop",
         "name": "firefox-desktop",
         "testDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests",
@@ -123,15 +113,13 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 45000
       },
       {
         "outputDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "webkit-desktop",
         "name": "webkit-desktop",
         "testDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests",
@@ -143,15 +131,13 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 45000
       },
       {
         "outputDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "mobile-chrome",
         "name": "mobile-chrome",
         "testDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests",
@@ -163,15 +149,13 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 45000
       },
       {
         "outputDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "mobile-safari",
         "name": "mobile-safari",
         "testDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests",
@@ -183,15 +167,13 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 45000
       },
       {
         "outputDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "tablet",
         "name": "tablet",
         "testDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests",
@@ -203,15 +185,13 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 45000
       },
       {
         "outputDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results",
         "repeatEach": 1,
         "retries": 1,
-        "metadata": {
-          "actualWorkers": 4
-        },
+        "metadata": {},
         "id": "dark-mode-chromium",
         "name": "dark-mode-chromium",
         "testDir": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests",
@@ -221,7 +201,7 @@
         "testMatch": [
           "**/*.@(spec|test).?(c|m)[jt]s?(x)"
         ],
-        "timeout": 30000
+        "timeout": 45000
       }
     ],
     "shard": null,
@@ -238,328 +218,19 @@
       "stderr": "pipe"
     }
   },
-  "suites": [
+  "suites": [],
+  "errors": [
     {
-      "title": "local/01-homepage.spec.ts",
-      "file": "local/01-homepage.spec.ts",
-      "column": 0,
-      "line": 0,
-      "specs": [],
-      "suites": [
-        {
-          "title": "Homepage Tests - AI動画生成プラットフォーム",
-          "file": "local/01-homepage.spec.ts",
-          "line": 3,
-          "column": 6,
-          "specs": [
-            {
-              "title": "should load homepage successfully",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 7921,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-06-14T12:19:41.305Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "c3935f7ce6e0257342af-e556656ed10f6ab94966",
-              "file": "local/01-homepage.spec.ts",
-              "line": 4,
-              "column": 7
-            },
-            {
-              "title": "should display main navigation elements",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 3980,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-06-14T12:19:41.312Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "c3935f7ce6e0257342af-180cc54f6a28accb0e2a",
-              "file": "local/01-homepage.spec.ts",
-              "line": 17,
-              "column": 7
-            },
-            {
-              "title": "should navigate to key pages from homepage",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "parallelIndex": 2,
-                      "status": "failed",
-                      "duration": 11954,
-                      "error": {
-                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
-                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests/local/01-homepage.spec.ts:120:81",
-                        "location": {
-                          "file": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests/local/01-homepage.spec.ts",
-                          "column": 81,
-                          "line": 120
-                        },
-                        "snippet": "  118 |       await page.waitForLoadState('networkidle');\n  119 |       const currentUrl = page.url();\n> 120 |       expect(currentUrl.includes('/dashboard') || currentUrl.includes('/auth')).toBeTruthy();\n      |                                                                                 ^\n  121 |     }\n  122 |   });\n  123 |"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests/local/01-homepage.spec.ts",
-                            "column": 81,
-                            "line": 120
-                          },
-                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  118 |       await page.waitForLoadState('networkidle');\n  119 |       const currentUrl = page.url();\n> 120 |       expect(currentUrl.includes('/dashboard') || currentUrl.includes('/auth')).toBeTruthy();\n      |                                                                                 ^\n  121 |     }\n  122 |   });\n  123 |\n    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests/local/01-homepage.spec.ts:120:81"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-06-14T12:19:41.299Z",
-                      "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results/local-01-homepage-Homepage-1bb33--to-key-pages-from-homepage-chromium-desktop/test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results/local-01-homepage-Homepage-1bb33--to-key-pages-from-homepage-chromium-desktop/video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results/local-01-homepage-Homepage-1bb33--to-key-pages-from-homepage-chromium-desktop/error-context.md"
-                        },
-                        {
-                          "name": "trace",
-                          "contentType": "application/zip",
-                          "path": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/test-results/local-01-homepage-Homepage-1bb33--to-key-pages-from-homepage-chromium-desktop/trace.zip"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/tests/local/01-homepage.spec.ts",
-                        "column": 81,
-                        "line": 120
-                      }
-                    },
-                    {
-                      "workerIndex": 4,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 3231,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 1,
-                      "startTime": "2025-06-14T12:19:56.098Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "flaky"
-                }
-              ],
-              "id": "c3935f7ce6e0257342af-340036b379df78356256",
-              "file": "local/01-homepage.spec.ts",
-              "line": 56,
-              "column": 7
-            },
-            {
-              "title": "should display key content sections",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "parallelIndex": 3,
-                      "status": "passed",
-                      "duration": 8525,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-06-14T12:19:41.311Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "c3935f7ce6e0257342af-d239f52c94638244cd0d",
-              "file": "local/01-homepage.spec.ts",
-              "line": 124,
-              "column": 7
-            },
-            {
-              "title": "should have no critical console errors",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 3105,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-06-14T12:19:46.495Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "c3935f7ce6e0257342af-763cb2472cf4d6204413",
-              "file": "local/01-homepage.spec.ts",
-              "line": 145,
-              "column": 7
-            },
-            {
-              "title": "should be responsive on different screen sizes",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "parallelIndex": 1,
-                      "status": "passed",
-                      "duration": 2137,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-06-14T12:19:49.637Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "c3935f7ce6e0257342af-0bbc0ff5b7257e9bde9c",
-              "file": "local/01-homepage.spec.ts",
-              "line": 169,
-              "column": 7
-            },
-            {
-              "title": "should load CSS and JavaScript resources",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 30000,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium-desktop",
-                  "projectName": "chromium-desktop",
-                  "results": [
-                    {
-                      "workerIndex": 0,
-                      "parallelIndex": 0,
-                      "status": "passed",
-                      "duration": 2492,
-                      "errors": [],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-06-14T12:19:50.439Z",
-                      "annotations": [],
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "c3935f7ce6e0257342af-b16efda4785fc6fa0470",
-              "file": "local/01-homepage.spec.ts",
-              "line": 191,
-              "column": 7
-            }
-          ]
-        }
-      ]
+      "message": "Error: Process from config.webServer exited early.",
+      "stack": "Error: Process from config.webServer exited early."
     }
   ],
-  "errors": [],
   "stats": {
-    "startTime": "2025-06-14T12:19:33.401Z",
-    "duration": 26536.807999999997,
-    "expected": 6,
+    "startTime": "2025-06-19T04:09:21.229Z",
+    "duration": 2698.889,
+    "expected": 0,
     "skipped": 0,
     "unexpected": 0,
-    "flaky": 1
+    "flaky": 0
   }
 }

@@ -109,13 +109,32 @@ export async function POST(request: NextRequest) {
 
 // Background processing function with enhanced error handling
 async function processYouTubeVideo(videoId: string, youtubeUrl: string) {
+  console.log(`🎬 Starting YouTube video processing: ${videoId}`)
+  console.log(`📺 URL: ${youtubeUrl}`)
+  console.log(`🌍 Environment: NODE_ENV=${process.env.NODE_ENV}, VERCEL=${process.env.VERCEL}, RAILWAY=${process.env.RAILWAY_ENVIRONMENT}`)
+  
   const YouTubeDownloader = await getYouTubeDownloader()
   const downloader = new YouTubeDownloader()
   
   try {
-    await downloader.processYouTubeVideo(videoId, youtubeUrl)
+    const startTime = Date.now()
+    const result = await downloader.processYouTubeVideo(videoId, youtubeUrl)
+    const processingTime = Date.now() - startTime
+    
+    console.log(`✅ YouTube video processing completed successfully`)
+    console.log(`⏱️ Processing time: ${processingTime}ms`)
+    console.log(`🔗 Public URL: ${result.publicUrl}`)
+    
+    return result
   } catch (error) {
-    console.error('YouTube processing failed:', error)
+    console.error('❌ YouTube processing failed:', error)
+    console.error('🔍 Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : 'No stack trace',
+      videoId,
+      youtubeUrl
+    })
     
     // Update database with specific error information
     let errorMessage = 'Unknown error occurred'
@@ -142,6 +161,9 @@ async function processYouTubeVideo(videoId: string, youtubeUrl: string) {
           break
         case DownloadErrorType.NETWORK_ERROR:
           userFriendlyMessage = 'Network error. Please check your connection and try again.'
+          break
+        case 'DOWNLOADER_NOT_AVAILABLE':
+          userFriendlyMessage = 'Video downloader is temporarily unavailable. Please try again later.'
           break
         default:
           userFriendlyMessage = 'Unable to process this video. Please try with a different video.'

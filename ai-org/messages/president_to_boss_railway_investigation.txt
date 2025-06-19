@@ -1,0 +1,91 @@
+【緊急指示】Railway公式ドキュメント調査と適合性確認
+
+TO: BOSS
+FROM: President
+PRIORITY: HIGHEST
+DATE: 2025-06-18
+
+## 背景
+Railwayデプロイメントで継続的にビルドエラーが発生。根本原因の特定と恒久的解決が必要。
+
+## 指示内容
+
+### 1. Railway公式ドキュメントの網羅的調査
+以下の項目を重点的に調査してください：
+
+#### A. Nixpacks関連
+- Nixpacksのビルドプロセス詳細
+- 自動検出される設定とその挙動
+- カスタムビルド設定の方法
+- 環境変数の扱い
+
+#### B. Node.js/Next.js固有の設定
+- Next.js 15のサポート状況
+- 推奨されるnode version
+- ビルドコマンドのベストプラクティス
+- 依存関係の解決方法
+
+#### C. Docker設定
+- Dockerfileの推奨構成
+- マルチステージビルドの注意点
+- キャッシュの扱い
+- ベースイメージの選択基準
+
+#### D. 環境変数とシークレット
+- ビルド時環境変数
+- ランタイム環境変数
+- シークレット管理
+
+### 2. 現在の実装との適合性確認
+
+Workerチームに以下の確認作業を指示：
+
+#### Worker1（インフラ担当）
+- Dockerfile構成がRailway推奨に準拠しているか
+- ビルドステージの最適化
+- 不要な設定の削除
+
+#### Worker2（依存関係担当）
+- package.jsonの設定確認
+- Railway特有の依存関係問題
+- node_modulesキャッシュ戦略
+
+#### Worker3（ビルド設定担当）
+- next.config.tsの設定検証
+- ビルドコマンドの最適化
+- 環境固有の設定分離
+
+### 3. 調査項目チェックリスト
+
+□ Nixpacksを使用すべきか、Dockerfileを使用すべきか
+□ Railway.jsonまたはrailway.tomlの必要性
+□ ビルド時のメモリ制限と対策
+□ Private npm registryの設定方法
+□ Monorepoサポートと設定
+□ ビルドタイムアウトの設定
+□ 静的ファイルの扱い
+□ Health checkの実装要件
+
+### 4. 成果物
+
+以下のドキュメントを作成：
+1. RAILWAY_BEST_PRACTICES.md - Railway推奨設定集
+2. RAILWAY_COMPATIBILITY_CHECKLIST.md - 適合性チェックリスト
+3. RAILWAY_MIGRATION_GUIDE.md - 現在の設定からの移行ガイド
+
+### 5. タイムライン
+
+- 調査開始: 即座
+- 初期報告: 30分以内
+- 詳細報告: 1時間以内
+- 実装修正: 2時間以内
+
+## 参考URL
+- https://docs.railway.app/
+- https://docs.railway.app/deploy/builds
+- https://docs.railway.app/deploy/dockerfiles
+- https://docs.railway.app/guides/nextjs
+
+この調査により、Railwayビルドエラーの根本解決を図ります。
+
+President

@@ -1,0 +1,70 @@
+# Railway デプロイメント学習記録
+
+## 2025-06-18: Railway ビルドエラー解決（更新）
+
+### 問題
+Railwayビルドが継続的に失敗。TypeScriptエラーとlightningcss問題。
+
+### 誤った判断
+1. **初期判断**: Dockerfileの設定のみで解決可能と判断
+2. **見落とし**: railway.tomlがNIXPACKSを使用していることを確認せず
+
+### 根本原因
+- **railway.tomlの`builder = "NIXPACKS"`設定**
+- NIXPACKSビルダーはDockerfileを無視
+- 結果として、すべてのDockerfile修正が反映されなかった
+
+### 正しい解決策
+```toml
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+buildCommand = "CI=false npm run build"
+```
+
+### 学習ポイント
+1. **設定ファイルの優先順位を確認**
+   - railway.toml > railway.json > Dockerfile
+   - 複数の設定ファイルがある場合は優先順位を理解する
+
+2. **キャッシュ問題への対処**
+   - タイムスタンプを使用したキャッシュバスト
+   - `RUN echo "Cache bust: $(date)" > /tmp/cachebust.txt`
+
+3. **Next.js 15の破壊的変更**
+   - `headers()`が非同期関数に変更
+   - 設定オプションの非推奨化（swcMinify、experimental.turbo）
+
+### 予防策
+- デプロイメント前に全設定ファイルを確認
+- ビルダーの種類（NIXPACKS vs DOCKERFILE）を明確に把握
+- エラーログの詳細な分析（ファイルパスやライン番号の確認）
+
+### 改善された診断プロセス
+1. エラーログの詳細確認
+2. 使用されているビルダーの特定
+3. 設定ファイルの優先順位確認
+4. キャッシュの影響を考慮
+5. 根本原因に基づいた修正
+
+## 2025-06-18: Supabase環境変数ビルドエラー
+
+### 新たな発見
+同じ`npm run build`エラーでも、詳細なログを確認すると別の原因があった。
+
+### 真の根本原因
+- **Next.jsのビルド時ページデータ収集**
+- APIルートがビルド時に評価される
+- Supabaseクライアントの初期化で環境変数が必須
+- 環境変数が未設定でエラー発生
+
+### 解決策
+1. Dockerfileにダミー環境変数を追加
+2. supabase.tsでビルド時のフォールバック値を設定
+3. CI環境でのエラーをスキップ
+
+### 重要な教訓
+**エラーメッセージが同じでも原因は異なる可能性がある**
+- ローカルでのDockerビルドテストが重要
+- エラーログの全体を確認する必要がある
+- 環境変数の要求タイミングを理解する

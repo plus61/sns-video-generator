@@ -1,0 +1,32 @@
+【緊急】YouTube URL アップロードエラー修正指示
+
+## 問題
+実サイトでYouTube URLを入力してもアップロードエラーが発生。
+これはSNS Video Generatorの基幹機能であり、即座の修正が必要。
+
+## 調査ポイント
+1. エラーメッセージの内容確認
+2. ブラウザコンソールエラーの収集
+3. サーバーサイドログの確認
+4. 環境変数設定の検証
+
+## 各Worker担当
+### Worker1（インフラ）
+- Railway/Vercelのエラーログ収集
+- YOUTUBE_API_KEY環境変数の確認
+- CORS設定の検証
+
+### Worker2（実装）
+- youtube-downloader.tsの動作確認
+- USE_MOCK_DOWNLOADER設定の影響調査
+- YouTube Data API v3の接続テスト
+
+### Worker3（テスト）
+- 複数のYouTube URLでテスト実施
+- エラーパターンの分類
+- 修正後の検証計画作成
+
+## 期限
+- 原因特定: 30分以内
+- 修正実装: 1時間以内
+- 完全動作確認: 1.5時間以内

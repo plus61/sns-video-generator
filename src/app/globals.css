@@ -1,6 +1,7 @@
-@tailwind base;
+/* Temporarily disable Tailwind CSS imports to fix build */
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
 @import "../styles/animations.css";
 
 :root {

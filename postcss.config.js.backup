@@ -1,0 +1,7 @@
+module.exports = {
+  plugins: {
+    // Temporarily disable Tailwind CSS to fix Railway build
+    // tailwindcss: {},
+    autoprefixer: {},
+  },
+}

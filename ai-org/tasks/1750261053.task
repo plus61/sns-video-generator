@@ -1,0 +1,10 @@
+{
+  "id": "1750261053",
+  "priority": "high",
+  "category": "infrastructure",
+  "description": "古いチームシステムファイルのクリーンアップ",
+  "status": "completed",
+  "created": "#午後",
+  "assigned_role": "DevOps思考",
+  "updated": "#午後"
+}
