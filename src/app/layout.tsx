@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 // Temporarily disable Google Fonts to fix build issues
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SessionProvider } from "@/components/providers/SessionProvider";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { GlobalErrorBoundary } from "@/components/error/GlobalErrorBoundary";
 
 // Temporarily disable font configurations
 // const geistSans = Geist({
@@ -22,21 +20,19 @@ export const metadata: Metadata = {
   description: "AI-powered social media video generation platform",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions);
-  
   return (
     <html lang="en">
       <body
         className="antialiased"
       >
-        <SessionProvider session={session}>
+        <GlobalErrorBoundary>
           {children}
-        </SessionProvider>
+        </GlobalErrorBoundary>
       </body>
     </html>
   );

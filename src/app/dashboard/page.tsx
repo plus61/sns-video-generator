@@ -18,8 +18,15 @@ interface UserUsage {
   reset_date: string
 }
 
+// Server Component for initial data loading
+interface DashboardServerData {
+  projects: VideoProject[]
+  videoUploads: VideoUpload[]
+  usage: UserUsage | null
+}
+
 function DashboardContent() {
-  const { session, status } = useAuth({ required: true })
+  const { user, isLoading } = useAuth({ required: true })
   const router = useRouter()
   const [projects, setProjects] = useState<VideoProject[]>([])
   const [videoUploads, setVideoUploads] = useState<VideoUpload[]>([])

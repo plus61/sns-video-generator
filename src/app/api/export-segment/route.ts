@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -38,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify ownership
-    if (segment.video_uploads.user_id !== session.user.id) {
+    if (segment.video_uploads.user_id !== user.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 

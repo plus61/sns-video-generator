@@ -1,37 +1,39 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from "next-auth/next"
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/utils/supabase/server'
 
 export async function GET() {
   try {
-    console.log('=== Simple Auth Test ===')
+    console.log('=== Simple Supabase Auth Test ===')
     
-    // Check if session exists
-    const session = await getServerSession(authOptions)
+    // Check if user is authenticated
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
     const result = {
-      hasSession: !!session,
-      sessionData: session ? {
-        userId: session.user?.id,
-        userEmail: session.user?.email,
-        userName: session.user?.name,
-        expires: session.expires
+      hasUser: !!user,
+      userData: user ? {
+        userId: user.id,
+        userEmail: user.email,
+        userRole: user.role,
+        emailConfirmed: user.email_confirmed_at,
+        lastSignIn: user.last_sign_in_at
       } : null,
       timestamp: new Date().toISOString(),
       environment: {
         NODE_ENV: process.env.NODE_ENV,
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-        hasSecret: !!process.env.NEXTAUTH_SECRET
-      }
+        hasSupabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasSupabaseKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      },
+      error: error?.message
     }
     
-    console.log('Auth test result:', result)
+    console.log('Supabase auth test result:', result)
     
     return NextResponse.json(result)
   } catch (error) {
-    console.error('Auth test error:', error)
+    console.error('Supabase auth test error:', error)
     return NextResponse.json({
-      error: 'Auth test failed',
+      error: 'Supabase auth test failed',
       message: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 })
   }

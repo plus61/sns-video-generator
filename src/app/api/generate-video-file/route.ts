@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { getVideoProject, updateVideoProject, getVideoTemplates } from '@/lib/database'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Get project details
     const project = await getVideoProject(projectId)
-    if (!project || project.user_id !== session.user.id) {
+    if (!project || project.user_id !== user.id) {
       return NextResponse.json(
         { error: 'Project not found' },
         { status: 404 }

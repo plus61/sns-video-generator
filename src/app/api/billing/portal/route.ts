@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { billingService } from '@/lib/billing-service'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     // Create customer portal session
     const portalSession = await billingService.createPortalSession(
-      session.user.id,
+      user.id,
       returnUrl
     )
 

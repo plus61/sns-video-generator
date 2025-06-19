@@ -1,21 +1,28 @@
 'use client'
 
 import { Header } from '@/components/ui/Header'
-import { useSession } from 'next-auth/react'
+import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Home() {
-  const { status } = useSession()
+  const supabase = createClient()
   const router = useRouter()
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (status === 'authenticated') {
-      router.push('/dashboard')
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        router.push('/dashboard')
+      } else {
+        setLoading(false)
+      }
     }
-  }, [status, router])
+    getUser()
+  }, [router, supabase])
 
-  if (status === 'loading') {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>

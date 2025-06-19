@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { createVideoAnalysisService } from '@/lib/video-analysis-service'
 import { DEFAULT_SEGMENT_CRITERIA, HIGH_QUALITY_SEGMENT_CRITERIA } from '@/lib/vision-analyzer'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -24,7 +25,7 @@ export async function POST(request: NextRequest) {
       .from('video_uploads')
       .select('*')
       .eq('id', videoId)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .single()
 
     if (videoError || !video) {
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
       videoId,
       videoPath,
       duration: video.duration || 300,
-      userId: session.user.id,
+      userId: user.id,
       criteria: selectedCriteria
     })
 
@@ -98,9 +99,10 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -113,7 +115,7 @@ export async function GET(request: NextRequest) {
 
     // Get analysis results
     const analysisService = createVideoAnalysisService()
-    const results = await analysisService.getAnalysisResults(videoId, session.user.id)
+    const results = await analysisService.getAnalysisResults(videoId, user.id)
 
     if (results.error) {
       return NextResponse.json({ error: results.error }, { status: 404 })

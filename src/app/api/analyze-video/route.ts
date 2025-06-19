@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { supabaseAdmin } from '@/lib/supabase'
 import { whisperService, type ContentSegment, type TranscriptionResult } from '@/lib/whisper'
 import { gpt4vService, type EnhancedSegment } from '@/lib/gpt4v'
@@ -29,9 +29,10 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
       .from('video_uploads')
       .select('*')
       .eq('id', videoId)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .single()
 
     if (fetchError || !videoUpload) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/hooks/useAuth'
 import type { VideoTemplate } from '@/types'
 
 interface VideoGenerationFormProps {
@@ -13,7 +13,7 @@ interface VideoGenerationFormProps {
 export function VideoGenerationForm({ onGenerate, isGenerating, selectedTemplate }: VideoGenerationFormProps) {
   const [prompt, setPrompt] = useState('')
   const [title, setTitle] = useState('')
-  const { data: session } = useSession()
+  const { user } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,7 +57,7 @@ export function VideoGenerationForm({ onGenerate, isGenerating, selectedTemplate
 
         <button
           type="submit"
-          disabled={!prompt.trim() || isGenerating || !session}
+          disabled={!prompt.trim() || isGenerating || !user}
           className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
         >
           {isGenerating ? (
@@ -70,7 +70,7 @@ export function VideoGenerationForm({ onGenerate, isGenerating, selectedTemplate
           )}
         </button>
         
-        {!session && (
+        {!user && (
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
             Please sign in to generate videos
           </p>

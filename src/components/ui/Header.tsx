@@ -1,9 +1,9 @@
 'use client'
 
-import { useSession, signOut } from 'next-auth/react'
+import { useState, useEffect } from 'react'
+import { createClient } from '@/utils/supabase/client'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 const navigation = [
   { 
@@ -45,10 +45,37 @@ const navigation = [
 ]
 
 export function Header() {
-  const { data: session, status } = useSession()
+  const supabase = createClient()
   const pathname = usePathname()
+  const router = useRouter()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setLoading(false)
+    }
+
+    getUser()
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase])
+
+  const handleSignOut = async () => {
+    setIsUserMenuOpen(false)
+    await supabase.auth.signOut()
+    router.push('/')
+  }
   
   return (
     <header className="sticky top-0 z-50 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 shadow-sm">
@@ -102,9 +129,9 @@ export function Header() {
 
           {/* User Menu */}
           <div className="flex items-center space-x-4">
-            {status === 'loading' ? (
+            {loading ? (
               <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-20 rounded-lg"></div>
-            ) : session ? (
+            ) : user ? (
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -112,15 +139,15 @@ export function Header() {
                 >
                   <div className="w-8 h-8 bg-gradient-to-r from-green-400 to-blue-500 rounded-full flex items-center justify-center">
                     <span className="text-white font-medium text-sm">
-                      {session.user?.name?.[0] || session.user?.email?.[0] || 'U'}
+                      {user.email?.[0]?.toUpperCase() || 'U'}
                     </span>
                   </div>
                   <div className="hidden sm:block text-left">
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
-                      {session.user?.name || 'User'}
+                      {user.email?.split('@')[0] || 'User'}
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {session.user?.email}
+                      {user.email}
                     </p>
                   </div>
                   <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,10 +160,10 @@ export function Header() {
                   <div className="absolute right-0 top-full mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-20">
                     <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
                       <p className="text-sm font-medium text-gray-900 dark:text-white">
-                        {session.user?.name || 'User'}
+                        {user.email?.split('@')[0] || 'User'}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {session.user?.email}
+                        {user.email}
                       </p>
                     </div>
                     
@@ -160,10 +187,7 @@ export function Header() {
                     
                     <div className="border-t border-gray-200 dark:border-gray-700 mt-2 pt-2">
                       <button
-                        onClick={() => {
-                          setIsUserMenuOpen(false)
-                          signOut()
-                        }}
+                        onClick={handleSignOut}
                         className="flex items-center w-full px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                       >
                         <span className="mr-3">🚪</span>
@@ -175,7 +199,7 @@ export function Header() {
               </div>
             ) : (
               <Link
-                href="/auth/signin"
+                href="/signin"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 サインイン

@@ -77,8 +77,8 @@ export async function createVideoProcessor() {
   
   switch (config.environment) {
     case 'vercel':
-      const { VercelVideoProcessor } = await import('./video-processor-vercel')
-      return new VercelVideoProcessor({
+      const { VercelVideoProcessor: VercelProcessor } = await import('./video-processor-vercel')
+      return new VercelProcessor({
         environment: 'vercel',
         railwayBackendUrl: config.apiBaseUrl,
         maxFileSize: config.maxFileSize,
@@ -96,8 +96,8 @@ export async function createVideoProcessor() {
         })
       } catch (error) {
         console.warn('Railway processor not available, falling back to Vercel processor')
-        const { VercelVideoProcessor } = await import('./video-processor-vercel')
-        return new VercelVideoProcessor({
+        const { VercelVideoProcessor: FallbackProcessor } = await import('./video-processor-vercel')
+        return new FallbackProcessor({
           environment: 'railway',
           railwayBackendUrl: config.apiBaseUrl,
           maxFileSize: config.maxFileSize,
@@ -107,8 +107,8 @@ export async function createVideoProcessor() {
       
     case 'development':
     default:
-      const { VercelVideoProcessor } = await import('./video-processor-vercel')
-      return new VercelVideoProcessor({
+      const { VercelVideoProcessor: DevProcessor } = await import('./video-processor-vercel')
+      return new DevProcessor({
         environment: 'development',
         maxFileSize: config.maxFileSize,
         allowedFormats: ['mp4', 'mov', 'avi', 'mkv', 'webm']

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { supabaseAdmin } from '@/lib/supabase'
 import { videoProcessingQueue } from '@/lib/queues/video-processing-queue'
 import { webhookService } from '@/lib/services/webhook-service'
@@ -38,9 +38,10 @@ interface ProcessVideoResponse {
 
 export async function POST(request: NextRequest): Promise<NextResponse<ProcessVideoResponse>> {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ 
         success: false,
         jobId: '',
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ProcessVi
       .from('video_uploads')
       .select('*')
       .eq('id', videoId)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .single()
 
     if (videoError || !video) {
@@ -95,7 +96,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ProcessVi
       .from('processing_jobs')
       .insert({
         id: jobId,
-        user_id: session.user.id,
+        user_id: user.id,
         video_id: videoId,
         job_type: 'video_processing',
         status: 'queued',
@@ -134,7 +135,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ProcessVi
       {
         jobId,
         videoId,
-        userId: session.user.id,
+        userId: user.id,
         processingOptions,
         aiAnalysisOptions,
         video: {
@@ -168,7 +169,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<ProcessVi
         event: 'processing.started',
         jobId,
         videoId,
-        userId: session.user.id,
+        userId: user.id,
         estimatedProcessingTime: estimatedTime,
         queuePosition,
         timestamp: new Date().toISOString()
@@ -197,9 +198,10 @@ export async function POST(request: NextRequest): Promise<NextResponse<ProcessVi
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -222,7 +224,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         )
       `)
       .eq('id', jobId)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .single()
 
     if (jobError || !job) {
@@ -256,9 +258,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
 export async function DELETE(request: NextRequest): Promise<NextResponse> {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -274,7 +277,7 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
       .from('processing_jobs')
       .select('id, status, video_id')
       .eq('id', jobId)
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .single()
 
     if (jobError || !job) {

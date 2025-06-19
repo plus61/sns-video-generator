@@ -1,17 +1,16 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { createClient } from '@/utils/supabase/client'
 import { Header } from '@/components/ui/Header'
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { useAuth } from '@/hooks/useAuth'
 
 interface UserProfile {
   id: string
   email: string
-  name: string
+  first_name: string
+  last_name: string
+  username?: string
   avatar_url?: string
-  created_at: string
   updated_at: string
 }
 
@@ -31,19 +30,21 @@ interface NotificationSettings {
 }
 
 function SettingsContent() {
-  useAuth({ required: true })
-  const { data: session } = useSession()
+  const supabase = createClient()
   const [activeTab, setActiveTab] = useState<'profile' | 'api' | 'notifications'>('profile')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<{type: 'success' | 'error', text: string} | null>(null)
+  const [user, setUser] = useState<any>(null)
 
   // Profile state
   const [profile, setProfile] = useState<UserProfile>({
     id: '',
     email: '',
-    name: '',
-    created_at: '',
+    first_name: '',
+    last_name: '',
+    username: '',
+    avatar_url: '',
     updated_at: ''
   })
 
@@ -60,16 +61,46 @@ function SettingsContent() {
   })
 
   useEffect(() => {
-    if (session?.user) {
-      setProfile({
-        id: session.user.id || '',
-        email: session.user.email || '',
-        name: session.user.name || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      })
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUser(user)
+        
+        // Fetch profile from profiles table
+        const { data: profileData, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+
+        if (profileData) {
+          setProfile({
+            id: profileData.id,
+            email: user.email || '',
+            first_name: profileData.first_name || '',
+            last_name: profileData.last_name || '',
+            username: profileData.username || '',
+            avatar_url: profileData.avatar_url || '',
+            updated_at: profileData.updated_at
+          })
+        } else {
+          // Create initial profile if doesn't exist
+          setProfile({
+            id: user.id,
+            email: user.email || '',
+            first_name: '',
+            last_name: '',
+            username: '',
+            avatar_url: '',
+            updated_at: new Date().toISOString()
+          })
+        }
+      }
+      setIsLoading(false)
     }
-  }, [session])
+    
+    getUser()
+  }, [])
 
   const showMessage = (type: 'success' | 'error', text: string) => {
     setMessage({ type, text })
@@ -79,10 +110,24 @@ function SettingsContent() {
   const handleProfileSave = async () => {
     setIsSaving(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: profile.id,
+          first_name: profile.first_name,
+          last_name: profile.last_name,
+          username: profile.username,
+          avatar_url: profile.avatar_url,
+          updated_at: new Date().toISOString()
+        })
+
+      if (error) {
+        throw error
+      }
+
       showMessage('success', 'プロフィールを更新しました')
     } catch (error) {
+      console.error('Profile update error:', error)
       showMessage('error', 'プロフィールの更新に失敗しました')
     } finally {
       setIsSaving(false)
@@ -185,12 +230,38 @@ function SettingsContent() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          名
+                        </label>
+                        <input
+                          type="text"
+                          value={profile.first_name}
+                          onChange={(e) => setProfile({ ...profile, first_name: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                          姓
+                        </label>
+                        <input
+                          type="text"
+                          value={profile.last_name}
+                          onChange={(e) => setProfile({ ...profile, last_name: e.target.value })}
+                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                           ユーザー名
                         </label>
                         <input
                           type="text"
-                          value={profile.name}
-                          onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                          value={profile.username || ''}
+                          onChange={(e) => setProfile({ ...profile, username: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                         />
                       </div>
@@ -383,9 +454,40 @@ function SettingsContent() {
 }
 
 export default function Settings() {
-  return (
-    <ProtectedRoute>
-      <SettingsContent />
-    </ProtectedRoute>
-  )
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setLoading(false)
+    }
+    getUser()
+  }, [supabase])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">認証が必要です</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-8">このページを表示するにはサインインしてください。</p>
+          <a href="/signin" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-md font-medium">
+            サインインページへ
+          </a>
+        </div>
+      </div>
+    )
+  }
+
+  return <SettingsContent />
 }

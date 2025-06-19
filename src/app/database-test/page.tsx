@@ -1,9 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createClient } from '@/utils/supabase/client'
 import { Header } from '@/components/ui/Header'
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { useAuth } from '@/hooks/useAuth'
 
 interface TestResult {
   test: string
@@ -20,21 +19,21 @@ interface ConnectionInfo {
 }
 
 function DatabaseTestContent() {
-  useAuth({ required: true })
+  const supabase = createClient()
   const [connectionInfo, setConnectionInfo] = useState<ConnectionInfo>({
     url: '',
     connected: false
   })
   const [testResults, setTestResults] = useState<TestResult[]>([])
   const [isRunning, setIsRunning] = useState(false)
-  const [testData, setTestData] = useState({ name: '', email: '' })
+  const [testData, setTestData] = useState({ first_name: '', last_name: '', username: '' })
 
   const tests = [
     { id: 'connection', name: '接続テスト', description: 'Supabaseサーバーへの接続確認' },
-    { id: 'create', name: 'CREATE操作', description: 'テストデータの作成' },
-    { id: 'read', name: 'READ操作', description: 'データの読み取り確認' },
-    { id: 'update', name: 'UPDATE操作', description: 'データの更新確認' },
-    { id: 'delete', name: 'DELETE操作', description: 'データの削除確認' }
+    { id: 'auth', name: '認証テスト', description: 'ユーザー認証の確認' },
+    { id: 'create', name: 'CREATE操作', description: 'プロファイルデータの作成' },
+    { id: 'read', name: 'READ操作', description: 'プロファイルデータの読み取り確認' },
+    { id: 'update', name: 'UPDATE操作', description: 'プロファイルデータの更新確認' }
   ]
 
   useEffect(() => {
@@ -62,78 +61,92 @@ function DatabaseTestContent() {
       
       switch (testId) {
         case 'connection':
-          response = await fetch('/api/test-supabase')
-          data = await response.json()
-          if (data.success) {
+          try {
+            const { data, error } = await supabase.from('profiles').select('count', { count: 'exact', head: true })
+            if (error) throw error
             setConnectionInfo({
               url: 'Connected to Supabase',
               connected: true,
               latency: Date.now() - startTime
             })
             updateTestResult(index, 'success', '接続成功', Date.now() - startTime)
-          } else {
-            throw new Error(data.error || '接続に失敗しました')
+          } catch (error: any) {
+            throw new Error(error.message || '接続に失敗しました')
+          }
+          break
+          
+        case 'auth':
+          try {
+            const { data: { user }, error } = await supabase.auth.getUser()
+            if (error) throw error
+            if (user) {
+              updateTestResult(index, 'success', `認証成功 (User ID: ${user.id})`, Date.now() - startTime)
+            } else {
+              throw new Error('ユーザーが認証されていません')
+            }
+          } catch (error: any) {
+            throw new Error(error.message || '認証テストに失敗しました')
           }
           break
           
         case 'create':
-          response = await fetch('/api/test-db', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'create',
-              data: {
-                name: testData.name || 'テストユーザー',
-                email: testData.email || 'test@example.com'
-              }
-            })
-          })
-          data = await response.json()
-          if (data.success) {
-            updateTestResult(index, 'success', `データ作成成功 (ID: ${data.id})`, Date.now() - startTime)
-          } else {
-            throw new Error(data.error || 'データ作成に失敗しました')
+          try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error('ユーザーが認証されていません')
+            
+            const { data, error } = await supabase
+              .from('profiles')
+              .upsert({
+                id: user.id,
+                first_name: testData.first_name || 'テスト',
+                last_name: testData.last_name || 'ユーザー',
+                username: testData.username || 'testuser',
+                updated_at: new Date().toISOString()
+              })
+              .select()
+              
+            if (error) throw error
+            updateTestResult(index, 'success', `プロファイル作成/更新成功`, Date.now() - startTime)
+          } catch (error: any) {
+            throw new Error(error.message || 'データ作成に失敗しました')
           }
           break
           
         case 'read':
-          response = await fetch('/api/test-db?action=read')
-          data = await response.json()
-          if (data.success) {
-            updateTestResult(index, 'success', `${data.count}件のデータを取得`, Date.now() - startTime)
-          } else {
-            throw new Error(data.error || 'データ読み取りに失敗しました')
+          try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error('ユーザーが認証されていません')
+            
+            const { data, error } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', user.id)
+              
+            if (error) throw error
+            updateTestResult(index, 'success', `プロファイルデータ取得成功`, Date.now() - startTime)
+          } catch (error: any) {
+            throw new Error(error.message || 'データ読み取りに失敗しました')
           }
           break
           
         case 'update':
-          response = await fetch('/api/test-db', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action: 'update',
-              data: { name: 'Updated Test User' }
-            })
-          })
-          data = await response.json()
-          if (data.success) {
-            updateTestResult(index, 'success', 'データ更新成功', Date.now() - startTime)
-          } else {
-            throw new Error(data.error || 'データ更新に失敗しました')
-          }
-          break
-          
-        case 'delete':
-          response = await fetch('/api/test-db', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ action: 'delete' })
-          })
-          data = await response.json()
-          if (data.success) {
-            updateTestResult(index, 'success', 'データ削除成功', Date.now() - startTime)
-          } else {
-            throw new Error(data.error || 'データ削除に失敗しました')
+          try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error('ユーザーが認証されていません')
+            
+            const { data, error } = await supabase
+              .from('profiles')
+              .update({
+                first_name: 'Updated Test',
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', user.id)
+              .select()
+              
+            if (error) throw error
+            updateTestResult(index, 'success', 'プロファイル更新成功', Date.now() - startTime)
+          } catch (error: any) {
+            throw new Error(error.message || 'データ更新に失敗しました')
           }
           break
           
@@ -227,26 +240,39 @@ function DatabaseTestContent() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  名前
+                  名
                 </label>
                 <input
                   type="text"
-                  value={testData.name}
-                  onChange={(e) => setTestData({ ...testData, name: e.target.value })}
-                  placeholder="テストユーザー"
+                  value={testData.first_name}
+                  onChange={(e) => setTestData({ ...testData, first_name: e.target.value })}
+                  placeholder="テスト"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
                 />
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  メール
+                  姓
                 </label>
                 <input
-                  type="email"
-                  value={testData.email}
-                  onChange={(e) => setTestData({ ...testData, email: e.target.value })}
-                  placeholder="test@example.com"
+                  type="text"
+                  value={testData.last_name}
+                  onChange={(e) => setTestData({ ...testData, last_name: e.target.value })}
+                  placeholder="ユーザー"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  ユーザー名
+                </label>
+                <input
+                  type="text"
+                  value={testData.username}
+                  onChange={(e) => setTestData({ ...testData, username: e.target.value })}
+                  placeholder="testuser"
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
                 />
               </div>
@@ -349,9 +375,26 @@ function DatabaseTestContent() {
 }
 
 export default function DatabaseTest() {
-  return (
-    <ProtectedRoute>
-      <DatabaseTestContent />
-    </ProtectedRoute>
-  )
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setLoading(false)
+    }
+    getUser()
+  }, [supabase])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    )
+  }
+
+  return <DatabaseTestContent />
 }

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from '@/utils/supabase/server'
 import { createStorageService } from '@/lib/supabase-storage'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create storage service instance for the authenticated user
-    const storageService = createStorageService(session.user.id)
+    const storageService = createStorageService(user.id)
 
     // Upload video with progress tracking
     const uploadResult = await storageService.uploadVideo(videoFile, {
@@ -58,9 +58,10 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -71,7 +72,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Video ID required' }, { status: 400 })
     }
 
-    const storageService = createStorageService(session.user.id)
+    const storageService = createStorageService(user.id)
     const deleteResult = await storageService.deleteVideo(videoId)
 
     if (!deleteResult.success) {

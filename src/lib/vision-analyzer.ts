@@ -7,7 +7,6 @@ import { createCanvas, loadImage } from './canvas-wrapper'
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   maxRetries: 3,
-  timeout: 30000, // 30 seconds
 })
 
 export interface VideoFrame {
@@ -235,7 +234,6 @@ OPTIMIZATION FOCUS:
         ],
         max_tokens: 1500,
         temperature: 0.3, // Lower temperature for more consistent analysis
-        timeout: this.analysisTimeout
       })
 
       const content = response.choices[0]?.message?.content

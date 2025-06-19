@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
-import { useSession } from 'next-auth/react'
+import { useAuth } from '@/hooks/useAuth'
 import { useRouter, useParams } from 'next/navigation'
 import { Header } from '@/components/ui/Header'
 import { VideoAnalysisStatus } from '@/components/ui/VideoAnalysisStatus'
@@ -9,7 +9,7 @@ import { SegmentsList } from '@/components/ui/SegmentsList'
 import type { VideoUpload, VideoSegment } from '@/types'
 
 function AnalyzeContent() {
-  const { data: session, status } = useSession()
+  const { user, isLoading: authLoading } = useAuth({ required: true })
   const router = useRouter()
   const params = useParams()
   const videoId = params.id as string
@@ -38,15 +38,10 @@ function AnalyzeContent() {
   }, [videoId])
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin')
-      return
-    }
-
-    if (status === 'authenticated' && videoId) {
+    if (!authLoading && user && videoId) {
       fetchVideoData()
     }
-  }, [status, videoId, router, fetchVideoData])
+  }, [authLoading, user, videoId, fetchVideoData])
 
   const pollAnalysisStatus = useCallback(() => {
     const interval = setInterval(async () => {
@@ -97,7 +92,7 @@ function AnalyzeContent() {
 
 
 
-  if (status === 'loading' || isLoading) {
+  if (authLoading || isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Header />
@@ -108,7 +103,7 @@ function AnalyzeContent() {
     )
   }
 
-  if (!session) {
+  if (!user) {
     return null
   }
 

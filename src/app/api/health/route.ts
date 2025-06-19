@@ -24,6 +24,7 @@ interface HealthCheckResponse {
       active: number
       failed: number
       completed: number
+      responseTime: number
       error?: string
     }
     storage: {

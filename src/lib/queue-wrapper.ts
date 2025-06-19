@@ -65,6 +65,30 @@ export const Queue = QueueImpl
 export const Worker = WorkerImpl  
 export const Redis = RedisImpl
 
+// Export Job type for proper TypeScript support
+export type Job<T = any> = {
+  id: string | number
+  data: T
+  progress?: number
+  updateProgress(progress: number): Promise<void>
+  opts?: any
+}
+
+// Mock Job implementation for environments without BullMQ
+export class MockJob<T = any> implements Job<T> {
+  constructor(
+    public id: string | number,
+    public data: T,
+    public progress?: number,
+    public opts?: any
+  ) {}
+
+  async updateProgress(progress: number): Promise<void> {
+    this.progress = progress
+    console.log(`📊 Mock job ${this.id} progress: ${progress}%`)
+  }
+}
+
 // Queue configuration
 export const getQueueConfig = () => {
   if (isVercel || isBuildTime) {
@@ -77,7 +101,7 @@ export const getQueueConfig = () => {
       }
     }
   } else {
-    // Railway configuration
+    // Railway configuration with BullMQ optimizations
     const redisConfig = {
       host: process.env.REDIS_HOST || 'localhost',
       port: parseInt(process.env.REDIS_PORT || '6379'),
@@ -88,6 +112,21 @@ export const getQueueConfig = () => {
       enableReadyCheck: true,
       maxLoadingTimeout: 5000,
       lazyConnect: true,
+      // Boss1革命的最適化設定
+      retryStrategy: (times: number) => {
+        const delay = Math.max(Math.min(Math.exp(times), 20000), 1000)
+        console.log(`🔄 Redis retry attempt ${times}, delay: ${delay}ms`)
+        return delay
+      },
+      maxRetriesPerRequest: null, // BullMQ requirement - disable retries
+      enableOfflineQueue: true,
+      connectTimeout: 10000,
+      commandTimeout: 5000,
+      // Connection pool optimization（Boss1指示）
+      family: 4, // Use IPv4
+      keepAlive: true,
+      // パフォーマンス設定（IORedis対応）
+      // 注: 高度設定は実装環境で調整
     }
 
     // Parse Railway Redis URL if available
@@ -107,13 +146,24 @@ export const getQueueConfig = () => {
     return {
       connection: new RedisImpl(redisConfig),
       defaultJobOptions: {
-        removeOnComplete: 50,
-        removeOnFail: 100,
-        attempts: 3,
+        removeOnComplete: 100, // 増量（パフォーマンス分析用）
+        removeOnFail: 50, // 最適化
+        attempts: 5, // Boss1推奨値
         backoff: {
           type: 'exponential',
-          delay: 5000,
+          delay: 3000, // 高速化
         },
+        // 追加の最適化オプション
+        priority: 5,
+        jobId: undefined, // 自動生成
+        repeat: undefined,
+        delay: 0
+      },
+      // 追加のキュー設定
+      settings: {
+        stalledInterval: 30000,
+        maxStalledCount: 1,
+        retryProcessDelay: 5000
       }
     }
   }

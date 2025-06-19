@@ -1,20 +1,21 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { getUserUsage } from '@/lib/database'
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       )
     }
 
-    const usage = await getUserUsage(session.user.id)
+    const usage = await getUserUsage(user.id)
 
     if (!usage) {
       return NextResponse.json(

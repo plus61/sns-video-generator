@@ -1,11 +1,8 @@
-'use client'
-
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Header } from '@/components/ui/Header'
+import { BackButton } from '@/components/ui/BackButton'
 
 export default function NotFound() {
-  const router = useRouter()
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -44,12 +41,7 @@ export default function NotFound() {
               🏠 ホームに戻る
             </Link>
             
-            <button
-              onClick={() => router.back()}
-              className="w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-medium py-3 px-6 rounded-lg transition-colors duration-200"
-            >
-              ← 前のページに戻る
-            </button>
+            <BackButton />
           </div>
 
           {/* Quick Links */}
@@ -127,10 +119,6 @@ export default function NotFound() {
           {/* Error Code for Debug */}
           <div className="mt-8 text-xs text-gray-400 dark:text-gray-600">
             Error Code: 404 | Page Not Found
-            <br />
-            {typeof window !== 'undefined' && (
-              <>URL: {window.location.href}</>
-            )}
           </div>
         </div>
       </main>

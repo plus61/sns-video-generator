@@ -1,106 +1,93 @@
+npm warn config production Use `--omit=dev` instead.
+
+added 2 packages, removed 18 packages, and audited 126 packages in 9s
+
+27 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+npm warn config production Use `--omit=dev` instead.
+
+[41m                                                                               [0m
+[41m[37m                This is not the tsc command you are looking for                [0m
+[41m                                                                               [0m
+
+To get access to the TypeScript compiler, [34mtsc[0m, from the command line either:
+
+- Use [1mnpm install typescript[0m to first add TypeScript to your project [1mbefore[0m using npx
+- Use [1myarn[0m to avoid accidentally running code from un-installed packages
+npm warn config production Use `--omit=dev` instead.
 
 > sns-video-generator@0.1.0 build
 > next build
 
+ ⚠ The config property `experimental.turbo` is deprecated. Move this setting to `config.turbopack` as Turbopack is now stable.
    ▲ Next.js 15.3.3
    - Environments: .env.local, .env.production
 
    Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy] Serializing big strings (100kiB) impacts deserialization performance (consider using Buffer instead and decode when needed)
 Failed to compile.
 
-./src/app/globals.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./src/app/globals.css
-Error: Cannot find module 'autoprefixer'
-Require stack:
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/index.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/index.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack-config.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/plugins/next-trace-entrypoints-plugin.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/collect-build-traces.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/index.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/cli/next-build.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/server/require-hook.js:55:36
-    at Function.resolve (node:internal/modules/helpers:188:19)
-    at loadPlugin (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56
-    at Array.map (<anonymous>)
-    at getPostCssPlugins (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)
-    at async /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36
-    at async /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js:52:40
-    at async Span.traceAsyncFn (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/trace/trace.js:157:20)
+./src/app/analyze/[id]/page.tsx
+Module not found: Can't resolve 'next-auth/react'
 
-Import trace for requested module:
-./src/app/globals.css.webpack[javascript/auto]!=!./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./src/app/globals.css
-./src/app/globals.css
+https://nextjs.org/docs/messages/module-not-found
 
-./src/app/globals.css
-Error: Cannot find module 'autoprefixer'
-Require stack:
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/index.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/index.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack-config.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/plugins/next-trace-entrypoints-plugin.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/collect-build-traces.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/index.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/cli/next-build.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/server/require-hook.js:55:36
-    at Function.resolve (node:internal/modules/helpers:188:19)
-    at loadPlugin (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56
-    at Array.map (<anonymous>)
-    at getPostCssPlugins (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)
-    at async /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36
-    at async /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js:52:40
-    at async Span.traceAsyncFn (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/trace/trace.js:157:20)
-    at tryRunOrWebpackError (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:316142)
-    at __webpack_require_module__ (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
-    at __nested_webpack_require_161494__ (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:131840
-    at symbolIterator (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
-    at done (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/neo-async/async.js:1:14824)
-    at Hook.eval [as callAsync] (eval at create (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:14:9224), <anonymous>:15:1)
-    at Hook.CALL_ASYNC_DELEGATE [as _callAsync] (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:14:6378)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:130703
-    at symbolIterator (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/neo-async/async.js:1:14402)
--- inner error --
-Error: Cannot find module 'autoprefixer'
-Require stack:
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/index.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/index.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack-config.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/plugins/next-trace-entrypoints-plugin.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/collect-build-traces.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/index.js
-- /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/cli/next-build.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/server/require-hook.js:55:36
-    at Function.resolve (node:internal/modules/helpers:188:19)
-    at loadPlugin (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:53:32)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:56
-    at Array.map (<anonymous>)
-    at getPostCssPlugins (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/plugins.js:185:47)
-    at async /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/config/blocks/css/index.js:125:36
-    at async /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js:52:40
-    at async Span.traceAsyncFn (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/trace/trace.js:157:20)
-    at Object.<anonymous> (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/src/app/globals.css:1:7)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:962742
-    at Hook.eval [as call] (eval at create (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:14:9002), <anonymous>:7:1)
-    at Hook.CALL_DELEGATE [as _call] (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:14:6272)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:131581
-    at tryRunOrWebpackError (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:316096)
-    at __webpack_require_module__ (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
-    at __nested_webpack_require_161494__ (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
-    at /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/webpack/bundle5.js:29:131840
-    at symbolIterator (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+./src/app/auth/signin/page.tsx
+Module not found: Can't resolve 'next-auth/react'
 
-Generated code for /Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/src/app/globals.css
+https://nextjs.org/docs/messages/module-not-found
 
-Import trace for requested module:
-./src/app/globals.css
+./src/app/page.tsx
+Module not found: Can't resolve 'next-auth/react'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./src/app/api/analyze-video-ai/route.ts
+Module not found: Can't resolve 'next-auth'
+
+https://nextjs.org/docs/messages/module-not-found
+
+./src/app/api/analyze-video/route.ts
+Module not found: Can't resolve 'next-auth'
+
+https://nextjs.org/docs/messages/module-not-found
 
 
 > Build failed because of webpack errors
+npm warn config production Use `--omit=dev` instead.
+
+> sns-video-generator@0.1.0 lint
+> next lint
+
+It looks like you're trying to use TypeScript but do not have the required package(s) installed.
+Installing dependencies
+
+If you are not trying to use TypeScript, please remove the tsconfig.json file from your package root (and any TypeScript files in your app and pages directories).
+
+
+Installing devDependencies (npm):
+- typescript
+- @types/react
+
+npm warn config production Use `--omit=dev` instead.
+
+up to date, audited 126 packages in 3s
+
+27 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+
+/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/server/require-hook.js:62
+    if (request.endsWith('.shared-runtime')) {
+                ^
+
+TypeError: Cannot read properties of undefined (reading 'endsWith')
+    at mod.require (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/server/require-hook.js:62:17)
+    at require (node:internal/modules/helpers:177:18)
+    at verifyTypeScriptSetup (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/lib/verify-typescript-setup.js:116:42)
+    at async Module.nextLint (/Users/yuichiroooosuger/sns-video-generator/sns-video-generator/node_modules/next/dist/cli/next-lint.js:77:5)
+
+Node.js v18.20.4

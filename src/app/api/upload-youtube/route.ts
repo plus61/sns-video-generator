@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { supabaseAdmin } from '@/lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
 import { getYouTubeDownloader } from '@/lib/youtube-downloader-dynamic'
@@ -9,9 +9,10 @@ import { YouTubeAPIService, YouTubeAPIErrorType } from '@/lib/youtube-api-servic
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       .from('video_uploads')
       .insert({
         id: videoId,
-        user_id: session.user.id,
+        user_id: user.id,
         youtube_url: url,
         youtube_video_id: youtubeVideoId,
         upload_source: 'youtube',

@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { generateVideoScript, generateVideoTitle } from '@/lib/openai'
 import { createVideoProject, checkUserCanGenerate, incrementUserUsage } from '@/lib/database'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user can generate more videos (monthly limit)
-    const canGenerate = await checkUserCanGenerate(session.user.id)
+    const canGenerate = await checkUserCanGenerate(user.id)
     if (!canGenerate) {
       return NextResponse.json(
         { error: 'Monthly video generation limit reached' },
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     // Save to database
     const videoProject = await createVideoProject({
-      user_id: session.user.id,
+      user_id: user.id,
       title: finalTitle,
       prompt,
       script,
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Increment user usage counter
-    await incrementUserUsage(session.user.id)
+    await incrementUserUsage(user.id)
 
     return NextResponse.json({
       id: videoProject.id,

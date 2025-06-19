@@ -1,18 +1,19 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { supabaseAdmin } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Test database connection and user existence
-    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(session.user.id)
+    const { data: userData, error: userError } = await supabaseAdmin.auth.admin.getUserById(user.id)
     
     if (userError) {
       return NextResponse.json({
@@ -25,7 +26,7 @@ export async function GET() {
     const { data: videoData, error: videoError } = await supabaseAdmin
       .from('video_uploads')
       .select('*')
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .limit(1)
 
     if (videoError) {

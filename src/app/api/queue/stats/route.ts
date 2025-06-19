@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { videoProcessingQueue } from '@/lib/queues/video-processing-queue'
 
 interface QueueStatsResponse {
@@ -40,9 +40,10 @@ interface QueueStatsResponse {
 
 export async function GET(request: NextRequest): Promise<NextResponse<QueueStatsResponse>> {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({
         success: false,
         stats: {
@@ -212,9 +213,10 @@ export async function GET(request: NextRequest): Promise<NextResponse<QueueStats
 // Queue management endpoints
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

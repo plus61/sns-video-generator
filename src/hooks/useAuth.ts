@@ -1,8 +1,8 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface UseAuthOptions {
   required?: boolean
@@ -11,41 +11,59 @@ interface UseAuthOptions {
 }
 
 export function useAuth(options: UseAuthOptions = {}) {
-  const { data: session, status } = useSession()
+  const supabase = createClient()
   const router = useRouter()
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   
   const {
     required = false,
-    redirectTo = '/auth/signin',
+    redirectTo = '/signin',
     redirectIfFound = false
   } = options
 
   useEffect(() => {
-    if (status === 'loading') return // Still loading
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setLoading(false)
+    }
 
-    // If auth is required and there's no session, redirect to login
-    if (required && !session) {
+    getUser()
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [supabase])
+
+  useEffect(() => {
+    if (loading) return // Still loading
+
+    // If auth is required and there's no user, redirect to login
+    if (required && !user) {
       router.push(redirectTo)
       return
     }
 
-    // If session exists and redirectIfFound is true, redirect
-    if (redirectIfFound && session) {
+    // If user exists and redirectIfFound is true, redirect
+    if (redirectIfFound && user) {
       router.push(redirectTo)
       return
     }
-  }, [session, status, required, redirectTo, redirectIfFound, router])
+  }, [user, loading, required, redirectTo, redirectIfFound, router])
 
   return {
-    session,
-    status,
-    isAuthenticated: !!session,
-    isLoading: status === 'loading',
-    user: session?.user || null
+    user,
+    isAuthenticated: !!user,
+    isLoading: loading
   }
 }
 
-export function useRequireAuth(redirectTo = '/auth/signin') {
+export function useRequireAuth(redirectTo = '/signin') {
   return useAuth({ required: true, redirectTo })
 }
 

@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { createClient } from "@/utils/supabase/server"
+
 import { billingService } from '@/lib/billing-service'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
     if (!session?.user?.id || !session?.user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -19,9 +20,9 @@ export async function POST(request: NextRequest) {
 
     // Create checkout session
     const checkoutSession = await billingService.createCheckoutSession(
-      session.user.id,
+      user.id,
       planId,
-      session.user.email,
+      user.email,
       successUrl,
       cancelUrl
     )
@@ -46,15 +47,16 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const supabase = await createClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id) {
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     // Get current billing information
-    const billing = await billingService.getBillingInfo(session.user.id)
-    const usage = await billingService.getUsageMetrics(session.user.id)
+    const billing = await billingService.getBillingInfo(user.id)
+    const usage = await billingService.getUsageMetrics(user.id)
 
     return NextResponse.json({
       success: true,
