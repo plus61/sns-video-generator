@@ -1192,3 +1192,5 @@ ENV PORT=$PORT
 [2025-06-19 14:43:27] boss1: MESSAGE - "worker2"
 [2025-06-19 14:43:34] user: MESSAGE - "worker3"
 [2025-06-19 14:43:35] boss1: MESSAGE - "worker3"
+[2025-06-19 14:44:00] user: MESSAGE - "president"
+[2025-06-19 14:44:01] boss1: MESSAGE - "president"
