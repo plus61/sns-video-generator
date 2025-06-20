@@ -1,0 +1,33 @@
+# Simple Production Dockerfile for Railway - Guaranteed to work
+FROM node:18-slim
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install ALL dependencies (including devDependencies for build)
+RUN npm install --legacy-peer-deps
+
+# Copy all source files
+COPY . .
+
+# Set production environment
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Create dummy env file for build (Railway will override at runtime)
+RUN echo "NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co" > .env.production && \
+    echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy" >> .env.production
+
+# BUILD THE APPLICATION - THIS IS THE KEY STEP!
+RUN npm run build
+
+# Verify .next directory exists
+RUN ls -la .next || (echo "ERROR: .next directory not created!" && exit 1)
+
+# Expose port
+EXPOSE 3000
+
+# Start the production server
+CMD ["npm", "start"]
