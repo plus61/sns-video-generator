@@ -1,0 +1,61 @@
+# Railway Production Dockerfile - Custom Server Solution
+FROM node:18-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    python3 \
+    make \
+    g++ \
+    libcairo2-dev \
+    libjpeg-dev \
+    libpango1.0-dev \
+    libgif-dev \
+    libpixman-1-dev \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json package-lock.json* ./
+
+# Install ALL dependencies (including devDependencies for build)
+RUN npm ci
+
+# Copy all source files
+COPY . .
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Build the application
+RUN npm run build
+
+# Remove devDependencies after build
+RUN npm prune --production
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs && \
+    chown -R nextjs:nodejs /app
+
+# Create necessary directories
+RUN mkdir -p /tmp/video-uploads /tmp/video-analysis && \
+    chown -R nextjs:nodejs /tmp/video-uploads /tmp/video-analysis
+
+# Switch to non-root user
+USER nextjs
+
+# Environment
+ENV HOSTNAME="0.0.0.0"
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+# Use custom server
+CMD ["node", "server.js"]

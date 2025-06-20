@@ -1,9 +1,9 @@
-# Railway Production Dockerfile - Fixed Version
+# Railway Production Dockerfile - Path Alias Fix
 FROM node:18-slim AS base
 
-# Install system dependencies with specific versions for stability
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    ffmpeg=7:4.4.* \
+    ffmpeg \
     python3 \
     make \
     g++ \
@@ -16,17 +16,14 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Set working directory
 WORKDIR /app
 
-# Dependencies stage - optimized for Railway
+# Dependencies stage
 FROM base AS deps
 COPY package.json package-lock.json* ./
-# Use exact npm version and clean install
-RUN npm ci --omit=dev --no-audit --no-fund && \
-    npm cache clean --force
+RUN npm ci --omit=dev --no-audit --no-fund
 
-# Build stage - completely rewritten for Railway compatibility
+# Build stage
 FROM base AS builder
 COPY package.json package-lock.json* ./
 RUN npm ci --no-audit --no-fund
@@ -34,91 +31,89 @@ RUN npm ci --no-audit --no-fund
 # Copy source code
 COPY . .
 
-# Set Railway-specific build environment
+# Set build environment
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-ENV CI=true
 ENV SKIP_ENV_VALIDATION=true
 
-# Railway compatibility flags
-ENV DISABLE_CANVAS=false
-ENV DISABLE_BULLMQ=false
-ENV USE_MOCK_DOWNLOADER=false
+# Create build-time env file with dummy values
+RUN echo "NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co" > .env.production && \
+    echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-anon-key" >> .env.production && \
+    echo "SUPABASE_SERVICE_ROLE_KEY=dummy-service-role-key" >> .env.production && \
+    echo "OPENAI_API_KEY=dummy-openai-api-key" >> .env.production && \
+    echo "NEXTAUTH_URL=http://localhost:3000" >> .env.production && \
+    echo "NEXTAUTH_SECRET=dummy-nextauth-secret" >> .env.production
 
-# Dummy environment variables for build (Railway will override at runtime)
-ENV NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co
-ENV NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-anon-key
-ENV SUPABASE_SERVICE_ROLE_KEY=dummy-service-role-key
-ENV OPENAI_API_KEY=dummy-openai-api-key
-ENV NEXTAUTH_URL=http://localhost:3000
-ENV NEXTAUTH_SECRET=dummy-nextauth-secret
+# Build the application
+RUN npm run build
 
-# Cache busting and build
-RUN echo "Cache bust: $(date)" > /tmp/cachebust.txt && \
-    npm run build
-
-# Verify build output - CRITICAL FOR RAILWAY
-RUN echo "🔍 Build verification:" && \
-    ls -la .next/ && \
-    echo "🔍 Standalone directory:" && \
-    ls -la .next/standalone/ && \
-    echo "🔍 Server file check:" && \
-    ls -la .next/standalone/server.js || echo "❌ server.js missing"
-
-# Production runtime stage
-FROM node:18-slim AS runner
+# Production stage
+FROM base AS runner
 WORKDIR /app
 
-# Install only runtime dependencies
+# Install production runtime dependencies
 RUN apt-get update && apt-get install -y \
-    ffmpeg=7:4.4.* \
+    ffmpeg \
     libcairo2 \
     libjpeg62-turbo \
     libpango-1.0-0 \
     libgif7 \
     curl \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && addgroup --system --gid 1001 nodejs \
-    && adduser --system --uid 1001 nextjs
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy production dependencies
-COPY --from=deps /app/node_modules ./node_modules
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
-# Copy built application - CORRECTED STRUCTURE
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
-# Copy additional required files
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/start-railway.js ./
+# Create src directory structure for path aliases
+COPY --from=builder --chown=nextjs:nodejs /app/src ./src
 
-# Verify server.js exists after copy
-RUN echo "🔍 Final verification:" && \
-    ls -la ./ && \
-    echo "🔍 Server file:" && \
-    ls -la ./server.js || echo "❌ server.js missing in final image"
+# Create module resolution wrapper
+RUN echo '#!/usr/bin/env node\n\
+const Module = require("module");\n\
+const path = require("path");\n\
+const originalResolveFilename = Module._resolveFilename;\n\
+\n\
+Module._resolveFilename = function (request, parent, isMain) {\n\
+  if (request.startsWith("@/")) {\n\
+    const modulePath = request.replace("@/", "");\n\
+    const resolved = path.join(__dirname, "src", modulePath);\n\
+    try {\n\
+      return originalResolveFilename(resolved, parent, isMain);\n\
+    } catch (e) {\n\
+      // Fallback to original if resolution fails\n\
+      return originalResolveFilename(request, parent, isMain);\n\
+    }\n\
+  }\n\
+  return originalResolveFilename(request, parent, isMain);\n\
+};\n\
+\n\
+require("./server.js");' > server-wrapper.js && \
+    chown nextjs:nodejs server-wrapper.js && \
+    chmod +x server-wrapper.js
 
 # Create necessary directories
 RUN mkdir -p /tmp/video-uploads /tmp/video-analysis && \
-    chown -R nextjs:nodejs /tmp/video-uploads /tmp/video-analysis && \
-    chown -R nextjs:nodejs /app
+    chown -R nextjs:nodejs /tmp/video-uploads /tmp/video-analysis
 
 # Switch to non-root user
 USER nextjs
 
-# Railway environment setup
+# Environment
 ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
-ENV PORT=${PORT:-3000}
+EXPOSE 3000
 
-# Health check for Railway
+# Health check
 HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:${PORT:-3000}/api/health || exit 1
+  CMD curl -f http://localhost:3000/api/health || exit 1
 
-# Expose port
-EXPOSE $PORT
-
-# Start with fixed Railway script
-CMD ["node", "start-railway.js"]
+# Start the server with the wrapper
+CMD ["node", "server-wrapper.js"]
