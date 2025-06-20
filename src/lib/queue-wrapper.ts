@@ -118,7 +118,6 @@ export const getQueueConfig = () => {
         console.log(`🔄 Redis retry attempt ${times}, delay: ${delay}ms`)
         return delay
       },
-      maxRetriesPerRequest: null, // BullMQ requirement - disable retries
       enableOfflineQueue: true,
       connectTimeout: 10000,
       commandTimeout: 5000,
@@ -155,8 +154,6 @@ export const getQueueConfig = () => {
         },
         // 追加の最適化オプション
         priority: 5,
-        jobId: undefined, // 自動生成
-        repeat: undefined,
         delay: 0
       },
       // 追加のキュー設定

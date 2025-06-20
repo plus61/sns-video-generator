@@ -1,0 +1,10 @@
+【ビルド状況】
+日時: 2025-06-20 05:36
+状態: 最新ビルドでエラー発生中
+
+実施済み修正:
+1. npm ci → npm install --legacy-peer-deps
+2. railway.json 削除（設定競合解消）
+3. メイン Dockerfile 修正
+
+待機中: エラー詳細の確認

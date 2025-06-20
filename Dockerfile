@@ -26,7 +26,8 @@ RUN npm install --legacy-peer-deps --omit=dev --no-audit --no-fund
 # Build stage
 FROM base AS builder
 COPY package*.json ./
-RUN npm install --legacy-peer-deps --no-audit --no-fund
+# Install ALL dependencies including devDependencies for build
+RUN npm install --legacy-peer-deps --no-audit --no-fund --include=dev
 
 # Copy source code
 COPY . .
@@ -35,6 +36,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 ENV SKIP_ENV_VALIDATION=true
+ENV DISABLE_BULLMQ=true
 
 # Create build-time env file with dummy values
 RUN echo "NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co" > .env.production && \
