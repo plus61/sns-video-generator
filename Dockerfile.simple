@@ -1,15 +1,12 @@
-# Railway用シンプルDockerfile - 大手サービスで実績のある構成
-FROM node:18-alpine AS builder
+# Railway用シンプルDockerfile - 確実に動作する最小構成
+FROM node:18-alpine
 
 WORKDIR /app
 
 # 依存関係ファイルをコピー
 COPY package*.json ./
 
-# 依存関係をインストール
-RUN npm ci --only=production
-
-# devDependenciesもインストール（ビルドに必要）
+# 全ての依存関係をインストール（本番用とビルド用）
 RUN npm install --legacy-peer-deps
 
 # アプリケーションコードをコピー
@@ -22,19 +19,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # ビルド実行
 RUN npm run build
 
-# 実行用イメージ
-FROM node:18-alpine
-
-WORKDIR /app
-
-# 本番用依存関係のみコピー
-COPY package*.json ./
-RUN npm ci --only=production
-
-# ビルド済みアプリケーションをコピー
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.mjs ./
+# .nextディレクトリの存在確認（デバッグ用）
+RUN ls -la && ls -la .next && ls -la .next/standalone || echo "Directory check"
 
 # ポート設定
 EXPOSE 3000
@@ -42,5 +28,5 @@ EXPOSE 3000
 # 環境変数
 ENV NODE_ENV=production
 
-# 起動コマンド
-CMD ["npm", "start"]
+# 起動コマンド - 直接Next.jsを起動
+CMD ["npx", "next", "start", "-p", "3000"]
