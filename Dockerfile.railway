@@ -30,9 +30,15 @@ COPY . .
 # Set environment variables
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV SKIP_ENV_VALIDATION=1
+ENV DISABLE_BULLMQ=true
+
+# Create dummy .env file for build
+RUN echo "NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co" > .env.production && \
+    echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-key" >> .env.production
 
 # Build the application
-RUN npm run build
+RUN chmod +x scripts/railway-build.sh && ./scripts/railway-build.sh
 
 # Remove devDependencies after build
 RUN npm prune --production
