@@ -1,6 +1,6 @@
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "./Dockerfile.railway-fix"
+dockerfilePath = "./Dockerfile.railway-production"
 
 [deploy]
 startCommand = "npm start"

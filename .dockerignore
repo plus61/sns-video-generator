@@ -1,6 +1,6 @@
 # .dockerignore
 node_modules
-.next
+# .next - Commented out because Railway builds inside container
 .git
 .gitignore
 README.md

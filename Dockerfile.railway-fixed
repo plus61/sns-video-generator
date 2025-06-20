@@ -1,0 +1,86 @@
+# Railway用 - 完全修正版
+FROM node:18-alpine AS base
+
+# 必要なツールをインストール
+RUN apk add --no-cache libc6-compat python3 make g++ 
+
+WORKDIR /app
+
+# 依存関係のインストール
+FROM base AS deps
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+# ビルドステージ
+FROM base AS builder
+COPY package*.json ./
+# 開発依存関係も含めてインストール（ビルドに必要）
+RUN npm ci
+
+# ソースコードをコピー
+COPY . .
+
+# 環境変数（ビルド時に必要なもの）
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV SKIP_ENV_VALIDATION=true
+
+# ビルド前にnode_modulesの権限を修正
+RUN chmod -R 755 node_modules/
+
+# ビルドを実行
+RUN npm run build || (echo "Build failed. Checking for errors..." && \
+    ls -la && \
+    echo "Checking node_modules:" && \
+    ls -la node_modules/ | head -20 && \
+    echo "Package.json content:" && \
+    cat package.json && \
+    exit 1)
+
+# ビルド後の確認
+RUN echo "Build completed successfully. Verifying outputs:" && \
+    ls -la .next/ && \
+    echo "Build ID:" && \
+    cat .next/BUILD_ID && \
+    echo ".next directory structure:" && \
+    find .next -type d | head -20
+
+# 実行ステージ
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# 非rootユーザーを作成
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# 本番用の依存関係をコピー
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+
+# ビルド成果物をコピー
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.mjs ./next.config.mjs
+
+# srcディレクトリもコピー（path aliasのため）
+COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+
+# 必要なディレクトリを作成
+RUN mkdir -p /tmp/video-uploads /tmp/video-processing && \
+    chown -R nextjs:nodejs /tmp/video-uploads /tmp/video-processing
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# ヘルスチェック
+HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3000/api/health/simple', (res) => { process.exit(res.statusCode === 200 ? 0 : 1); })"
+
+# 起動コマンド
+CMD ["npm", "run", "start"]

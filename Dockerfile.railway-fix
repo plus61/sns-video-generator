@@ -24,7 +24,9 @@ RUN npm run build && \
     echo "Build completed. Checking .next directory:" && \
     ls -la .next/ && \
     echo "Checking for BUILD_ID:" && \
-    cat .next/BUILD_ID || echo "BUILD_ID not found"
+    cat .next/BUILD_ID || echo "BUILD_ID not found" && \
+    echo "Ensuring .next directory has correct permissions:" && \
+    chmod -R 755 .next/
 
 # ポート
 EXPOSE 3000
