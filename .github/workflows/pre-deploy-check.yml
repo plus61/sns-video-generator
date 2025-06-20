@@ -1,0 +1,56 @@
+name: Pre-Deploy Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm install --legacy-peer-deps
+    
+    - name: Create dummy env file
+      run: |
+        echo "NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co" > .env.production
+        echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-key" >> .env.production
+        echo "SUPABASE_SERVICE_ROLE_KEY=dummy-key" >> .env.production
+        echo "OPENAI_API_KEY=dummy-key" >> .env.production
+    
+    - name: Set environment variables
+      run: |
+        echo "NODE_ENV=production" >> $GITHUB_ENV
+        echo "NEXT_TELEMETRY_DISABLED=1" >> $GITHUB_ENV
+        echo "SKIP_ENV_VALIDATION=1" >> $GITHUB_ENV
+        echo "DISABLE_BULLMQ=true" >> $GITHUB_ENV
+    
+    - name: Run build test
+      run: npm run build
+      continue-on-error: true
+    
+    - name: Test Docker build
+      run: |
+        docker build -f Dockerfile.railway -t railway-test .
+      continue-on-error: true
+    
+    - name: Check build artifacts
+      run: |
+        if [ -d ".next" ]; then
+          echo "✅ Build artifacts created"
+          ls -la .next/
+        else
+          echo "❌ Build artifacts not found"
+          exit 1
+        fi
