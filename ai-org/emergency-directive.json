@@ -1,0 +1,32 @@
+{
+  "msg_id": "emrg-001",
+  "timestamp": "2025-06-20T04:09:00Z",
+  "from": "president",
+  "to": "all",
+  "type": "directive",
+  "priority": 5,
+  "payload": {
+    "directive": "EMERGENCY_BUILD_LOG_ANALYSIS",
+    "context": "Railway deployment still failing after 8 minutes",
+    "tasks": {
+      "boss1": {
+        "action": "coordinate_investigation",
+        "workers": ["worker1", "worker2", "worker3"]
+      },
+      "worker1": {
+        "action": "analyze_railway_logs",
+        "focus": "build_errors"
+      },
+      "worker2": {
+        "action": "check_dockerfile_config",
+        "focus": "custom_server_setup"
+      },
+      "worker3": {
+        "action": "verify_github_webhook",
+        "focus": "deployment_trigger"
+      }
+    }
+  },
+  "requires_ack": true,
+  "timeout_ms": 30000
+}
