@@ -37,19 +37,33 @@ ENV DISABLE_BULLMQ=true
 RUN echo "NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co" > .env.production && \
     echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-key" >> .env.production
 
-# Build the application
-RUN npm run build && echo "Build completed successfully"
-
-# Verify build output exists
-RUN ls -la .next/ && ls -la .next/standalone/
+# Build the application with detailed logging
+RUN echo "=== Starting build ===" && \
+    npm run build && \
+    echo "=== Build completed ===" && \
+    echo "=== Directory contents ===" && \
+    ls -la && \
+    echo "=== .next contents ===" && \
+    ls -la .next/ && \
+    echo "=== BUILD_ID ===" && \
+    cat .next/BUILD_ID && \
+    echo "=== Checking standalone ===" && \
+    ls -la .next/standalone/ || echo "No standalone directory"
 
 # Keep production dependencies only
 RUN npm prune --production
 
+# Verify .next still exists after prune
+RUN echo "=== After npm prune ===" && \
+    ls -la .next/ || echo ".next missing after prune!"
+
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs && \
-    chown -R nextjs:nodejs /app
+    adduser --system --uid 1001 nextjs
+
+# Fix permissions before switching user
+RUN chown -R nextjs:nodejs /app && \
+    chmod -R 755 /app/.next
 
 # Create necessary directories
 RUN mkdir -p /tmp/video-uploads /tmp/video-analysis && \
@@ -66,5 +80,17 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
   CMD curl -f http://localhost:3000/api/health || exit 1
 
-# Use npm start command
-CMD ["npm", "start"]
+# Debug startup
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'echo "=== Startup Debug ==="' >> /app/start.sh && \
+    echo 'echo "Current directory: $(pwd)"' >> /app/start.sh && \
+    echo 'echo "Directory contents:"' >> /app/start.sh && \
+    echo 'ls -la' >> /app/start.sh && \
+    echo 'echo ".next contents:"' >> /app/start.sh && \
+    echo 'ls -la .next/ || echo ".next not found"' >> /app/start.sh && \
+    echo 'echo "Starting Next.js..."' >> /app/start.sh && \
+    echo 'npm start' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Use debug startup script
+CMD ["/app/start.sh"]
