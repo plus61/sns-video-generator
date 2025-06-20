@@ -76,11 +76,16 @@ RUN apt-get update && apt-get install -y \
     && addgroup --system --gid 1001 nodejs \
     && adduser --system --uid 1001 nextjs
 
-# Copy built application
+# Copy built application with proper static asset handling
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=deps /app/node_modules ./node_modules
+
+# Ensure static files are in the correct location for standalone
+RUN mkdir -p .next/standalone/.next/static && \
+    cp -r .next/static/* .next/standalone/.next/static/ 2>/dev/null || true && \
+    cp -r public .next/standalone/ 2>/dev/null || true
 
 # Copy necessary config files for runtime
 COPY --from=builder /app/next.config.ts ./

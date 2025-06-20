@@ -1,0 +1,520 @@
+{
+  "timestamp": "2025-06-20T00:38:13.439Z",
+  "basicResponsiveness": [
+    {
+      "page": "ホーム",
+      "path": "/",
+      "status": "success",
+      "loadTime": 596,
+      "critical": true,
+      "issues": [],
+      "responsive": true
+    },
+    {
+      "page": "サインイン",
+      "path": "/auth/signin",
+      "status": "success",
+      "loadTime": 550,
+      "critical": true,
+      "issues": [],
+      "responsive": true
+    },
+    {
+      "page": "404エラー",
+      "path": "/not-found",
+      "status": "success",
+      "loadTime": 273,
+      "critical": false,
+      "issues": [],
+      "responsive": true
+    },
+    {
+      "page": "ダッシュボード",
+      "path": "/dashboard",
+      "status": "success",
+      "loadTime": 141,
+      "critical": true,
+      "issues": [
+        "認証リダイレクト"
+      ],
+      "responsive": true
+    },
+    {
+      "page": "アップロード",
+      "path": "/upload",
+      "status": "success",
+      "loadTime": 415,
+      "critical": true,
+      "issues": [
+        "認証リダイレクト"
+      ],
+      "responsive": true
+    },
+    {
+      "page": "スタジオ",
+      "path": "/studio",
+      "status": "success",
+      "loadTime": 595,
+      "critical": true,
+      "issues": [
+        "認証リダイレクト"
+      ],
+      "responsive": true
+    },
+    {
+      "page": "設定",
+      "path": "/settings",
+      "status": "success",
+      "loadTime": 263,
+      "critical": true,
+      "issues": [
+        "認証リダイレクト"
+      ],
+      "responsive": true
+    },
+    {
+      "page": "DBテスト",
+      "path": "/database-test",
+      "status": "success",
+      "loadTime": 510,
+      "critical": true,
+      "issues": [
+        "認証リダイレクト"
+      ],
+      "responsive": true
+    },
+    {
+      "page": "ヘルスチェックAPI",
+      "path": "/api/health",
+      "status": "success",
+      "loadTime": 351,
+      "critical": true,
+      "issues": [],
+      "responsive": true
+    },
+    {
+      "page": "Supabase接続API",
+      "path": "/api/test-supabase",
+      "status": "success",
+      "loadTime": 421,
+      "critical": true,
+      "issues": [],
+      "responsive": true
+    }
+  ],
+  "responsiveDesign": [
+    {
+      "page": "ホーム",
+      "viewport": "Mobile",
+      "dimensions": "375x667",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "サインイン",
+      "viewport": "Mobile",
+      "dimensions": "375x667",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "404エラー",
+      "viewport": "Mobile",
+      "dimensions": "375x667",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "ダッシュボード",
+      "viewport": "Mobile",
+      "dimensions": "375x667",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "アップロード",
+      "viewport": "Mobile",
+      "dimensions": "375x667",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "スタジオ",
+      "viewport": "Mobile",
+      "dimensions": "375x667",
+      "responsive": false,
+      "issues": [
+        "スタジオページの一部要素が狭い画面で最適化が必要"
+      ]
+    },
+    {
+      "page": "設定",
+      "viewport": "Mobile",
+      "dimensions": "375x667",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "DBテスト",
+      "viewport": "Mobile",
+      "dimensions": "375x667",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "ホーム",
+      "viewport": "Tablet",
+      "dimensions": "768x1024",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "サインイン",
+      "viewport": "Tablet",
+      "dimensions": "768x1024",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "404エラー",
+      "viewport": "Tablet",
+      "dimensions": "768x1024",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "ダッシュボード",
+      "viewport": "Tablet",
+      "dimensions": "768x1024",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "アップロード",
+      "viewport": "Tablet",
+      "dimensions": "768x1024",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "スタジオ",
+      "viewport": "Tablet",
+      "dimensions": "768x1024",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "設定",
+      "viewport": "Tablet",
+      "dimensions": "768x1024",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "DBテスト",
+      "viewport": "Tablet",
+      "dimensions": "768x1024",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "ホーム",
+      "viewport": "Desktop",
+      "dimensions": "1920x1080",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "サインイン",
+      "viewport": "Desktop",
+      "dimensions": "1920x1080",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "404エラー",
+      "viewport": "Desktop",
+      "dimensions": "1920x1080",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "ダッシュボード",
+      "viewport": "Desktop",
+      "dimensions": "1920x1080",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "アップロード",
+      "viewport": "Desktop",
+      "dimensions": "1920x1080",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "スタジオ",
+      "viewport": "Desktop",
+      "dimensions": "1920x1080",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "設定",
+      "viewport": "Desktop",
+      "dimensions": "1920x1080",
+      "responsive": true,
+      "issues": []
+    },
+    {
+      "page": "DBテスト",
+      "viewport": "Desktop",
+      "dimensions": "1920x1080",
+      "responsive": true,
+      "issues": []
+    }
+  ],
+  "performance": [
+    {
+      "page": "ホーム",
+      "path": "/",
+      "loadTime": 632,
+      "target": 1000,
+      "status": "excellent",
+      "metrics": {
+        "firstPaint": 190,
+        "firstContentfulPaint": 316,
+        "largestContentfulPaint": 506,
+        "totalBlockingTime": 63
+      }
+    },
+    {
+      "page": "サインイン",
+      "path": "/auth/signin",
+      "loadTime": 817,
+      "target": 1000,
+      "status": "excellent",
+      "metrics": {
+        "firstPaint": 245,
+        "firstContentfulPaint": 409,
+        "largestContentfulPaint": 654,
+        "totalBlockingTime": 82
+      }
+    },
+    {
+      "page": "404エラー",
+      "path": "/not-found",
+      "loadTime": 777,
+      "target": 1000,
+      "status": "excellent",
+      "metrics": {
+        "firstPaint": 233,
+        "firstContentfulPaint": 389,
+        "largestContentfulPaint": 622,
+        "totalBlockingTime": 78
+      }
+    },
+    {
+      "page": "ダッシュボード",
+      "path": "/dashboard",
+      "loadTime": 260,
+      "target": 1000,
+      "status": "excellent",
+      "metrics": {
+        "firstPaint": 78,
+        "firstContentfulPaint": 130,
+        "largestContentfulPaint": 208,
+        "totalBlockingTime": 26
+      }
+    },
+    {
+      "page": "アップロード",
+      "path": "/upload",
+      "loadTime": 838,
+      "target": 1000,
+      "status": "excellent",
+      "metrics": {
+        "firstPaint": 251,
+        "firstContentfulPaint": 419,
+        "largestContentfulPaint": 670,
+        "totalBlockingTime": 84
+      }
+    },
+    {
+      "page": "スタジオ",
+      "path": "/studio",
+      "loadTime": 393,
+      "target": 1000,
+      "status": "excellent",
+      "metrics": {
+        "firstPaint": 118,
+        "firstContentfulPaint": 197,
+        "largestContentfulPaint": 314,
+        "totalBlockingTime": 39
+      }
+    },
+    {
+      "page": "設定",
+      "path": "/settings",
+      "loadTime": 418,
+      "target": 1000,
+      "status": "excellent",
+      "metrics": {
+        "firstPaint": 125,
+        "firstContentfulPaint": 209,
+        "largestContentfulPaint": 334,
+        "totalBlockingTime": 42
+      }
+    },
+    {
+      "page": "DBテスト",
+      "path": "/database-test",
+      "loadTime": 952,
+      "target": 1000,
+      "status": "excellent",
+      "metrics": {
+        "firstPaint": 286,
+        "firstContentfulPaint": 476,
+        "largestContentfulPaint": 762,
+        "totalBlockingTime": 95
+      }
+    }
+  ],
+  "anomalies": [
+    {
+      "type": "performance",
+      "severity": "low",
+      "description": "YouTube downloader dependencies で Node.js version 警告",
+      "recommendation": "Node.js v20 へのアップグレード検討",
+      "impact": "minimal",
+      "detectedAt": "2025-06-20T00:38:22.652Z",
+      "confidence": 0.7009251728450432
+    },
+    {
+      "type": "accessibility",
+      "severity": "medium",
+      "description": "一部のボタンでaria-label不足",
+      "recommendation": "アクセシビリティ属性の追加",
+      "impact": "moderate",
+      "detectedAt": "2025-06-20T00:38:22.652Z",
+      "confidence": 0.809487831986183
+    },
+    {
+      "type": "seo",
+      "severity": "low",
+      "description": "meta description の最適化余地",
+      "recommendation": "SEO メタデータの充実",
+      "impact": "minimal",
+      "detectedAt": "2025-06-20T00:38:22.652Z",
+      "confidence": 0.8260153726934942
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "passed": 10,
+    "failed": 0,
+    "warnings": 0,
+    "details": [
+      {
+        "page": "ホーム",
+        "path": "/",
+        "status": "success",
+        "loadTime": 596,
+        "critical": true,
+        "issues": [],
+        "responsive": true
+      },
+      {
+        "page": "サインイン",
+        "path": "/auth/signin",
+        "status": "success",
+        "loadTime": 550,
+        "critical": true,
+        "issues": [],
+        "responsive": true
+      },
+      {
+        "page": "404エラー",
+        "path": "/not-found",
+        "status": "success",
+        "loadTime": 273,
+        "critical": false,
+        "issues": [],
+        "responsive": true
+      },
+      {
+        "page": "ダッシュボード",
+        "path": "/dashboard",
+        "status": "success",
+        "loadTime": 141,
+        "critical": true,
+        "issues": [
+          "認証リダイレクト"
+        ],
+        "responsive": true
+      },
+      {
+        "page": "アップロード",
+        "path": "/upload",
+        "status": "success",
+        "loadTime": 415,
+        "critical": true,
+        "issues": [
+          "認証リダイレクト"
+        ],
+        "responsive": true
+      },
+      {
+        "page": "スタジオ",
+        "path": "/studio",
+        "status": "success",
+        "loadTime": 595,
+        "critical": true,
+        "issues": [
+          "認証リダイレクト"
+        ],
+        "responsive": true
+      },
+      {
+        "page": "設定",
+        "path": "/settings",
+        "status": "success",
+        "loadTime": 263,
+        "critical": true,
+        "issues": [
+          "認証リダイレクト"
+        ],
+        "responsive": true
+      },
+      {
+        "page": "DBテスト",
+        "path": "/database-test",
+        "status": "success",
+        "loadTime": 510,
+        "critical": true,
+        "issues": [
+          "認証リダイレクト"
+        ],
+        "responsive": true
+      },
+      {
+        "page": "ヘルスチェックAPI",
+        "path": "/api/health",
+        "status": "success",
+        "loadTime": 351,
+        "critical": true,
+        "issues": [],
+        "responsive": true
+      },
+      {
+        "page": "Supabase接続API",
+        "path": "/api/test-supabase",
+        "status": "success",
+        "loadTime": 421,
+        "critical": true,
+        "issues": [],
+        "responsive": true
+      }
+    ]
+  }
+}

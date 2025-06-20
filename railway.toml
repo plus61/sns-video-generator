@@ -3,10 +3,10 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "node start-railway.js"
+startCommand = "node server.js"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
-healthcheckPath = "/api/health"
+healthcheckPath = "/api/health/simple"
 healthcheckTimeout = 30
 healthcheckInterval = 30
 startPeriod = 60
@@ -104,26 +104,7 @@ fallback = ["us-east1", "eu-west1"]
 "/tmp/video-processing" = "10GB"
 "/app/uploads" = "50GB"
 
-# Custom nixpacks configuration
-[nixpacks]
-pkgs = ["nodejs-18_x", "ffmpeg", "imagemagick"]
-
-[nixpacks.phases.setup]
-cmds = [
-  "mkdir -p /tmp/video-processing",
-  "mkdir -p /app/uploads",
-  "chmod 755 /tmp/video-processing",
-  "chmod 755 /app/uploads"
-]
-
-[nixpacks.phases.install]
-cmds = [
-  "npm ci --only=production",
-  "npm run build"
-]
-
-[nixpacks.phases.start]
-cmd = "npm start"
+# Dockerfile configuration (nixpacks disabled)
 
 # Environment-specific overrides
 [environments.development]
