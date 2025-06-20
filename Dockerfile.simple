@@ -3,6 +3,9 @@ FROM node:18-alpine
 
 WORKDIR /app
 
+# 必要なシステム依存関係をインストール
+RUN apk add --no-cache libc6-compat
+
 # 依存関係ファイルをコピー
 COPY package*.json ./
 
@@ -19,8 +22,20 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # ビルド実行
 RUN npm run build
 
-# .nextディレクトリの存在確認（デバッグ用）
-RUN ls -la && ls -la .next && echo "Build completed successfully"
+# .nextディレクトリの存在確認と詳細情報（デバッグ用）
+RUN echo "=== Build verification ===" && \
+    echo "Current directory: $(pwd)" && \
+    echo "Directory contents:" && \
+    ls -la && \
+    echo ".next directory check:" && \
+    if [ -d ".next" ]; then \
+        echo ".next exists with contents:" && \
+        ls -la .next/ | head -10 && \
+        echo "Build completed successfully"; \
+    else \
+        echo "ERROR: .next directory not found!" && \
+        find . -name ".next" -type d; \
+    fi
 
 # ポート設定
 EXPOSE 3000
@@ -28,5 +43,5 @@ EXPOSE 3000
 # 環境変数
 ENV NODE_ENV=production
 
-# 起動コマンド - 直接Next.jsを起動
-CMD ["npm", "start"]
+# 起動コマンド - 直接Next.jsを起動（明示的なパスで）
+CMD ["node_modules/.bin/next", "start"]
