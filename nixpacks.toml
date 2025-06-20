@@ -1,0 +1,20 @@
+# Nixpacks設定ファイル
+# Next.js standalone用の明示的な設定
+
+[phases.setup]
+nixPkgs = ["nodejs-18_x", "npm-9_x"]
+
+[phases.build]
+cmds = [
+  "npm install --legacy-peer-deps",
+  "npm run build",
+  "ls -la .next/standalone"
+]
+
+[start]
+# Standaloneサーバーを直接実行
+cmd = "cd .next/standalone && node server.js"
+
+[variables]
+NODE_ENV = "production"
+PORT = "3000"

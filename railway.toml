@@ -4,7 +4,8 @@
 # dockerfilePath = "./Dockerfile.simple"
 
 [deploy]
-startCommand = "npm run start:railway"
+# Standaloneの場合は特別な起動方法が必要
+startCommand = "node server.js"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 healthcheckPath = "/api/health/simple"
