@@ -1,0 +1,18 @@
+{
+  "name": "sns-video-generator-express",
+  "version": "1.0.0",
+  "description": "Express server for SNS Video Generator",
+  "main": "express-server.js",
+  "scripts": {
+    "start": "node express-server.js",
+    "build": "next build && next export -o dist",
+    "postbuild": "cp -r public/* dist/ || true"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
