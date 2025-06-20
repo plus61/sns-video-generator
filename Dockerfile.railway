@@ -1,4 +1,4 @@
-# Railway Production Dockerfile - Custom Server Solution
+# Railway Production Dockerfile - Fixed npm ci issue
 FROM node:18-slim
 
 # Install system dependencies
@@ -21,7 +21,7 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install ALL dependencies (including devDependencies for build)
+# Install dependencies with legacy peer deps to avoid conflicts
 RUN npm install --legacy-peer-deps
 
 # Copy all source files
