@@ -1,12 +1,15 @@
-# Railway用シンプルDockerfile - 最小構成
-FROM node:18-alpine
+# Railway用シンプルDockerfile - 大手サービスで実績のある構成
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
 # 依存関係ファイルをコピー
 COPY package*.json ./
 
-# 依存関係をインストール（--legacy-peer-depsで依存関係エラーを回避）
+# 依存関係をインストール
+RUN npm ci --only=production
+
+# devDependenciesもインストール（ビルドに必要）
 RUN npm install --legacy-peer-deps
 
 # アプリケーションコードをコピー
@@ -19,8 +22,25 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # ビルド実行
 RUN npm run build
 
+# 実行用イメージ
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 本番用依存関係のみコピー
+COPY package*.json ./
+RUN npm ci --only=production
+
+# ビルド済みアプリケーションをコピー
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.mjs ./
+
 # ポート設定
 EXPOSE 3000
 
-# 起動コマンド（Next.jsのデフォルトサーバーを使用）
+# 環境変数
+ENV NODE_ENV=production
+
+# 起動コマンド
 CMD ["npm", "start"]
