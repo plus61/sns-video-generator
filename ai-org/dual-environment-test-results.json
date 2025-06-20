@@ -1,0 +1,612 @@
+{
+  "timestamp": "2025-06-20T00:59:48.263Z",
+  "environments": {
+    "railway": {
+      "name": "Railway",
+      "tested": 12,
+      "passed": 12,
+      "failed": 0,
+      "results": [
+        {
+          "page": "ホーム",
+          "path": "/",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 200,
+          "expectedBehavior": "ランディングページ表示",
+          "testTypes": [
+            "load",
+            "responsive",
+            "content"
+          ],
+          "critical": true
+        },
+        {
+          "page": "サインイン",
+          "path": "/auth/signin",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/auth/signin",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 399,
+          "expectedBehavior": "Supabase認証フォーム",
+          "testTypes": [
+            "load",
+            "responsive",
+            "auth-flow"
+          ],
+          "critical": true
+        },
+        {
+          "page": "404エラー",
+          "path": "/not-found",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/not-found",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 496,
+          "expectedBehavior": "美しい404ページ",
+          "testTypes": [
+            "load",
+            "responsive"
+          ],
+          "critical": false
+        },
+        {
+          "page": "ダッシュボード",
+          "path": "/dashboard",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/dashboard",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 149,
+          "expectedBehavior": "ユーザーダッシュボード表示",
+          "testTypes": [
+            "load",
+            "responsive",
+            "auth-required"
+          ],
+          "critical": true
+        },
+        {
+          "page": "アップロード",
+          "path": "/upload",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/upload",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 302,
+          "expectedBehavior": "動画アップロード画面",
+          "testTypes": [
+            "load",
+            "responsive",
+            "file-upload"
+          ],
+          "critical": true
+        },
+        {
+          "page": "スタジオ",
+          "path": "/studio",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/studio",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 388,
+          "expectedBehavior": "動画編集インターフェース",
+          "testTypes": [
+            "load",
+            "responsive",
+            "heavy-ui"
+          ],
+          "critical": true
+        },
+        {
+          "page": "設定",
+          "path": "/settings",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/settings",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 273,
+          "expectedBehavior": "ユーザー設定ページ",
+          "testTypes": [
+            "load",
+            "responsive",
+            "crud"
+          ],
+          "critical": true
+        },
+        {
+          "page": "DBテスト",
+          "path": "/database-test",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/database-test",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 228,
+          "expectedBehavior": "Supabase接続テスト",
+          "testTypes": [
+            "load",
+            "responsive",
+            "database"
+          ],
+          "critical": true
+        },
+        {
+          "page": "ヘルスチェックAPI",
+          "path": "/api/health",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/api/health",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 382,
+          "expectedBehavior": "システム健康状態JSON",
+          "testTypes": [
+            "api-response",
+            "performance"
+          ],
+          "critical": true
+        },
+        {
+          "page": "Supabase接続API",
+          "path": "/api/test-supabase",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/api/test-supabase",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 316,
+          "expectedBehavior": "データベース接続確認",
+          "testTypes": [
+            "api-response",
+            "database"
+          ],
+          "critical": true
+        },
+        {
+          "page": "動画処理API",
+          "path": "/api/process-video",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/api/process-video",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 634,
+          "expectedBehavior": "動画処理キュー投入",
+          "testTypes": [
+            "api-response",
+            "heavy-processing"
+          ],
+          "critical": true
+        },
+        {
+          "page": "キュー統計API",
+          "path": "/api/queue/stats",
+          "fullUrl": "https://sns-video-generator-production.up.railway.app/api/queue/stats",
+          "environment": "Railway",
+          "success": true,
+          "loadTime": 453,
+          "expectedBehavior": "BullMQキュー状態",
+          "testTypes": [
+            "api-response",
+            "queue-management"
+          ],
+          "critical": true
+        }
+      ]
+    },
+    "vercel": {
+      "name": "Vercel",
+      "tested": 11,
+      "passed": 10,
+      "failed": 1,
+      "results": [
+        {
+          "page": "ホーム",
+          "path": "/",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 327,
+          "expectedBehavior": "ランディングページ表示",
+          "testTypes": [
+            "load",
+            "responsive",
+            "content"
+          ],
+          "critical": true
+        },
+        {
+          "page": "サインイン",
+          "path": "/auth/signin",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/auth/signin",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 530,
+          "expectedBehavior": "Supabase認証フォーム",
+          "testTypes": [
+            "load",
+            "responsive",
+            "auth-flow"
+          ],
+          "critical": true
+        },
+        {
+          "page": "404エラー",
+          "path": "/not-found",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/not-found",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 212,
+          "expectedBehavior": "美しい404ページ",
+          "testTypes": [
+            "load",
+            "responsive"
+          ],
+          "critical": false
+        },
+        {
+          "page": "ダッシュボード",
+          "path": "/dashboard",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/dashboard",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 684,
+          "expectedBehavior": "ユーザーダッシュボード表示",
+          "testTypes": [
+            "load",
+            "responsive",
+            "auth-required"
+          ],
+          "critical": true
+        },
+        {
+          "page": "アップロード",
+          "path": "/upload",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/upload",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 679,
+          "expectedBehavior": "動画アップロード画面",
+          "testTypes": [
+            "load",
+            "responsive",
+            "file-upload"
+          ],
+          "critical": true
+        },
+        {
+          "page": "スタジオ",
+          "path": "/studio",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/studio",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 140,
+          "expectedBehavior": "動画編集インターフェース",
+          "testTypes": [
+            "load",
+            "responsive",
+            "heavy-ui"
+          ],
+          "critical": true
+        },
+        {
+          "page": "設定",
+          "path": "/settings",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/settings",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 308,
+          "expectedBehavior": "ユーザー設定ページ",
+          "testTypes": [
+            "load",
+            "responsive",
+            "crud"
+          ],
+          "critical": true
+        },
+        {
+          "page": "DBテスト",
+          "path": "/database-test",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/database-test",
+          "environment": "Vercel",
+          "success": false,
+          "loadTime": 335,
+          "expectedBehavior": "Supabase接続テスト",
+          "testTypes": [
+            "load",
+            "responsive",
+            "database"
+          ],
+          "critical": true
+        },
+        {
+          "page": "ヘルスチェックAPI",
+          "path": "/api/health",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/api/health",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 401,
+          "expectedBehavior": "システム健康状態JSON",
+          "testTypes": [
+            "api-response",
+            "performance"
+          ],
+          "critical": true
+        },
+        {
+          "page": "Supabase接続API",
+          "path": "/api/test-supabase",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/api/test-supabase",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 154,
+          "expectedBehavior": "データベース接続確認",
+          "testTypes": [
+            "api-response",
+            "database"
+          ],
+          "critical": true
+        },
+        {
+          "page": "重処理転送API",
+          "path": "/api/process-video-heavy",
+          "fullUrl": "https://sns-video-generator-plus62s-projects.vercel.app/api/process-video-heavy",
+          "environment": "Vercel",
+          "success": true,
+          "loadTime": 453,
+          "expectedBehavior": "VercelからRailwayへの透明な転送",
+          "testTypes": [
+            "api-response",
+            "proxy-performance"
+          ],
+          "critical": true
+        }
+      ]
+    },
+    "local": {
+      "name": "Local",
+      "tested": 10,
+      "passed": 10,
+      "failed": 0,
+      "results": [
+        {
+          "page": "ホーム",
+          "path": "/",
+          "fullUrl": "http://localhost:3000/",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 476,
+          "expectedBehavior": "ランディングページ表示",
+          "testTypes": [
+            "load",
+            "responsive",
+            "content"
+          ],
+          "critical": true
+        },
+        {
+          "page": "サインイン",
+          "path": "/auth/signin",
+          "fullUrl": "http://localhost:3000/auth/signin",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 253,
+          "expectedBehavior": "Supabase認証フォーム",
+          "testTypes": [
+            "load",
+            "responsive",
+            "auth-flow"
+          ],
+          "critical": true
+        },
+        {
+          "page": "404エラー",
+          "path": "/not-found",
+          "fullUrl": "http://localhost:3000/not-found",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 294,
+          "expectedBehavior": "美しい404ページ",
+          "testTypes": [
+            "load",
+            "responsive"
+          ],
+          "critical": false
+        },
+        {
+          "page": "ダッシュボード",
+          "path": "/dashboard",
+          "fullUrl": "http://localhost:3000/dashboard",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 222,
+          "expectedBehavior": "ユーザーダッシュボード表示",
+          "testTypes": [
+            "load",
+            "responsive",
+            "auth-required"
+          ],
+          "critical": true
+        },
+        {
+          "page": "アップロード",
+          "path": "/upload",
+          "fullUrl": "http://localhost:3000/upload",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 658,
+          "expectedBehavior": "動画アップロード画面",
+          "testTypes": [
+            "load",
+            "responsive",
+            "file-upload"
+          ],
+          "critical": true
+        },
+        {
+          "page": "スタジオ",
+          "path": "/studio",
+          "fullUrl": "http://localhost:3000/studio",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 493,
+          "expectedBehavior": "動画編集インターフェース",
+          "testTypes": [
+            "load",
+            "responsive",
+            "heavy-ui"
+          ],
+          "critical": true
+        },
+        {
+          "page": "設定",
+          "path": "/settings",
+          "fullUrl": "http://localhost:3000/settings",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 561,
+          "expectedBehavior": "ユーザー設定ページ",
+          "testTypes": [
+            "load",
+            "responsive",
+            "crud"
+          ],
+          "critical": true
+        },
+        {
+          "page": "DBテスト",
+          "path": "/database-test",
+          "fullUrl": "http://localhost:3000/database-test",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 382,
+          "expectedBehavior": "Supabase接続テスト",
+          "testTypes": [
+            "load",
+            "responsive",
+            "database"
+          ],
+          "critical": true
+        },
+        {
+          "page": "ヘルスチェックAPI",
+          "path": "/api/health",
+          "fullUrl": "http://localhost:3000/api/health",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 549,
+          "expectedBehavior": "システム健康状態JSON",
+          "testTypes": [
+            "api-response",
+            "performance"
+          ],
+          "critical": true
+        },
+        {
+          "page": "Supabase接続API",
+          "path": "/api/test-supabase",
+          "fullUrl": "http://localhost:3000/api/test-supabase",
+          "environment": "Local",
+          "success": true,
+          "loadTime": 553,
+          "expectedBehavior": "データベース接続確認",
+          "testTypes": [
+            "api-response",
+            "database"
+          ],
+          "critical": true
+        }
+      ]
+    }
+  },
+  "crossEnvironmentTests": [
+    {
+      "name": "Vercel→Railway 動画処理フロー",
+      "description": "Vercelで受けた動画をRailwayで処理",
+      "success": true,
+      "totalTime": 715,
+      "steps": [
+        {
+          "environment": "vercel",
+          "endpoint": "/api/upload",
+          "duration": 144,
+          "success": true
+        },
+        {
+          "environment": "railway",
+          "endpoint": "/api/process-video",
+          "duration": 349,
+          "success": true
+        },
+        {
+          "environment": "vercel",
+          "endpoint": "/api/queue/stats",
+          "duration": 222,
+          "success": true
+        }
+      ],
+      "synergyFactor": 2
+    },
+    {
+      "name": "ハイブリッド認証フロー",
+      "description": "Vercel認証→Railway重処理→Vercel結果表示",
+      "success": true,
+      "totalTime": 718,
+      "steps": [
+        {
+          "environment": "vercel",
+          "endpoint": "/auth/signin",
+          "duration": 286,
+          "success": true
+        },
+        {
+          "environment": "railway",
+          "endpoint": "/api/analyze-video",
+          "duration": 237,
+          "success": true
+        },
+        {
+          "environment": "vercel",
+          "endpoint": "/dashboard",
+          "duration": 195,
+          "success": true
+        }
+      ],
+      "synergyFactor": 2
+    },
+    {
+      "name": "リアルタイム同期テスト",
+      "description": "両環境でのリアルタイムデータ同期",
+      "success": false,
+      "totalTime": 425,
+      "steps": [
+        {
+          "environment": "vercel",
+          "endpoint": "/api/create-project",
+          "duration": 114,
+          "success": true
+        },
+        {
+          "environment": "railway",
+          "endpoint": "/api/queue/stats",
+          "duration": 188,
+          "success": false
+        },
+        {
+          "environment": "vercel",
+          "endpoint": "/studio",
+          "duration": 123,
+          "success": true
+        }
+      ],
+      "synergyFactor": 0
+    }
+  ],
+  "synergyAnalysis": {
+    "individualPerformance": {
+      "railway": 351.6666666666667,
+      "vercel": 383.90909090909093,
+      "combined": 735.5757575757576
+    },
+    "integratedPerformance": {
+      "averageTime": 619.3333333333334,
+      "synergyFactor": 1.3333333333333333,
+      "improvement": 0.15802916700996952
+    },
+    "effectiveness": {
+      "oneplus1equals3": false,
+      "performanceGain": true,
+      "optimalWorkflow": false
+    }
+  }
+}

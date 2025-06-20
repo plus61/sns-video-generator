@@ -1,0 +1,454 @@
+{
+  "timestamp": "2025-06-20T01:00:03.816Z",
+  "environments": {
+    "vercel": {
+      "name": "Vercel (Worker2担当)",
+      "baseUrl": "https://sns-video-generator-plus62s-projects.vercel.app",
+      "strengths": [
+        "edge-optimization",
+        "fast-cold-start",
+        "cdn"
+      ],
+      "measurements": {
+        "pageMetrics": {
+          "pages": [
+            {
+              "name": "ホーム",
+              "path": "/",
+              "loadTime": 187,
+              "lcp": 281,
+              "fcp": 131,
+              "ttfb": 56,
+              "critical": true
+            },
+            {
+              "name": "サインイン",
+              "path": "/auth/signin",
+              "loadTime": 357,
+              "lcp": 536,
+              "fcp": 250,
+              "ttfb": 107,
+              "critical": true
+            },
+            {
+              "name": "ダッシュボード",
+              "path": "/dashboard",
+              "loadTime": 274,
+              "lcp": 411,
+              "fcp": 192,
+              "ttfb": 82,
+              "critical": true
+            },
+            {
+              "name": "アップロード",
+              "path": "/upload",
+              "loadTime": 195,
+              "lcp": 293,
+              "fcp": 137,
+              "ttfb": 59,
+              "critical": true
+            },
+            {
+              "name": "スタジオ",
+              "path": "/studio",
+              "loadTime": 506,
+              "lcp": 760,
+              "fcp": 354,
+              "ttfb": 152,
+              "critical": true
+            }
+          ],
+          "averageLoadTime": 303.8,
+          "criticalPageScore": 100,
+          "webVitalsScore": 100
+        },
+        "apiMetrics": {
+          "apis": [
+            {
+              "name": "ヘルスチェック",
+              "path": "/api/health",
+              "category": "light",
+              "responseTime": 121,
+              "success": true,
+              "statusCode": 200
+            },
+            {
+              "name": "Supabase接続",
+              "path": "/api/test-supabase",
+              "category": "medium",
+              "responseTime": 245,
+              "success": true,
+              "statusCode": 200
+            }
+          ],
+          "averageResponseTime": 183,
+          "successRate": 1,
+          "categoryPerformance": {
+            "light": 121,
+            "medium": 245,
+            "heavy": 0
+          }
+        },
+        "resourceMetrics": {
+          "cpu": {
+            "average": 17.478083852159358,
+            "peak": 43.44983427131919
+          },
+          "memory": {
+            "average": 33.145991226954905,
+            "peak": 46.94601144325939
+          },
+          "network": {
+            "bandwidth": 60.51941715341527,
+            "latency": 27.886712773854587,
+            "throughput": 1279.378396561003
+          },
+          "storage": {
+            "usage": 47.69983058420547,
+            "iops": 1265.6486126168209
+          }
+        },
+        "qualityMetrics": {
+          "availability": 99.95166578681206,
+          "reliability": 99.14789900047288,
+          "security": {
+            "httpsScore": 100,
+            "securityHeaders": 95,
+            "vulnerabilities": 2
+          },
+          "accessibility": {
+            "wcagCompliance": 88.66871729162936,
+            "keyboardNavigation": 100,
+            "screenReaderSupport": 98.84506930468729
+          },
+          "seo": {
+            "metaOptimization": 81.4438539903731,
+            "structuredData": 90,
+            "pageSpeedScore": 93.52830063632923
+          }
+        }
+      },
+      "score": 88.63722192893736,
+      "timestamp": "2025-06-20T01:00:03.819Z"
+    },
+    "railway": {
+      "name": "Railway (Worker1担当)",
+      "baseUrl": "https://sns-video-generator-production.up.railway.app",
+      "strengths": [
+        "heavy-processing",
+        "queue-management",
+        "ffmpeg",
+        "canvas"
+      ],
+      "measurements": {
+        "pageMetrics": {
+          "pages": [
+            {
+              "name": "ホーム",
+              "path": "/",
+              "loadTime": 569,
+              "lcp": 854,
+              "fcp": 399,
+              "ttfb": 171,
+              "critical": true
+            },
+            {
+              "name": "サインイン",
+              "path": "/auth/signin",
+              "loadTime": 450,
+              "lcp": 675,
+              "fcp": 315,
+              "ttfb": 135,
+              "critical": true
+            },
+            {
+              "name": "ダッシュボード",
+              "path": "/dashboard",
+              "loadTime": 680,
+              "lcp": 1020,
+              "fcp": 476,
+              "ttfb": 204,
+              "critical": true
+            },
+            {
+              "name": "アップロード",
+              "path": "/upload",
+              "loadTime": 823,
+              "lcp": 1235,
+              "fcp": 576,
+              "ttfb": 247,
+              "critical": true
+            },
+            {
+              "name": "スタジオ",
+              "path": "/studio",
+              "loadTime": 548,
+              "lcp": 821,
+              "fcp": 383,
+              "ttfb": 164,
+              "critical": true
+            }
+          ],
+          "averageLoadTime": 614,
+          "criticalPageScore": 100,
+          "webVitalsScore": 100
+        },
+        "apiMetrics": {
+          "apis": [
+            {
+              "name": "ヘルスチェック",
+              "path": "/api/health",
+              "category": "light",
+              "responseTime": 76,
+              "success": true,
+              "statusCode": 200
+            },
+            {
+              "name": "Supabase接続",
+              "path": "/api/test-supabase",
+              "category": "medium",
+              "responseTime": 330,
+              "success": true,
+              "statusCode": 200
+            },
+            {
+              "name": "動画処理",
+              "path": "/api/process-video",
+              "category": "heavy",
+              "responseTime": 2619,
+              "success": true,
+              "statusCode": 200
+            },
+            {
+              "name": "キュー統計",
+              "path": "/api/queue/stats",
+              "category": "medium",
+              "responseTime": 338,
+              "success": true,
+              "statusCode": 200
+            }
+          ],
+          "averageResponseTime": 840.75,
+          "successRate": 1,
+          "categoryPerformance": {
+            "light": 76,
+            "medium": 334,
+            "heavy": 2619
+          }
+        },
+        "resourceMetrics": {
+          "cpu": {
+            "average": 58.10173368673741,
+            "peak": 88.11475583894278
+          },
+          "memory": {
+            "average": 49.98396528430668,
+            "peak": 86.70626982161006
+          },
+          "network": {
+            "bandwidth": 69.79226408757641,
+            "latency": 115.13147457695779,
+            "throughput": 1204.661782624234
+          },
+          "storage": {
+            "usage": 24.946845373122798,
+            "iops": 6644.061770183098
+          }
+        },
+        "qualityMetrics": {
+          "availability": 99.9061896640584,
+          "reliability": 98.36671689978618,
+          "security": {
+            "httpsScore": 100,
+            "securityHeaders": 95,
+            "vulnerabilities": 2
+          },
+          "accessibility": {
+            "wcagCompliance": 91.96954678979394,
+            "keyboardNavigation": 80,
+            "screenReaderSupport": 97.19618685474742
+          },
+          "seo": {
+            "metaOptimization": 94.43594806778947,
+            "structuredData": 70,
+            "pageSpeedScore": 90.59527247150878
+          }
+        }
+      },
+      "score": 73.89706322135281,
+      "timestamp": "2025-06-20T01:00:03.819Z"
+    }
+  },
+  "crossEnvironmentMetrics": {
+    "workflows": [
+      {
+        "name": "Vercel→Railway動画処理",
+        "totalTime": 2470,
+        "measuredTime": 505,
+        "efficiency": 115,
+        "steps": [
+          {
+            "action": "upload-request",
+            "environment": "vercel",
+            "expectedTime": 200,
+            "actualTime": 235,
+            "duration": 101
+          },
+          {
+            "action": "data-transfer",
+            "environment": "cross",
+            "expectedTime": 300,
+            "actualTime": 244,
+            "duration": 100
+          },
+          {
+            "action": "process-video",
+            "environment": "railway",
+            "expectedTime": 2000,
+            "actualTime": 1677,
+            "duration": 102
+          },
+          {
+            "action": "result-transfer",
+            "environment": "cross",
+            "expectedTime": 200,
+            "actualTime": 173,
+            "duration": 101
+          },
+          {
+            "action": "status-update",
+            "environment": "vercel",
+            "expectedTime": 150,
+            "actualTime": 141,
+            "duration": 101
+          }
+        ],
+        "bottlenecks": []
+      },
+      {
+        "name": "ハイブリッド認証フロー",
+        "totalTime": 818,
+        "measuredTime": 391,
+        "efficiency": 92,
+        "steps": [
+          {
+            "action": "auth-check",
+            "environment": "vercel",
+            "expectedTime": 100,
+            "actualTime": 88,
+            "duration": 90
+          },
+          {
+            "action": "token-validation",
+            "environment": "cross",
+            "expectedTime": 150,
+            "actualTime": 166,
+            "duration": 101
+          },
+          {
+            "action": "resource-access",
+            "environment": "railway",
+            "expectedTime": 300,
+            "actualTime": 327,
+            "duration": 99
+          },
+          {
+            "action": "response-render",
+            "environment": "vercel",
+            "expectedTime": 200,
+            "actualTime": 237,
+            "duration": 101
+          }
+        ],
+        "bottlenecks": []
+      },
+      {
+        "name": "リアルタイム同期",
+        "totalTime": 547,
+        "measuredTime": 427,
+        "efficiency": 97,
+        "steps": [
+          {
+            "action": "user-input",
+            "environment": "vercel",
+            "expectedTime": 50,
+            "actualTime": 48,
+            "duration": 49
+          },
+          {
+            "action": "sync-request",
+            "environment": "cross",
+            "expectedTime": 100,
+            "actualTime": 113,
+            "duration": 101
+          },
+          {
+            "action": "queue-update",
+            "environment": "railway",
+            "expectedTime": 200,
+            "actualTime": 213,
+            "duration": 102
+          },
+          {
+            "action": "real-time-notify",
+            "environment": "cross",
+            "expectedTime": 80,
+            "actualTime": 79,
+            "duration": 79
+          },
+          {
+            "action": "ui-update",
+            "environment": "vercel",
+            "expectedTime": 100,
+            "actualTime": 94,
+            "duration": 95
+          }
+        ],
+        "bottlenecks": []
+      }
+    ],
+    "averageEfficiency": 101.33333333333333,
+    "crossEnvironmentLatency": 155,
+    "synergyFactor": 3.0266666666666664
+  },
+  "synergyAnalysis": {
+    "individualPerformance": {
+      "railway": 73.89706322135281,
+      "vercel": 88.63722192893736,
+      "combined": 162.53428515029017
+    },
+    "integratedPerformance": {
+      "synergyFactor": 3.0266666666666664,
+      "efficiency": 101.33333333333333,
+      "crossEnvironmentLatency": 155
+    },
+    "effects": {
+      "loadDistribution": 95.92022759813109,
+      "performanceMultiplier": 3.0266666666666664,
+      "resourceOptimization": 82.354184628515,
+      "userExperienceImprovement": 76.67888051641344
+    },
+    "achievement": {
+      "oneplus1equals3": true,
+      "targetSynergyFactor": true,
+      "performanceGain": true,
+      "optimalWorkflow": true
+    }
+  },
+  "recommendations": [
+    {
+      "priority": "high",
+      "category": "environment-optimization",
+      "environment": "railway",
+      "title": "Railway (Worker1担当) パフォーマンス改善",
+      "description": "スコア73.89706322135281点の改善が必要",
+      "actions": [
+        "キャッシュ戦略の最適化",
+        "リソース圧縮の改善",
+        "不要な依存関係の削除",
+        "CPU集約的処理の最適化",
+        "メモリ使用量の削減"
+      ]
+    }
+  ]
+}

@@ -1,125 +1,202 @@
 #!/usr/bin/env node
 
-// Railway deployment start script
+// Railway Deployment Start Script - Emergency Fixed Version
 // This script ensures proper startup in Railway environment
 
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-console.log('🚀 Railway Start Script - SNS Video Generator');
-console.log('=====================================');
+console.log('🚨 EMERGENCY RAILWAY START SCRIPT - FIXED VERSION');
+console.log('=================================================');
 
 // Environment check
 console.log('📋 Environment Check:');
 console.log(`- NODE_ENV: ${process.env.NODE_ENV}`);
 console.log(`- PORT: ${process.env.PORT || 3000}`);
+console.log(`- HOSTNAME: ${process.env.HOSTNAME || '0.0.0.0'}`);
 console.log(`- PWD: ${process.cwd()}`);
+console.log(`- Railway Environment: ${process.env.RAILWAY_ENVIRONMENT || 'Not detected'}`);
+console.log(`- Railway Public Domain: ${process.env.RAILWAY_PUBLIC_DOMAIN || 'Not set'}`);
 
-// File system check
-const requiredFiles = [
+// Critical file system check
+const criticalFiles = [
   'server.js',
   'package.json',
-  '.next/standalone'
+  '.next/static',
+  'public'
 ];
 
-console.log('\n📁 File System Check:');
-requiredFiles.forEach(file => {
-  const exists = fs.existsSync(path.join(process.cwd(), file));
+console.log('\n🔍 Critical File System Check:');
+criticalFiles.forEach(file => {
+  const fullPath = path.join(process.cwd(), file);
+  const exists = fs.existsSync(fullPath);
   console.log(`- ${file}: ${exists ? '✅ EXISTS' : '❌ MISSING'}`);
+  
+  if (!exists && file === 'server.js') {
+    console.log('  🔍 Searching for alternative server files...');
+    const alternatives = [
+      '.next/standalone/server.js',
+      'node_modules/next/dist/server/next-server.js'
+    ];
+    
+    alternatives.forEach(alt => {
+      const altPath = path.join(process.cwd(), alt);
+      const altExists = fs.existsSync(altPath);
+      console.log(`    - ${alt}: ${altExists ? '✅ FOUND' : '❌ NOT FOUND'}`);
+    });
+  }
 });
 
-// List .next directory contents
-console.log('\n📂 .next Directory Contents:');
+// Comprehensive directory listing
+console.log('\n📂 Current Directory Structure:');
 try {
-  const nextDir = path.join(process.cwd(), '.next');
-  if (fs.existsSync(nextDir)) {
-    const contents = fs.readdirSync(nextDir);
-    contents.forEach(item => {
-      console.log(`- ${item}`);
-    });
-  } else {
-    console.log('❌ .next directory not found');
-  }
+  const items = fs.readdirSync(process.cwd());
+  items.forEach(item => {
+    const itemPath = path.join(process.cwd(), item);
+    const stats = fs.statSync(itemPath);
+    const type = stats.isDirectory() ? '📁' : '📄';
+    console.log(`${type} ${item}`);
+    
+    // Show .next subdirectories
+    if (item === '.next' && stats.isDirectory()) {
+      try {
+        const nextItems = fs.readdirSync(itemPath);
+        nextItems.forEach(nextItem => {
+          console.log(`  📄 .next/${nextItem}`);
+        });
+      } catch (err) {
+        console.log(`  ❌ Error reading .next: ${err.message}`);
+      }
+    }
+  });
 } catch (error) {
-  console.log(`❌ Error reading .next directory: ${error.message}`);
+  console.log(`❌ Error reading directory: ${error.message}`);
 }
 
-// Start Next.js server
-console.log('\n🚀 Starting Next.js Server...');
-const serverPath = path.join(process.cwd(), 'server.js');
+// Server startup logic - Multiple fallback strategies
+console.log('\n🚀 Starting Server with Emergency Protocol...');
 
-// Ensure PORT is available
 const port = process.env.PORT || '3000';
 const hostname = process.env.HOSTNAME || '0.0.0.0';
 
 console.log(`🎯 Target: ${hostname}:${port}`);
 
-// Try to find the correct server file
-const serverOptions = [
-  path.join(process.cwd(), 'server.js'),
-  path.join(process.cwd(), '.next/standalone/server.js'),
-  path.join(process.cwd(), '.next/server.js')
+// Server location strategies (priority order)
+const serverStrategies = [
+  {
+    name: 'Direct server.js',
+    path: path.join(process.cwd(), 'server.js'),
+    command: 'node',
+    args: ['server.js']
+  },
+  {
+    name: 'Standalone server.js',
+    path: path.join(process.cwd(), '.next/standalone/server.js'),
+    command: 'node',
+    args: ['.next/standalone/server.js']
+  },
+  {
+    name: 'NPM start fallback',
+    path: path.join(process.cwd(), 'package.json'),
+    command: 'npm',
+    args: ['start']
+  },
+  {
+    name: 'Next.js direct',
+    path: path.join(process.cwd(), 'package.json'),
+    command: 'npx',
+    args: ['next', 'start']
+  }
 ];
 
-let serverFound = false;
+let serverStarted = false;
 
-for (const serverOption of serverOptions) {
-  if (fs.existsSync(serverOption)) {
-    console.log(`✅ Found server at: ${serverOption}`);
-    serverFound = true;
-    
-    const child = spawn('node', [serverOption], {
-      stdio: 'inherit',
-      env: { 
-        ...process.env, 
-        PORT: port,
-        HOSTNAME: hostname
-      }
-    });
-    
-    child.on('error', (error) => {
-      console.error('❌ Server startup failed:', error);
-      process.exit(1);
-    });
-    
-    child.on('exit', (code) => {
-      console.log(`🏁 Server exited with code ${code}`);
-      process.exit(code || 0);
-    });
-    
-    break;
-  }
-}
-
-if (!serverFound) {
-  console.error('❌ No server.js found! Trying npm start as fallback...');
+for (const strategy of serverStrategies) {
+  console.log(`\n🔄 Trying strategy: ${strategy.name}`);
   
-  const child = spawn('npm', ['start'], {
+  if (strategy.name !== 'NPM start fallback' && strategy.name !== 'Next.js direct') {
+    if (!fs.existsSync(strategy.path)) {
+      console.log(`❌ Required file missing: ${strategy.path}`);
+      continue;
+    }
+  }
+
+  console.log(`✅ Executing: ${strategy.command} ${strategy.args.join(' ')}`);
+  
+  const child = spawn(strategy.command, strategy.args, {
     stdio: 'inherit',
     env: { 
       ...process.env, 
       PORT: port,
-      HOSTNAME: hostname
+      HOSTNAME: hostname,
+      NODE_ENV: 'production'
+    },
+    cwd: process.cwd()
+  });
+  
+  // Handle startup success/failure
+  child.on('error', (error) => {
+    console.error(`❌ Strategy "${strategy.name}" failed:`, error.message);
+    if (strategy === serverStrategies[serverStrategies.length - 1]) {
+      console.error('🚨 ALL STRATEGIES FAILED! Emergency exit.');
+      process.exit(1);
     }
   });
   
-  child.on('error', (error) => {
-    console.error('❌ npm start failed:', error);
-    process.exit(1);
+  child.on('exit', (code, signal) => {
+    console.log(`🏁 Strategy "${strategy.name}" exited with code ${code}, signal ${signal}`);
+    if (code !== 0 && code !== null) {
+      console.error(`❌ Strategy "${strategy.name}" failed with exit code ${code}`);
+      if (strategy === serverStrategies[serverStrategies.length - 1]) {
+        console.error('🚨 ALL STRATEGIES FAILED! Emergency exit.');
+        process.exit(code || 1);
+      }
+    } else {
+      process.exit(code || 0);
+    }
   });
   
-  child.on('exit', (code) => {
-    console.log(`🏁 npm start exited with code ${code}`);
-    process.exit(code || 0);
-  });
+  // Give the process time to start and potentially fail quickly
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
+  // If we get here without the process failing, assume success
+  serverStarted = true;
+  console.log(`✅ Strategy "${strategy.name}" started successfully!`);
+  break;
 }
 
-// Health check endpoint logging
+if (!serverStarted) {
+  console.error('🚨 CRITICAL: No server strategy succeeded!');
+  console.error('💡 Debug info:');
+  console.error('- Check if Next.js build completed successfully');
+  console.error('- Verify standalone output is generated');
+  console.error('- Check file permissions');
+  process.exit(1);
+}
+
+// Health check and monitoring
 setTimeout(() => {
-  console.log('\n🏥 Health Check Information:');
-  console.log(`- Health endpoint: http://${hostname}:${port}/api/health`);
+  console.log('\n🏥 Railway Health Check Information:');
+  console.log(`- Internal Health endpoint: http://${hostname}:${port}/api/health`);
   console.log(`- Railway Public Domain: ${process.env.RAILWAY_PUBLIC_DOMAIN || 'Not set'}`);
   console.log(`- Railway Static URL: ${process.env.RAILWAY_STATIC_URL || 'Not set'}`);
   console.log(`- Railway Environment: ${process.env.RAILWAY_ENVIRONMENT || 'Not set'}`);
+  console.log('\n🔄 Server should be running now. Check Railway logs for any issues.');
 }, 5000);
+
+// Keep the script alive
+process.on('SIGTERM', () => {
+  console.log('🛑 Received SIGTERM, shutting down gracefully...');
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('🛑 Received SIGINT, shutting down gracefully...');
+  process.exit(0);
+});
+
+// Async wrapper for the delay
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

@@ -1,0 +1,338 @@
+{
+  "vercel": {
+    "name": "Vercel",
+    "baseUrl": "https://sns-video-generator-plus62s-projects.vercel.app",
+    "timestamp": "2025-06-20T01:05:11.882Z",
+    "pages": [
+      {
+        "url": "https://sns-video-generator-plus62s-projects.vercel.app/",
+        "status": 200,
+        "ok": true,
+        "headers": {
+          "age": "0",
+          "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Fri, 20 Jun 2025 01:05:13 GMT",
+          "link": "</_next/static/media/569ce4b8f30dc480-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/93f479601ee12b01-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/",
+          "x-powered-by": "Next.js",
+          "x-robots-tag": "noindex",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "hnd1::iad1::v9wtg-1750381511979-73e1b4f451f2",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-plus62s-projects.vercel.app/auth/signin",
+        "status": 200,
+        "ok": true,
+        "headers": {
+          "age": "0",
+          "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Fri, 20 Jun 2025 01:05:14 GMT",
+          "link": "</_next/static/media/569ce4b8f30dc480-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/93f479601ee12b01-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/auth/signin",
+          "x-powered-by": "Next.js",
+          "x-robots-tag": "noindex",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "hnd1::iad1::5hdvg-1750381513959-c42cd2fb60b9",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-plus62s-projects.vercel.app/dashboard",
+        "status": 307,
+        "ok": true,
+        "headers": {
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-type": "text/plain",
+          "date": "Fri, 20 Jun 2025 01:05:14 GMT",
+          "location": "/api/auth/signin?callbackUrl=%2Fdashboard",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "x-robots-tag": "noindex",
+          "x-vercel-id": "hnd1::89bvb-1750381514354-5f8620e9c02d",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-plus62s-projects.vercel.app/database-test",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "age": "0",
+          "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Fri, 20 Jun 2025 01:05:14 GMT",
+          "link": "</_next/static/media/569ce4b8f30dc480-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/93f479601ee12b01-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/_not-found",
+          "x-powered-by": "Next.js",
+          "x-robots-tag": "noindex",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "hnd1::iad1::967mm-1750381514497-f7d64059dda8",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        }
+      }
+    ],
+    "apis": [
+      {
+        "url": "https://sns-video-generator-plus62s-projects.vercel.app/api/health",
+        "status": 200,
+        "ok": true,
+        "headers": {
+          "access-control-allow-headers": "Content-Type, Authorization",
+          "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "access-control-allow-origin": "*",
+          "age": "0",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "content-type": "application/json",
+          "date": "Fri, 20 Jun 2025 01:05:16 GMT",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/api/health",
+          "x-robots-tag": "noindex",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "hnd1::iad1::7zp9h-1750381514879-70a8fa5b6e0b",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-plus62s-projects.vercel.app/api/health/simple",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "access-control-allow-headers": "Content-Type, Authorization",
+          "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "access-control-allow-origin": "*",
+          "age": "0",
+          "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Fri, 20 Jun 2025 01:05:16 GMT",
+          "link": "</_next/static/media/569ce4b8f30dc480-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/93f479601ee12b01-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/_not-found",
+          "x-powered-by": "Next.js",
+          "x-robots-tag": "noindex",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "hnd1::iad1::bnmn4-1750381516591-391c6b22b16d",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-plus62s-projects.vercel.app/api/upload/youtube",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "access-control-allow-headers": "Content-Type, Authorization",
+          "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "access-control-allow-origin": "*",
+          "age": "0",
+          "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Fri, 20 Jun 2025 01:05:17 GMT",
+          "link": "</_next/static/media/569ce4b8f30dc480-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/93f479601ee12b01-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/_not-found",
+          "x-powered-by": "Next.js",
+          "x-robots-tag": "noindex",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "hnd1::iad1::7vbm4-1750381516915-88027de3da39",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-plus62s-projects.vercel.app/api/videos",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "access-control-allow-headers": "Content-Type, Authorization",
+          "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+          "access-control-allow-origin": "*",
+          "age": "0",
+          "cache-control": "private, no-cache, no-store, max-age=0, must-revalidate",
+          "content-type": "text/html; charset=utf-8",
+          "date": "Fri, 20 Jun 2025 01:05:17 GMT",
+          "link": "</_next/static/media/569ce4b8f30dc480-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\", </_next/static/media/93f479601ee12b01-s.p.woff2>; rel=preload; as=\"font\"; crossorigin=\"\"; type=\"font/woff2\"",
+          "server": "Vercel",
+          "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+          "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch",
+          "x-matched-path": "/_not-found",
+          "x-powered-by": "Next.js",
+          "x-robots-tag": "noindex",
+          "x-vercel-cache": "MISS",
+          "x-vercel-id": "hnd1::iad1::9k5xz-1750381517332-6141b7d81bfb",
+          "connection": "close",
+          "transfer-encoding": "chunked"
+        }
+      }
+    ],
+    "summary": {
+      "total": 8,
+      "success": 4,
+      "failed": 4,
+      "successRate": 50
+    }
+  },
+  "railway": {
+    "name": "Railway",
+    "baseUrl": "https://sns-video-generator-production-ad7957.up.railway.app",
+    "timestamp": "2025-06-20T01:05:17.617Z",
+    "pages": [
+      {
+        "url": "https://sns-video-generator-production-ad7957.up.railway.app/",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "content-length": "101",
+          "content-type": "application/json",
+          "server": "railway-edge",
+          "x-railway-edge": "railway/asia-southeast1",
+          "x-railway-fallback": "true",
+          "x-railway-request-id": "-KHfeyeFSMWRS-sSTUT29g",
+          "date": "Fri, 20 Jun 2025 01:05:18 GMT",
+          "connection": "close"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-production-ad7957.up.railway.app/auth/signin",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "content-length": "101",
+          "content-type": "application/json",
+          "server": "railway-edge",
+          "x-railway-edge": "railway/asia-southeast1",
+          "x-railway-fallback": "true",
+          "x-railway-request-id": "w4vwlan_QjG_JMEYTUT29g",
+          "date": "Fri, 20 Jun 2025 01:05:18 GMT",
+          "connection": "close"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-production-ad7957.up.railway.app/dashboard",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "content-length": "101",
+          "content-type": "application/json",
+          "server": "railway-edge",
+          "x-railway-edge": "railway/asia-southeast1",
+          "x-railway-fallback": "true",
+          "x-railway-request-id": "f7mqFOu5RDmHkUE_9N7Bqw",
+          "date": "Fri, 20 Jun 2025 01:05:18 GMT",
+          "connection": "close"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-production-ad7957.up.railway.app/database-test",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "content-length": "101",
+          "content-type": "application/json",
+          "server": "railway-edge",
+          "x-railway-edge": "railway/asia-southeast1",
+          "x-railway-fallback": "true",
+          "x-railway-request-id": "ePvplMZBQHKGYzknkNsGEQ",
+          "date": "Fri, 20 Jun 2025 01:05:19 GMT",
+          "connection": "close"
+        }
+      }
+    ],
+    "apis": [
+      {
+        "url": "https://sns-video-generator-production-ad7957.up.railway.app/api/health",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "content-length": "101",
+          "content-type": "application/json",
+          "server": "railway-edge",
+          "x-railway-edge": "railway/asia-southeast1",
+          "x-railway-fallback": "true",
+          "x-railway-request-id": "WdQ9P7rhQ7yGQU7VTUT29g",
+          "date": "Fri, 20 Jun 2025 01:05:19 GMT",
+          "connection": "close"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-production-ad7957.up.railway.app/api/health/simple",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "content-length": "101",
+          "content-type": "application/json",
+          "server": "railway-edge",
+          "x-railway-edge": "railway/asia-southeast1",
+          "x-railway-fallback": "true",
+          "x-railway-request-id": "d9ZqEUi2QZ--8ZbMBdfYkw",
+          "date": "Fri, 20 Jun 2025 01:05:19 GMT",
+          "connection": "close"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-production-ad7957.up.railway.app/api/upload/youtube",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "content-length": "101",
+          "content-type": "application/json",
+          "server": "railway-edge",
+          "x-railway-edge": "railway/asia-southeast1",
+          "x-railway-fallback": "true",
+          "x-railway-request-id": "TFm3rJEpQ_Kme7WBBdfYkw",
+          "date": "Fri, 20 Jun 2025 01:05:20 GMT",
+          "connection": "close"
+        }
+      },
+      {
+        "url": "https://sns-video-generator-production-ad7957.up.railway.app/api/videos",
+        "status": 404,
+        "ok": false,
+        "headers": {
+          "content-length": "101",
+          "content-type": "application/json",
+          "server": "railway-edge",
+          "x-railway-edge": "railway/asia-southeast1",
+          "x-railway-fallback": "true",
+          "x-railway-request-id": "zRxXsJB3RDK0Gf-_kNsGEQ",
+          "date": "Fri, 20 Jun 2025 01:05:20 GMT",
+          "connection": "close"
+        }
+      }
+    ],
+    "summary": {
+      "total": 8,
+      "success": 0,
+      "failed": 8,
+      "successRate": 0
+    }
+  },
+  "overall": {
+    "successRate": 25,
+    "gap": 75,
+    "timestamp": "2025-06-20T01:05:20.439Z"
+  }
+}

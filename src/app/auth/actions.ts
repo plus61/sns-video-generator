@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/utils/supabase/server'
 
@@ -8,7 +7,6 @@ export async function login(formData: FormData) {
   const supabase = await createClient()
 
   // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
@@ -17,10 +15,10 @@ export async function login(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword(data)
 
   if (error) {
-    redirect('/auth/error?message=' + encodeURIComponent(error.message))
+    console.error('Login error:', error)
+    redirect('/auth/signin?message=' + encodeURIComponent('ログインに失敗しました'))
   }
 
-  revalidatePath('/', 'layout')
   redirect('/dashboard')
 }
 
@@ -28,7 +26,6 @@ export async function signup(formData: FormData) {
   const supabase = await createClient()
 
   // type-casting here for convenience
-  // in practice, you should validate your inputs
   const data = {
     email: formData.get('email') as string,
     password: formData.get('password') as string,
@@ -37,22 +34,9 @@ export async function signup(formData: FormData) {
   const { error } = await supabase.auth.signUp(data)
 
   if (error) {
-    redirect('/auth/error?message=' + encodeURIComponent(error.message))
+    console.error('Signup error:', error)
+    redirect('/auth/signin?message=' + encodeURIComponent('アカウント作成に失敗しました'))
   }
 
-  revalidatePath('/', 'layout')
-  redirect('/auth/signin?message=Check your email to verify your account')
-}
-
-export async function signOut() {
-  const supabase = await createClient()
-  
-  const { error } = await supabase.auth.signOut()
-  
-  if (error) {
-    redirect('/auth/error?message=' + encodeURIComponent(error.message))
-  }
-
-  revalidatePath('/', 'layout')
-  redirect('/signin')
+  redirect('/auth/signin?message=' + encodeURIComponent('確認メールを送信しました'))
 }

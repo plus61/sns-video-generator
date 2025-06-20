@@ -307,10 +307,13 @@ export class AutomatedDeployChecker {
         throw new Error('Build output directory not found')
       }
 
+      // Railway-specific checks
+      const railwayChecks = await this.performRailwaySpecificChecks()
+      
       return {
         name: 'Production Build',
-        status: 'pass',
-        details: 'Production build successful',
+        status: railwayChecks.allPassed ? 'pass' : 'warning',
+        details: railwayChecks.allPassed ? 'Production build successful with Railway compatibility' : `Build successful but Railway issues: ${railwayChecks.issues.join(', ')}`,
         duration: Date.now() - startTime,
         timestamp: new Date().toISOString(),
         critical: true
@@ -324,6 +327,68 @@ export class AutomatedDeployChecker {
         timestamp: new Date().toISOString(),
         critical: true
       }
+    }
+  }
+
+  private async performRailwaySpecificChecks(): Promise<{allPassed: boolean, issues: string[]}> {
+    const issues: string[] = []
+    
+    try {
+      // Check 1: Standalone build verification
+      const nextDir = path.join(this.projectRoot, '.next')
+      const standaloneDir = path.join(nextDir, 'standalone')
+      
+      if (!fs.existsSync(standaloneDir)) {
+        issues.push('Standalone build directory not found - Railway deployment may fail')
+      }
+      
+      // Check 2: Static files verification (postbuild script effect)
+      const standaloneStaticDir = path.join(standaloneDir, '.next', 'static')
+      const publicDir = path.join(standaloneDir, 'public')
+      
+      if (!fs.existsSync(standaloneStaticDir)) {
+        issues.push('Static files not copied to standalone build - postbuild script may have failed')
+      }
+      
+      if (!fs.existsSync(publicDir)) {
+        issues.push('Public files not copied to standalone build - assets may be missing')
+      }
+      
+      // Check 3: Package.json in standalone
+      const standalonePackageJson = path.join(standaloneDir, 'package.json')
+      if (!fs.existsSync(standalonePackageJson)) {
+        issues.push('package.json not found in standalone build')
+      }
+      
+      // Check 4: Server.js verification
+      const serverJs = path.join(standaloneDir, 'server.js')
+      if (!fs.existsSync(serverJs)) {
+        issues.push('server.js not found in standalone build - Railway cannot start the app')
+      }
+      
+      // Check 5: Railway configuration
+      const railwayToml = path.join(this.projectRoot, 'railway.toml')
+      if (fs.existsSync(railwayToml)) {
+        const tomlContent = fs.readFileSync(railwayToml, 'utf8')
+        if (!tomlContent.includes('nixpacks.toml') && !tomlContent.includes('[build]')) {
+          issues.push('railway.toml may need build configuration')
+        }
+      }
+      
+      // Check 6: Environment compatibility
+      const packageJson = JSON.parse(fs.readFileSync(path.join(this.projectRoot, 'package.json'), 'utf8'))
+      if (packageJson.scripts?.postbuild && !packageJson.scripts.postbuild.includes('cp')) {
+        issues.push('postbuild script may not be Railway-compatible')
+      }
+      
+      return {
+        allPassed: issues.length === 0,
+        issues
+      }
+      
+    } catch (error) {
+      issues.push(`Railway compatibility check failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      return { allPassed: false, issues }
     }
   }
 
