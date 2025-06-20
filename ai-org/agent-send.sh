@@ -15,6 +15,10 @@ WORKER_MODEL="claude-3-sonnet-20240229"
 # === 並列処理最適化 ===
 MAX_PARALLEL_WORKERS=3  # Sonnet4の推奨並列数
 
+# === チーム意見収集システム ===
+TEAM_OPINIONS_FILE="/tmp/team_opinions.json"
+CONSENSUS_FILE="/tmp/team_consensus.json"
+
 # 並列タスク実行（例: 並列ワーカー起動）
 parallel_worker_exec() {
     local tasks=("$@")
@@ -185,6 +189,120 @@ async_receive_report() {
     echo "📨 報告をキューに追加: $from_agent"
 }
 
+# === チーム意見収集機能 ===
+# チーム全体に意見を求める
+request_team_opinions() {
+    local topic="$1"
+    local question="$2"
+    local request_id="$(date +%s%N)"
+    
+    echo "🤝 チーム意見収集開始: $topic"
+    
+    # 意見収集ファイルを初期化
+    echo "{\"request_id\": \"$request_id\", \"topic\": \"$topic\", \"question\": \"$question\", \"opinions\": {}, \"timestamp\": \"$(date -Iseconds)\"}" > "$TEAM_OPINIONS_FILE"
+    
+    # 各Workerに意見を求める
+    for worker in worker1 worker2 worker3; do
+        local target=$(get_agent_target "$worker")
+        send_message "$target" "🤝 チーム意見募集: $topic
+質問: $question
+あなたの視点から見た意見・懸念・提案を教えてください。
+回答例: 「意見: [技術的観点/実装観点/品質観点から...]」"
+    done
+    
+    echo "   意見収集ID: $request_id"
+    echo "   30秒後に意見を集約します..."
+    
+    # バックグラウンドで意見収集
+    (sleep 30 && analyze_team_opinions "$request_id" "$topic") &
+}
+
+# チームメンバーからの意見を記録
+record_team_opinion() {
+    local from_agent="$1"
+    local opinion="$2"
+    
+    if [[ "$opinion" =~ 意見:|観点:|提案: ]]; then
+        echo "💡 $from_agent からの意見を記録"
+        
+        # JSONファイルに意見を追加（簡易実装）
+        local timestamp=$(date -Iseconds)
+        echo "{\"agent\": \"$from_agent\", \"opinion\": \"$opinion\", \"timestamp\": \"$timestamp\"}" >> "${TEAM_OPINIONS_FILE}.tmp"
+    fi
+}
+
+# チーム意見の分析とコンセンサス形成
+analyze_team_opinions() {
+    local request_id="$1"
+    local topic="$2"
+    
+    echo "📊 チーム意見分析開始: $topic"
+    
+    # 収集した意見を分析
+    local consensus="チームコンセンサス:
+    
+📝 収集された意見:"
+    
+    if [ -f "${TEAM_OPINIONS_FILE}.tmp" ]; then
+        while IFS= read -r opinion_line; do
+            local agent=$(echo "$opinion_line" | jq -r '.agent' 2>/dev/null)
+            local opinion=$(echo "$opinion_line" | jq -r '.opinion' 2>/dev/null)
+            consensus="$consensus
+- $agent: $opinion"
+        done < "${TEAM_OPINIONS_FILE}.tmp"
+    fi
+    
+    consensus="$consensus
+
+🎯 統合見解:
+$(synthesize_team_opinions)"
+    
+    # コンセンサスを保存
+    echo "$consensus" > "$CONSENSUS_FILE"
+    
+    # Presidentに報告
+    send_message "president" "🤝 チームコンセンサス形成完了
+
+トピック: $topic
+$consensus
+
+チーム全体の知見を統合した結果です。"
+    
+    # 一時ファイルをクリーンアップ
+    rm -f "${TEAM_OPINIONS_FILE}.tmp"
+}
+
+# チーム意見の統合
+synthesize_team_opinions() {
+    # 実際の実装では、より高度な分析を行う
+    echo "- 技術的な実現可能性を確認
+- リスクと機会を多角的に評価
+- 実装の優先順位を検討
+- 品質基準を満たす方法を特定"
+}
+
+# チームブレインストーミング
+team_brainstorming() {
+    local challenge="$1"
+    
+    echo "🧠 チームブレインストーミング開始"
+    
+    # 全メンバーに同時にアイデアを求める
+    local brainstorm_msg="💡 ブレインストーミング: $challenge
+自由にアイデアを出してください！
+- 制約を考えない創造的なアイデア
+- 実践的な解決策
+- 過去の経験からの知見
+回答例: 「アイデア: ...」"
+    
+    for worker in worker1 worker2 worker3; do
+        local target=$(get_agent_target "$worker")
+        send_message "$target" "$brainstorm_msg"
+    done
+    
+    echo "   アイデア収集中..."
+}
+
 # === エラー処理・自動回復 ===
 error_detection() {
     local error_type="$1"; local context="$2"
@@ -259,6 +377,19 @@ boss_autonomous_decision() {
     local risk_level=$(echo "$analysis_result" | jq -r '.risk_level' 2>/dev/null || echo "low")
     
     echo "   📊 分析結果: 感情=$sentiment, 技術スコア=$tech_score, リスク=$risk_level"
+    
+    # === チーム意見収集判定 ===
+    # 重要な決定や複雑な問題の場合、チーム意見を収集
+    if [[ "$message" =~ (どうすれば|何が問題|エラーが続く|判断ミス|根本原因) ]]; then
+        echo "🤝 重要な問題を検知 - チーム意見収集モード"
+        request_team_opinions "問題解決" "$message"
+        return 0
+    fi
+    
+    # チームメンバーからの意見の場合は記録
+    if [[ "$message" =~ (意見:|観点:|提案:|アイデア:) ]]; then
+        record_team_opinion "$from_agent" "$message"
+    fi
     
     # === パターンベースの初期判定 ===
     if [[ "$message" =~ (完了|完成|finished|done|success) ]]; then
@@ -811,6 +942,8 @@ show_usage() {
   $0 --async [from_agent] [message]   # 非同期報告受信
   $0 --monitor                        # リアルタイム監視開始
   $0 --stop-monitor                   # 監視停止
+  $0 --team-opinion [topic]           # チーム意見収集
+  $0 --brainstorm [challenge]         # チームブレインストーミング
 
 利用可能エージェント:
   president - プロジェクト統括責任者
@@ -832,12 +965,20 @@ show_usage() {
   - 優先度に基づく自動対応
   - 非同期処理で待ち時間なし
 
+🤝 チーム協調機能:
+  - チーム全体の意見収集
+  - コンセンサス形成
+  - ブレインストーミング
+  - 多角的な視点での問題解決
+
 使用例:
   $0 president "指示書に従って"
   $0 boss1 "Hello World プロジェクト開始指示"
   $0 --auto worker1 "TypeScript修正完了しました"
   $0 --monitor  # リアルタイム監視開始
   $0 --async worker2 "BullMQ互換レイヤー実装中"
+  $0 --team-opinion "Railway デプロイエラー" "なぜエラーが続いているのか"
+  $0 --brainstorm "本番環境デプロイの改善方法"
 EOF
 }
 
@@ -936,6 +1077,28 @@ main() {
             exit 1
         fi
         boss_autonomous_decision "$2" "$3" "--async"
+        exit 0
+    fi
+    
+    # --team-opinion オプション (チーム意見収集)
+    if [[ "$1" == "--team-opinion" ]]; then
+        if [[ $# -lt 2 ]]; then
+            echo "❌ --team-opinionモード使用方法: $0 --team-opinion [topic] [question(optional)]"
+            exit 1
+        fi
+        local topic="$2"
+        local question="${3:-チームの意見を聞かせてください}"
+        request_team_opinions "$topic" "$question"
+        exit 0
+    fi
+    
+    # --brainstorm オプション (チームブレインストーミング)
+    if [[ "$1" == "--brainstorm" ]]; then
+        if [[ $# -lt 2 ]]; then
+            echo "❌ --brainstormモード使用方法: $0 --brainstorm [challenge]"
+            exit 1
+        fi
+        team_brainstorming "$2"
         exit 0
     fi
     

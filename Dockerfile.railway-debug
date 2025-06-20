@@ -1,0 +1,75 @@
+# Railway Debug Dockerfile - Enhanced debugging for .next directory issue
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install build dependencies
+RUN apk add --no-cache libc6-compat python3 make g++
+
+# Copy dependency files
+COPY package*.json ./
+
+# Install all dependencies (including dev for build)
+RUN npm install --legacy-peer-deps
+
+# Copy application code
+COPY . .
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Debug: Show current directory structure before build
+RUN echo "=== Pre-build directory structure ===" && \
+    pwd && \
+    ls -la
+
+# Build the application with debug output
+RUN echo "=== Starting build ===" && \
+    npm run build && \
+    echo "=== Build completed ==="
+
+# Debug: Comprehensive post-build checks
+RUN echo "=== Post-build verification ===" && \
+    echo "Current directory: $(pwd)" && \
+    echo "Directory contents:" && \
+    ls -la && \
+    echo "=== Searching for .next directory ===" && \
+    find . -name ".next" -type d 2>/dev/null | head -20 && \
+    echo "=== .next directory contents (if exists) ===" && \
+    if [ -d ".next" ]; then \
+        echo ".next found in current directory" && \
+        ls -la .next/ | head -20; \
+    else \
+        echo ".next NOT found in current directory"; \
+    fi && \
+    echo "=== Checking node_modules/.bin ===" && \
+    ls -la node_modules/.bin/next 2>/dev/null || echo "next binary not found"
+
+# Create a startup script with debugging
+RUN echo '#!/bin/sh\n\
+echo "=== Container startup ==="\n\
+echo "Current directory: $(pwd)"\n\
+echo "Directory contents:"\n\
+ls -la\n\
+echo "=== Checking for .next ==="\n\
+if [ -d ".next" ]; then\n\
+    echo ".next directory exists"\n\
+    echo "Size of .next:"\n\
+    du -sh .next\n\
+else\n\
+    echo "ERROR: .next directory not found!"\n\
+    echo "Searching for .next:"\n\
+    find . -name ".next" -type d 2>/dev/null | head -10\n\
+fi\n\
+echo "=== Environment variables ==="\n\
+env | grep -E "(NODE_|NEXT_|PORT)" | sort\n\
+echo "=== Starting Next.js ==="\n\
+exec npm start' > /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Port configuration
+EXPOSE 3000
+
+# Use the debug startup script
+CMD ["/app/start.sh"]

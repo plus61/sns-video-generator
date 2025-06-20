@@ -6,6 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start -p ${PORT:-3000}",
+    "start:custom": "node custom-server.js",
+    "start:railway": "ls -la && ls -la .next || echo 'No .next' && next start -p ${PORT:-3000}",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
