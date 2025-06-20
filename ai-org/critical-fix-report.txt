@@ -1,0 +1,25 @@
+【緊急修正報告】
+日時: 2025-06-20 05:32
+実行者: President + Team
+
+■ Railway エラー原因特定
+- エラー: npm ci --only=production が exit code: 1
+- 原因: 依存関係の競合またはpackage-lock.jsonの不整合
+
+■ 実施した修正
+1. 新しい Dockerfile.railway を作成
+   - npm ci → npm install --legacy-peer-deps に変更
+   - 依存関係の競合を回避
+   
+2. railway.toml を更新
+   - dockerfilePath を Dockerfile.railway に変更
+   
+3. GitHub にプッシュ完了
+   - コミット: 3732502
+
+■ 期待される結果
+- Railway ビルドエラーが解消
+- デプロイが正常に完了
+- 100%稼働率の達成
+
+監視継続中...

@@ -20,13 +20,13 @@ WORKDIR /app
 
 # Dependencies stage
 FROM base AS deps
-COPY package.json package-lock.json* ./
-RUN npm ci --omit=dev --no-audit --no-fund
+COPY package*.json ./
+RUN npm install --legacy-peer-deps --omit=dev --no-audit --no-fund
 
 # Build stage
 FROM base AS builder
-COPY package.json package-lock.json* ./
-RUN npm ci --no-audit --no-fund
+COPY package*.json ./
+RUN npm install --legacy-peer-deps --no-audit --no-fund
 
 # Copy source code
 COPY . .
