@@ -3,13 +3,13 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile.railway"
 
 [deploy]
-startCommand = "node server.js"
+startCommand = "npm start"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
-healthcheckPath = "/api/health/simple"
-healthcheckTimeout = 30
-healthcheckInterval = 30
-startPeriod = 60
+healthcheckPath = "/"
+healthcheckTimeout = 60
+healthcheckInterval = 60
+startPeriod = 180
 
 [env]
 # Node.js Configuration
@@ -22,7 +22,7 @@ NEXT_TELEMETRY_DISABLED = "1"
 NEXT_OPTIMIZE_FONTS = "false"
 
 # Application Settings
-PORT = "3000"
+PORT = "${PORT}"
 HOST = "0.0.0.0"
 
 # 🚨 CRITICAL FIX: Supabase環境変数修正
@@ -79,10 +79,10 @@ ENABLE_METRICS = "true"
 HEALTH_CHECK_INTERVAL = "30000"
 
 [healthcheck]
-path = "/api/health/simple"
-interval = 30
-timeout = 10
-retries = 3
+path = "/"
+interval = 60
+timeout = 30
+retries = 5
 
 [scaling]
 minInstances = 1
