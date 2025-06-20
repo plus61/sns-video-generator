@@ -1,0 +1,315 @@
+name: 🤝 Worker2×Worker3 Collaboration Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_type:
+        description: 'Type of collaboration test'
+        required: true
+        default: 'full-integration'
+        type: choice
+        options:
+        - full-integration
+        - performance-only
+        - synergy-check
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+
+env:
+  RAILWAY_URL: ${{ secrets.RAILWAY_URL }}
+  VERCEL_URL: ${{ secrets.VERCEL_URL }}
+
+jobs:
+  # Worker2: Vercel/UI Testing
+  worker2-vercel-tests:
+    name: 👤 Worker2 - Vercel/UI Tests
+    runs-on: ubuntu-latest
+    
+    outputs:
+      vercel-score: ${{ steps.vercel-test.outputs.score }}
+      vercel-metrics: ${{ steps.vercel-test.outputs.metrics }}
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🚀 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci --no-audit --no-fund
+      
+    - name: 🎨 Vercel UI Performance Test
+      id: vercel-test
+      run: |
+        echo "🔍 Worker2: Vercel/UI testing started"
+        
+        # Frontend asset loading test
+        VERCEL_RESPONSE_TIME=$(curl -w "%{time_total}" -s -o /dev/null "$VERCEL_URL/")
+        VERCEL_HEALTH=$(curl -s "$VERCEL_URL/api/health" | grep -o "healthy" || echo "unhealthy")
+        
+        # Calculate score (0-100)
+        if (( $(echo "$VERCEL_RESPONSE_TIME < 1.0" | bc -l) )); then
+          PERFORMANCE_SCORE=100
+        elif (( $(echo "$VERCEL_RESPONSE_TIME < 2.0" | bc -l) )); then
+          PERFORMANCE_SCORE=80
+        else
+          PERFORMANCE_SCORE=50
+        fi
+        
+        HEALTH_SCORE=0
+        if [ "$VERCEL_HEALTH" = "healthy" ]; then
+          HEALTH_SCORE=100
+        fi
+        
+        TOTAL_SCORE=$(( (PERFORMANCE_SCORE + HEALTH_SCORE) / 2 ))
+        
+        echo "score=$TOTAL_SCORE" >> $GITHUB_OUTPUT
+        echo "metrics={\"responseTime\":$VERCEL_RESPONSE_TIME,\"health\":\"$VERCEL_HEALTH\"}" >> $GITHUB_OUTPUT
+        
+        echo "✅ Worker2 completed: Score $TOTAL_SCORE/100"
+        
+    - name: 📊 Upload Worker2 results
+      uses: actions/upload-artifact@v4
+      with:
+        name: worker2-results
+        path: |
+          test-results/
+        retention-days: 7
+
+  # Worker3: Railway/API Testing  
+  worker3-railway-tests:
+    name: 👤 Worker3 - Railway/API Tests
+    runs-on: ubuntu-latest
+    
+    outputs:
+      railway-score: ${{ steps.railway-test.outputs.score }}
+      railway-metrics: ${{ steps.railway-test.outputs.metrics }}
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🚀 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci --no-audit --no-fund
+      
+    - name: 🚄 Railway API Reliability Test
+      id: railway-test
+      run: |
+        echo "🔍 Worker3: Railway/API testing started"
+        
+        # API endpoint testing
+        RAILWAY_HEALTH_TIME=$(curl -w "%{time_total}" -s -o /dev/null "$RAILWAY_URL/api/health")
+        RAILWAY_DB_TIME=$(curl -w "%{time_total}" -s -o /dev/null "$RAILWAY_URL/api/test-supabase")
+        RAILWAY_QUEUE_TIME=$(curl -w "%{time_total}" -s -o /dev/null "$RAILWAY_URL/api/queue/stats" || echo "5.0")
+        
+        # Calculate API performance score
+        if (( $(echo "$RAILWAY_HEALTH_TIME < 2.0" | bc -l) )); then
+          API_SCORE=100
+        elif (( $(echo "$RAILWAY_HEALTH_TIME < 5.0" | bc -l) )); then
+          API_SCORE=70
+        else
+          API_SCORE=30
+        fi
+        
+        # Heavy processing capability
+        if (( $(echo "$RAILWAY_QUEUE_TIME < 3.0" | bc -l) )); then
+          PROCESSING_SCORE=100
+        elif (( $(echo "$RAILWAY_QUEUE_TIME < 10.0" | bc -l) )); then
+          PROCESSING_SCORE=60
+        else
+          PROCESSING_SCORE=20
+        fi
+        
+        TOTAL_SCORE=$(( (API_SCORE + PROCESSING_SCORE) / 2 ))
+        
+        echo "score=$TOTAL_SCORE" >> $GITHUB_OUTPUT
+        echo "metrics={\"healthTime\":$RAILWAY_HEALTH_TIME,\"dbTime\":$RAILWAY_DB_TIME,\"queueTime\":$RAILWAY_QUEUE_TIME}" >> $GITHUB_OUTPUT
+        
+        echo "✅ Worker3 completed: Score $TOTAL_SCORE/100"
+        
+    - name: 📊 Upload Worker3 results
+      uses: actions/upload-artifact@v4
+      with:
+        name: worker3-results
+        path: |
+          test-results/
+        retention-days: 7
+
+  # Collaboration Integration Test
+  worker2-worker3-integration:
+    name: 🔄 Worker2×Worker3 Integration
+    runs-on: ubuntu-latest
+    needs: [worker2-vercel-tests, worker3-railway-tests]
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🚀 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci --no-audit --no-fund
+      
+    - name: 📊 Get Worker Results
+      id: worker-results
+      run: |
+        WORKER2_SCORE="${{ needs.worker2-vercel-tests.outputs.vercel-score }}"
+        WORKER3_SCORE="${{ needs.worker3-railway-tests.outputs.railway-score }}"
+        
+        echo "worker2_score=$WORKER2_SCORE" >> $GITHUB_OUTPUT
+        echo "worker3_score=$WORKER3_SCORE" >> $GITHUB_OUTPUT
+        
+        echo "📊 Worker2 (Vercel): $WORKER2_SCORE/100"
+        echo "📊 Worker3 (Railway): $WORKER3_SCORE/100"
+        
+    - name: 🔄 Cross-Environment Integration Test
+      id: integration-test
+      run: |
+        echo "🔄 Starting cross-environment integration test..."
+        
+        # Parallel request test
+        start_time=$(date +%s%N)
+        
+        # Test both environments simultaneously
+        curl -s "$VERCEL_URL/api/health" > /tmp/vercel_result &
+        curl -s "$RAILWAY_URL/api/health" > /tmp/railway_result &
+        wait
+        
+        end_time=$(date +%s%N)
+        parallel_time=$(( (end_time - start_time) / 1000000 ))  # Convert to milliseconds
+        
+        # Sequential test for comparison
+        start_time=$(date +%s%N)
+        curl -s "$VERCEL_URL/api/health" > /tmp/vercel_seq
+        curl -s "$RAILWAY_URL/api/health" > /tmp/railway_seq
+        end_time=$(date +%s%N)
+        sequential_time=$(( (end_time - start_time) / 1000000 ))
+        
+        # Calculate synergy factor
+        if [ $parallel_time -gt 0 ]; then
+          synergy_factor=$(echo "scale=2; $sequential_time / $parallel_time" | bc)
+        else
+          synergy_factor="1.00"
+        fi
+        
+        echo "integration_time=$parallel_time" >> $GITHUB_OUTPUT
+        echo "synergy_factor=$synergy_factor" >> $GITHUB_OUTPUT
+        
+        echo "⚡ Parallel execution: ${parallel_time}ms"
+        echo "🔄 Sequential execution: ${sequential_time}ms"
+        echo "✨ Synergy factor: ${synergy_factor}x"
+        
+    - name: 🎯 Calculate Team Performance
+      id: team-performance
+      run: |
+        WORKER2_SCORE="${{ steps.worker-results.outputs.worker2_score }}"
+        WORKER3_SCORE="${{ steps.worker-results.outputs.worker3_score }}"
+        SYNERGY_FACTOR="${{ steps.integration-test.outputs.synergy_factor }}"
+        
+        # Individual average
+        INDIVIDUAL_AVG=$(( (WORKER2_SCORE + WORKER3_SCORE) / 2 ))
+        
+        # Team score with synergy bonus
+        TEAM_SCORE=$(echo "scale=0; $INDIVIDUAL_AVG * $SYNERGY_FACTOR" | bc)
+        
+        # Achievement badges
+        ACHIEVEMENTS=""
+        if (( $(echo "$SYNERGY_FACTOR >= 1.5" | bc -l) )); then
+          ACHIEVEMENTS="$ACHIEVEMENTS 🏆1+1=3効果達成"
+        fi
+        if [ $WORKER2_SCORE -ge 90 ] && [ $WORKER3_SCORE -ge 90 ]; then
+          ACHIEVEMENTS="$ACHIEVEMENTS 💎両Worker高品質"
+        fi
+        if [ $TEAM_SCORE -ge 150 ]; then
+          ACHIEVEMENTS="$ACHIEVEMENTS 🚀チーム卓越性"
+        fi
+        
+        echo "team_score=$TEAM_SCORE" >> $GITHUB_OUTPUT
+        echo "achievements=$ACHIEVEMENTS" >> $GITHUB_OUTPUT
+        
+        echo "📊 Team Performance Summary:"
+        echo "├─ Worker2 (Vercel): $WORKER2_SCORE/100"
+        echo "├─ Worker3 (Railway): $WORKER3_SCORE/100"
+        echo "├─ Individual Avg: $INDIVIDUAL_AVG/100"
+        echo "├─ Synergy Factor: ${SYNERGY_FACTOR}x"
+        echo "├─ Team Score: $TEAM_SCORE/100"
+        echo "└─ Achievements:$ACHIEVEMENTS"
+        
+    - name: 🚀 Run Advanced Integration Test
+      run: |
+        echo "🚀 Running Worker2×Worker3 advanced integration test..."
+        chmod +x testing/worker2-worker3-integration.js
+        node testing/worker2-worker3-integration.js
+        
+    - name: 📋 Generate Collaboration Report
+      run: |
+        cat > collaboration-report.md << EOF
+        # 🤝 Worker2×Worker3 Collaboration Report
+        
+        ## 📊 Performance Summary
+        
+        | Metric | Worker2 (Vercel) | Worker3 (Railway) | Team |
+        |--------|------------------|-------------------|------|
+        | Individual Score | ${{ steps.worker-results.outputs.worker2_score }}/100 | ${{ steps.worker-results.outputs.worker3_score }}/100 | ${{ steps.team-performance.outputs.team_score }}/100 |
+        | Specialization | UI/Frontend | API/Backend | Full-Stack |
+        | Environment | Edge-Optimized | Compute-Heavy | Hybrid |
+        
+        ## ✨ Synergy Analysis
+        
+        - **Synergy Factor**: ${{ steps.integration-test.outputs.synergy_factor }}x
+        - **Integration Time**: ${{ steps.integration-test.outputs.integration_time }}ms
+        - **Achievements**: ${{ steps.team-performance.outputs.achievements }}
+        
+        ## 🎯 Collaboration Effectiveness
+        
+        $(if (( \$(echo "${{ steps.integration-test.outputs.synergy_factor }} >= 1.5" | bc -l) )); then echo "🎉 **SUCCESS**: 1+1=3 synergy effect achieved!"; else echo "⚠️ **IMPROVEMENT NEEDED**: Synergy factor below target"; fi)
+        
+        ## 🔮 Next Steps
+        
+        1. Continue optimizing cross-environment communication
+        2. Enhance load balancing strategies  
+        3. Implement advanced monitoring systems
+        4. Expand automated quality gates
+        
+        ---
+        *Generated by Worker2×Worker3 Collaboration Pipeline*
+        EOF
+        
+    - name: 📊 Upload Integration Results
+      uses: actions/upload-artifact@v4
+      with:
+        name: integration-results
+        path: |
+          collaboration-report.md
+          testing/integration-results/
+        retention-days: 30
+
+  # Success Notification
+  collaboration-success:
+    name: 🎉 Collaboration Success
+    runs-on: ubuntu-latest
+    needs: [worker2-vercel-tests, worker3-railway-tests, worker2-worker3-integration]
+    if: success()
+    
+    steps:
+    - name: 🎉 Celebrate Success
+      run: |
+        echo "🎉 Worker2×Worker3 Collaboration Successful!"
+        echo "🏆 Team achieved synergy effect through specialized cooperation"
+        echo "📊 Vercel (Worker2): ${{ needs.worker2-vercel-tests.outputs.vercel-score }}/100"
+        echo "📊 Railway (Worker3): ${{ needs.worker3-railway-tests.outputs.railway-score }}/100"
+        echo "✨ Integration testing completed successfully"

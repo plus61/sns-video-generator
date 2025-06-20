@@ -5,6 +5,7 @@
   "installCommand": "npm install --force",
   "env": {
     "VERCEL": "1",
+    "IS_VERCEL": "true",
     "DISABLE_CANVAS": "true",
     "DISABLE_BULLMQ": "true",
     "DISABLE_FFMPEG_NATIVE": "true",
@@ -32,6 +33,12 @@
     },
     "src/app/api/queue/stats/route.ts": {
       "maxDuration": 10
+    },
+    "src/app/api/videos/route.ts": {
+      "maxDuration": 10
+    },
+    "src/app/api/upload/route.ts": {
+      "maxDuration": 15
     }
   },
   "rewrites": [

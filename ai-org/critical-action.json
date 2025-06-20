@@ -1,0 +1,39 @@
+{
+  "msg_id": "CRITICAL_001",
+  "timestamp": "2025-06-20T12:31:00Z",
+  "from": "president",
+  "to": "all",
+  "type": "directive",
+  "priority": 5,
+  "payload": {
+    "action": "IMMEDIATE_PRODUCTION_DEPLOYMENT",
+    "context": {
+      "current_state": "25% success rate",
+      "root_cause": "Changes not deployed to production",
+      "uncommitted_files": ["next.config.ts", "railway.toml", "vercel.json"]
+    },
+    "tasks": {
+      "step1": {
+        "action": "commit_all_changes",
+        "target_files": ["next.config.ts", "railway.toml", "vercel.json"],
+        "responsible": "worker1"
+      },
+      "step2": {
+        "action": "push_to_github",
+        "branch": "main",
+        "responsible": "worker2"
+      },
+      "step3": {
+        "action": "monitor_deployments",
+        "services": ["railway", "vercel"],
+        "responsible": "worker3"
+      }
+    },
+    "success_criteria": {
+      "production_success_rate": 80,
+      "railway_status": "running",
+      "vercel_api_routes": "functional"
+    },
+    "deadline": "15 minutes"
+  }
+}

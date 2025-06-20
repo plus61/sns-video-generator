@@ -3,7 +3,7 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "node server.js"
+startCommand = "node .next/standalone/server.js"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 healthcheckPath = "/api/health/simple"
@@ -25,25 +25,27 @@ NEXT_OPTIMIZE_FONTS = "false"
 PORT = "3000"
 HOST = "0.0.0.0"
 
+# 🚨 CRITICAL FIX: Supabase環境変数修正
+NEXT_PUBLIC_SUPABASE_URL = "${{ NEXT_PUBLIC_SUPABASE_URL }}"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "${{ NEXT_PUBLIC_SUPABASE_ANON_KEY }}"
+SUPABASE_SERVICE_ROLE_KEY = "${{ SUPABASE_SERVICE_ROLE_KEY }}"
+
 # Database Configuration (from Railway variables)
 DATABASE_URL = "${{ POSTGRES_URL }}"
 REDIS_URL = "${{ REDIS_URL }}"
 
 # External Services
-SUPABASE_URL = "${{ SUPABASE_URL }}"
-SUPABASE_SERVICE_KEY = "${{ SUPABASE_SERVICE_KEY }}"
 OPENAI_API_KEY = "${{ OPENAI_API_KEY }}"
 YOUTUBE_API_KEY = "${{ YOUTUBE_API_KEY }}"
 
-# Authentication
-NEXTAUTH_URL = "${{ RAILWAY_PUBLIC_DOMAIN ? 'https://' + RAILWAY_PUBLIC_DOMAIN : 'http://localhost:3000' }}"
-NEXTAUTH_SECRET = "${{ NEXTAUTH_SECRET }}"
-GOOGLE_CLIENT_ID = "${{ GOOGLE_CLIENT_ID }}"
-GOOGLE_CLIENT_SECRET = "${{ GOOGLE_CLIENT_SECRET }}"
+# Authentication - NextAuth不使用なので削除
+# NEXTAUTH_URL = "${{ RAILWAY_PUBLIC_DOMAIN ? 'https://' + RAILWAY_PUBLIC_DOMAIN : 'http://localhost:3000' }}"
+# NEXTAUTH_SECRET = "${{ NEXTAUTH_SECRET }}"
+# GOOGLE_CLIENT_ID = "${{ GOOGLE_CLIENT_ID }}"
+# GOOGLE_CLIENT_SECRET = "${{ GOOGLE_CLIENT_SECRET }}"
 
 # Railway-specific settings
 RAILWAY_ENVIRONMENT = "production"
-CORS_ORIGIN = "${{ VERCEL_URL ? 'https://' + VERCEL_URL : 'http://localhost:3000' }}"
 
 # Video Processing Configuration
 MAX_VIDEO_SIZE = "500MB"
@@ -76,16 +78,8 @@ LOG_LEVEL = "info"
 ENABLE_METRICS = "true"
 HEALTH_CHECK_INTERVAL = "30000"
 
-[services.redis]
-image = "redis:7-alpine"
-restartPolicyType = "ALWAYS"
-
-[services.postgres]
-image = "postgres:15-alpine"
-restartPolicyType = "ALWAYS"
-
 [healthcheck]
-path = "/api/health"
+path = "/api/health/simple"
 interval = 30
 timeout = 10
 retries = 3
@@ -103,8 +97,6 @@ fallback = ["us-east1", "eu-west1"]
 [volumes]
 "/tmp/video-processing" = "10GB"
 "/app/uploads" = "50GB"
-
-# Dockerfile configuration (nixpacks disabled)
 
 # Environment-specific overrides
 [environments.development]

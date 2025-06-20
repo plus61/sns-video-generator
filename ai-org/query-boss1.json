@@ -1,0 +1,12 @@
+{
+  "msg_id": "73C00D51-2704-44F1-87CE-6FD2E60578FB",
+  "timestamp": "2025-06-20T03:24:28Z",
+  "from": "president",
+  "to": "boss1",
+  "type": "query",
+  "priority": 5,
+  "payload": {
+    "query": "EMERGENCY_STATUS_CHECK",
+    "required_info": ["railway_build_status", "vercel_deploy_status", "current_actions"]
+  }
+}
