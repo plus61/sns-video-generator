@@ -1,0 +1,44 @@
+{
+  "msg_id": "team-analysis-001",
+  "timestamp": "2025-06-20T05:15:00Z",
+  "from": "president",
+  "to": "all",
+  "type": "query",
+  "priority": 5,
+  "payload": {
+    "problem": "Railway deployment: .next directory not found error persists",
+    "request": "各自の専門的視点から原因分析と解決策を提案してください",
+    "assignments": {
+      "boss1": {
+        "focus": "全体的なアーキテクチャとワークフローの観点から",
+        "questions": [
+          "ビルドとデプロイの分離は適切か？",
+          "設定ファイルの優先順位は明確か？"
+        ]
+      },
+      "worker1": {
+        "focus": "技術的な実装の詳細から",
+        "questions": [
+          "Next.js のスタンドアロンモードは正しく動作しているか？",
+          "Dockerfile の構成に問題はないか？"
+        ]
+      },
+      "worker2": {
+        "focus": "Railway プラットフォームの特性から",
+        "questions": [
+          "Railway のビルドキャッシュが影響している可能性は？",
+          "Railway 特有の制限事項はないか？"
+        ]
+      },
+      "worker3": {
+        "focus": "根本的な前提条件の検証",
+        "questions": [
+          "そもそも server.js を使うべきか？",
+          "Vercel との違いは何か？"
+        ]
+      }
+    }
+  },
+  "requires_ack": true,
+  "timeout_ms": 60000
+}

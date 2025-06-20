@@ -1,85 +1,138 @@
-# Railway Build Logs Analysis Report - Worker1
+# Railway Build Technical Analysis Report - Worker1
 
-## Summary
+## Executive Summary
+The Railway deployment fails with ".next directory not found" error despite successful builds. This is a complex issue involving Next.js standalone mode, Docker multi-stage builds, and path alias resolution.
 
-As Worker1, I have analyzed the Railway build status for the sns-video-generator project. Here are my findings:
+## Core Technical Issues Identified
 
-## Current Status
+### 1. Next.js Standalone Mode Inconsistencies
+**Problem**: The standalone build creates files in `.next/standalone/` but the Dockerfile expects them in `.next/`
+```dockerfile
+# Line 72: Expects files in .next/standalone
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+```
 
-### Git Commit Status
-- **Latest Commit**: 81b449a "Fix Railway deployment with custom server and module resolution"
-- **Status**: Committed and pushed to origin/main
-- **Timestamp**: Fri Jun 20 13:01:18 2025 +0900
+**Issue**: The `server.js` file expects `.next` directory to be adjacent:
+```javascript
+// server.js line 50
+distDir: '.next',
+```
 
-### Configuration Analysis
+### 2. Path Alias Resolution Conflict
+**Problem**: Multiple conflicting path alias resolution mechanisms:
+1. Dockerfile server-wrapper.js (lines 81-100)
+2. server.js Module._resolveFilename override (lines 9-37)
+3. Both trying to resolve `@/` imports differently
 
-#### 1. Railway Configuration Files
-- **railway.json**: ✅ Correctly configured
-  - Uses custom Dockerfile: `Dockerfile.custom-server`
-  - Builder type: DOCKERFILE
-  - Health check configured: `/api/health`
-  
-- **railway.toml**: ⚠️ Potential Issue
-  - Start command: `node .next/standalone/server.js`
-  - But railway.json points to custom server solution
+**Technical Conflict**:
+- server-wrapper.js wraps server.js
+- Both intercept Module._resolveFilename
+- Creates a double-resolution scenario causing failures
 
-#### 2. Custom Server Solution
-- **server.js**: ✅ Created with path alias resolution
-- **Dockerfile.custom-server**: ✅ Created for Railway deployment
-- Custom server handles `@/` import path resolution at runtime
+### 3. File Structure Mismatch
+**Expected by server.js**:
+```
+/app/
+  ├── .next/
+  ├── src/
+  ├── public/
+  └── server.js
+```
 
-#### 3. Build Configuration
-- **next.config.mjs**: Updated with webpack aliases
-- **tsconfig.json**: Modified for better module resolution
-- **package.json**: Railway-specific build scripts added
+**Created by Dockerfile**:
+```
+/app/
+  ├── server.js (from .next/standalone/)
+  ├── .next/static/
+  ├── src/
+  └── server-wrapper.js
+```
 
-## Key Findings
+### 4. Configuration Contradictions
 
-### 1. Configuration Mismatch
-There's a potential conflict between:
-- `railway.json` → Uses custom Dockerfile with `server.js`
-- `railway.toml` → Points to `.next/standalone/server.js`
+**next.config.ts**:
+- Line 9: `output: 'standalone'` enabled
+- Line 14: Comment says "Remove standalone output for Vercel" but it's still enabled
 
-**This could cause build confusion on Railway platform**
+**package.json**:
+- Line 7: `"build": "next build"`
+- Line 8: `"postbuild": "cp -r .next/static .next/standalone/.next/"`
+- Postbuild assumes standalone structure but may fail silently
 
-### 2. Custom Server Solution
-The commit implements a comprehensive fix:
-- Custom server.js handles module resolution
-- Dockerfile.custom-server builds the application
-- Path aliases resolved at runtime
+### 5. Build Environment Issues
 
-### 3. Previous Issues Addressed
-Based on historical documents:
-- Next.js 15 async API issues: Fixed
-- LightningCSS problems: Resolved
-- Module resolution errors: Addressed with custom server
+**Environmental Variables During Build**:
+- Dummy values injected (Dockerfile lines 42-47)
+- May cause Next.js to generate different output structure
+- `SKIP_ENV_VALIDATION=true` might skip critical checks
 
-## Recommended Actions
+### 6. Module Resolution Implementation Flaws
 
-### Immediate Actions
-1. **Verify Railway Dashboard**
-   - Check if build is using railway.json or railway.toml
-   - Confirm Dockerfile.custom-server is being used
+**server.js issues**:
+```javascript
+// Lines 18-22: Alternative resolution paths
+const alternatives = [
+  path.join(__dirname, '.next/server/src', modulePath),
+  path.join(__dirname, '.next/server/chunks/src', modulePath),
+  path.join(__dirname, 'dist/src', modulePath)
+];
+```
+These paths don't align with actual standalone build output structure.
 
-2. **Configuration Alignment**
-   - Either update railway.toml to use `node server.js`
-   - Or ensure railway.json takes precedence
+## Root Cause Analysis
 
-3. **Build Log Verification**
-   - Need access to Railway dashboard to see actual build logs
-   - Check if custom Dockerfile is being executed
+The primary issue is a **fundamental mismatch between Next.js standalone build output and the custom server's expectations**:
 
-### Potential Issues to Monitor
-1. **Module Resolution**: Custom server should handle `@/` imports
-2. **Static Files**: Dockerfile copies public and .next/static
-3. **Health Check**: Endpoint should respond at `/api/health`
+1. **Standalone mode** creates a self-contained directory with its own server.js
+2. **Custom server.js** expects traditional Next.js structure
+3. **Dockerfile** tries to merge both approaches, creating conflicts
+4. **Path resolution** is attempted at multiple layers, causing interference
+
+## Critical Code Issues
+
+### 1. Server Initialization
+```javascript
+// server.js line 44-56
+const app = next({ 
+  dev,
+  hostname,
+  port,
+  dir: __dirname,  // Assumes .next is in __dirname
+  conf: {
+    distDir: '.next',  // Hardcoded path
+    experimental: {
+      outputFileTracingRoot: path.join(__dirname, '../../')  // Wrong for Docker
+    }
+  }
+});
+```
+
+### 2. Docker Copy Commands
+```dockerfile
+# Contradictory copy operations
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+# Results in .next/static inside root, not inside .next/
+```
+
+### 3. Wrapper Script Execution
+```dockerfile
+# Line 121: CMD using wrapper
+CMD ["node", "server-wrapper.js"]
+```
+But server-wrapper.js expects to load `./server.js` which is the Next.js standalone server, not the custom server.
+
+## Recommended Solutions
+
+### Immediate Fix
+1. Remove the custom server.js usage in standalone mode
+2. Use Next.js built-in standalone server directly
+3. Fix path alias resolution at build time, not runtime
+
+### Long-term Fix
+1. Choose either standalone OR custom server, not both
+2. If custom server needed, don't use standalone mode
+3. Implement proper build verification to catch structure mismatches
 
 ## Conclusion
-
-The commit 81b449a implements a comprehensive solution for Railway deployment issues. However, there's a configuration mismatch between railway.json and railway.toml that needs resolution. Without access to actual Railway build logs, I cannot determine if the build is failing or if the configuration mismatch is causing issues.
-
-**Next Step**: Access Railway dashboard to view actual build logs and deployment status.
-
----
-*Report generated by Worker1 - Railway Infrastructure Specialist*
-*Time: ${new Date().toISOString()}*
+The deployment fails because of conflicting approaches to server initialization and path resolution. The custom server expects a traditional Next.js structure while the build produces a standalone structure. The multiple layers of path resolution create additional conflicts rather than solving the core issue.

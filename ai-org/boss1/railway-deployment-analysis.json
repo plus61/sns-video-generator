@@ -1,0 +1,159 @@
+{
+  "analysis_summary": {
+    "issue": "Next.js application fails to start on Railway due to missing .next directory",
+    "root_cause": "Architectural mismatch between build and runtime environments in multi-stage Docker deployment",
+    "severity": "critical"
+  },
+  
+  "architectural_findings": {
+    "1_configuration_conflicts": {
+      "issue": "Multiple conflicting configuration files",
+      "details": [
+        "railway.json points to 'Dockerfile'",
+        "railway.toml points to 'Dockerfile.simple'",
+        "Different restart policies and health check configurations",
+        "Conflicting start commands (npm start vs node server.js)"
+      ],
+      "impact": "Unpredictable deployment behavior",
+      "recommendation": "Use single configuration file, preferably railway.toml"
+    },
+    
+    "2_build_runtime_separation": {
+      "issue": "Improper artifact transfer between Docker stages",
+      "details": [
+        "Main Dockerfile uses Next.js standalone output",
+        "Copies from /app/.next/standalone but may not include all required files",
+        "Custom server.js requires additional files not in standalone build",
+        "Path alias resolution requires src directory structure"
+      ],
+      "impact": "Missing dependencies at runtime",
+      "recommendation": "Ensure complete artifact transfer or use single-stage build"
+    },
+    
+    "3_next_config_complexity": {
+      "issue": "Complex build configuration with custom webpack settings",
+      "details": [
+        "output: 'standalone' mode requires specific file structure",
+        "Custom path aliases may not work with standalone builds",
+        "ESM configuration (next.config.mjs) adds complexity",
+        "Postbuild script attempts file copy that may fail silently"
+      ],
+      "impact": "Build artifacts may be incomplete or misplaced",
+      "recommendation": "Simplify configuration for production builds"
+    },
+    
+    "4_custom_server_architecture": {
+      "issue": "Custom server adds unnecessary complexity",
+      "details": [
+        "server.js implements module resolution override",
+        "May conflict with Next.js standalone output",
+        "server-wrapper.js in Dockerfile adds another layer",
+        "Multiple entry points increase failure points"
+      ],
+      "impact": "Increased complexity and potential for runtime failures",
+      "recommendation": "Use Next.js default server unless custom features absolutely required"
+    }
+  },
+  
+  "workflow_analysis": {
+    "current_flow": [
+      "1. Build stage installs all dependencies",
+      "2. Runs next build with standalone output",
+      "3. Copies selective files to runner stage",
+      "4. Attempts to start with custom server wrapper"
+    ],
+    "problems": [
+      "Incomplete file transfer between stages",
+      "Path resolution issues in production",
+      "Missing runtime dependencies",
+      "Complex startup sequence prone to failure"
+    ]
+  },
+  
+  "fundamental_issues": {
+    "1_overengineering": {
+      "problem": "Solution is overly complex for the requirements",
+      "evidence": [
+        "Multiple Dockerfiles",
+        "Custom server with module resolution",
+        "Complex multi-stage builds",
+        "Multiple configuration files"
+      ],
+      "solution": "Simplify to standard Next.js deployment"
+    },
+    
+    "2_environment_mismatch": {
+      "problem": "Development and production environments diverge significantly",
+      "evidence": [
+        "Custom server works locally but fails in production",
+        "Path aliases resolved differently",
+        "Build artifacts location varies"
+      ],
+      "solution": "Align development and production configurations"
+    },
+    
+    "3_incomplete_testing": {
+      "problem": "Build succeeds but runtime fails",
+      "evidence": [
+        "No verification of .next directory in build",
+        "No runtime checks before deployment",
+        "Silent failures in postbuild script"
+      ],
+      "solution": "Add build verification and smoke tests"
+    }
+  },
+  
+  "recommendations": {
+    "immediate": [
+      {
+        "action": "Consolidate configuration",
+        "steps": [
+          "Remove railway.json, use only railway.toml",
+          "Set dockerfilePath to single, simple Dockerfile",
+          "Remove custom start commands"
+        ]
+      },
+      {
+        "action": "Simplify Dockerfile",
+        "steps": [
+          "Use single-stage build initially",
+          "Remove custom server wrapper",
+          "Use standard 'npm start' command"
+        ]
+      },
+      {
+        "action": "Fix Next.js configuration",
+        "steps": [
+          "Remove 'standalone' output temporarily",
+          "Simplify webpack configuration",
+          "Ensure standard build output"
+        ]
+      }
+    ],
+    
+    "architectural": [
+      {
+        "action": "Standardize deployment",
+        "rationale": "Next.js has well-established deployment patterns",
+        "approach": "Follow Vercel/Railway Next.js deployment guides exactly"
+      },
+      {
+        "action": "Remove custom server",
+        "rationale": "Path alias issues can be solved at build time",
+        "approach": "Use Next.js built-in server with proper configuration"
+      },
+      {
+        "action": "Implement proper CI/CD",
+        "rationale": "Catch deployment issues before they reach production",
+        "approach": "Add build verification, smoke tests, and gradual rollout"
+      }
+    ]
+  },
+  
+  "proposed_solution": {
+    "phase1": "Get basic deployment working",
+    "phase2": "Optimize for production (multi-stage, caching)",
+    "phase3": "Add custom features if needed",
+    "principle": "Start simple, add complexity only when proven necessary"
+  }
+}
