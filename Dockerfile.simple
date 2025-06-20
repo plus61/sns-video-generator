@@ -1,0 +1,26 @@
+# Railway用シンプルDockerfile - 最小構成
+FROM node:18-alpine
+
+WORKDIR /app
+
+# 依存関係ファイルをコピー
+COPY package*.json ./
+
+# 依存関係をインストール（--legacy-peer-depsで依存関係エラーを回避）
+RUN npm install --legacy-peer-deps
+
+# アプリケーションコードをコピー
+COPY . .
+
+# 環境変数設定
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# ビルド実行
+RUN npm run build
+
+# ポート設定
+EXPOSE 3000
+
+# 起動コマンド（Next.jsのデフォルトサーバーを使用）
+CMD ["npm", "start"]

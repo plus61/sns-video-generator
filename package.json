@@ -5,10 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "postbuild": "cp -r .next/static .next/standalone/.next/ 2>/dev/null || true && cp -r public .next/standalone/ 2>/dev/null || true",
-    "start": "next start",
-    "start:custom": "node server.js",
-    "start:railway": "node server.js",
+    "start": "next start -p ${PORT:-3000}",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
