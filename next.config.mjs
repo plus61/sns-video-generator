@@ -18,6 +18,17 @@ const nextConfig = {
   
   // Module transpilation for problematic packages
   transpilePackages: ['@supabase/ssr'],
+  
+  // Railway optimization
+  swcMinify: true,
+  compress: true,
+  productionBrowserSourceMaps: false,
+  
+  // Environment variables
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  },
 };
 
 export default nextConfig;
