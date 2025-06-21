@@ -1,7 +1,16 @@
-import { type NextRequest } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
+  // Allow health checks and other public API routes to bypass authentication
+  if (
+    request.nextUrl.pathname.startsWith('/api/health') ||
+    request.nextUrl.pathname.startsWith('/api/test-supabase') ||
+    request.nextUrl.pathname.startsWith('/api/queue/stats')
+  ) {
+    return NextResponse.next()
+  }
+
   return await updateSession(request)
 }
 
