@@ -1,5 +1,9 @@
+[build]
+builder = "DOCKERFILE"
+
 [deploy]
-startCommand = "npm start"
+# Dockerfileで定義されたCMDを使用（standaloneビルド対応）
+# startCommandを指定しないことで、DockerfileのCMDが使われる
 healthcheckPath = "/api/health/simple"
 
 [env]
