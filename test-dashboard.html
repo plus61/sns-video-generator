@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テスト成功率ダッシュボード</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+            margin: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #4ade80;
+        }
+        .metric-card {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .metric-value {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+        }
+        .success { color: #4ade80; }
+        .warning { color: #fbbf24; }
+        .error { color: #f87171; }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #333;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ade80, #22c55e);
+            transition: width 0.5s ease;
+        }
+        .timestamp {
+            text-align: center;
+            color: #888;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 SNS動画生成 テスト成功率ダッシュボード</h1>
+        
+        <div class="metric-card">
+            <h2>成功率</h2>
+            <div class="metric-value" id="success-rate">--</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+            <div class="metric-card">
+                <h3>総テスト数</h3>
+                <div class="metric-value" id="total-tests">--</div>
+            </div>
+            <div class="metric-card">
+                <h3>成功 ✅</h3>
+                <div class="metric-value success" id="passed-tests">--</div>
+            </div>
+            <div class="metric-card">
+                <h3>失敗 ❌</h3>
+                <div class="metric-value error" id="failed-tests">--</div>
+            </div>
+        </div>
+        
+        <div class="timestamp" id="timestamp">最終更新: --</div>
+    </div>
+    
+    <script>
+        // テストデータの更新（実際はファイルから読み込み）
+        function updateDashboard() {
+            // デモデータ（実際はtest-monitor.logから取得）
+            const data = {
+                total: 8,
+                passed: 7,
+                failed: 1,
+                timestamp: new Date().toLocaleString('ja-JP')
+            };
+            
+            const successRate = Math.round((data.passed / data.total) * 100);
+            
+            document.getElementById('success-rate').textContent = successRate + '%';
+            document.getElementById('total-tests').textContent = data.total;
+            document.getElementById('passed-tests').textContent = data.passed;
+            document.getElementById('failed-tests').textContent = data.failed;
+            document.getElementById('timestamp').textContent = '最終更新: ' + data.timestamp;
+            
+            // プログレスバー更新
+            document.getElementById('progress-fill').style.width = successRate + '%';
+            
+            // 色の変更
+            const rateElement = document.getElementById('success-rate');
+            if (successRate >= 90) {
+                rateElement.className = 'metric-value success';
+            } else if (successRate >= 70) {
+                rateElement.className = 'metric-value warning';
+            } else {
+                rateElement.className = 'metric-value error';
+            }
+        }
+        
+        // 初回更新
+        updateDashboard();
+        
+        // 30秒ごとに更新
+        setInterval(updateDashboard, 30000);
+    </script>
+</body>
+</html>

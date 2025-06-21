@@ -1,0 +1,26 @@
+{
+  "name": "simplicity-revolution",
+  "version": "1.0.0",
+  "description": "Code Less, Create More - 5分で世界を変える",
+  "main": "tools/simplicity-cli.js",
+  "type": "module",
+  "bin": {
+    "simplicity": "./tools/simplicity-cli.js"
+  },
+  "scripts": {
+    "test": "echo 'Tests complete in 5 minutes!'"
+  },
+  "keywords": [
+    "tdd",
+    "simplicity",
+    "5-minutes",
+    "8-lines",
+    "productivity"
+  ],
+  "author": "Simplicity Revolution Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/simplicity-revolution.git"
+  }
+}

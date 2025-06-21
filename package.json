@@ -5,9 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start -p ${PORT:-3000}",
-    "start:custom": "node custom-server.js",
-    "start:railway": "ls -la && ls -la .next || echo 'No .next' && next start -p ${PORT:-3000}",
+    "start": "next start -p $PORT",
     "lint": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -33,6 +31,7 @@
     "ioredis": "^5.6.1",
     "next": "15.3.3",
     "openai": "^5.3.0",
+    "playwright": "^1.53.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-dropzone": "^14.3.8",

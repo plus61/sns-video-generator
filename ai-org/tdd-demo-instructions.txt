@@ -1,0 +1,23 @@
+🚀 TDD実証即時開始！ペアプログラミング with Worker3
+
+【動画サムネイル生成機能 - Red Phase（今から5分）】
+
+1. test/thumbnail.test.ts を作成：
+
+describe('Video Thumbnail Generator', () => {
+  test('should generate thumbnail from video', async () => {
+    const thumbnail = await generateThumbnail('test.mp4');
+    expect(thumbnail).toBeDefined();
+    expect(thumbnail.path).toContain('.jpg');
+  });
+});
+
+2. テストを実行して失敗を確認
+3. Worker3と思考プロセスを共有
+
+【タイムライン】
+- 0-5分: Red（失敗するテスト）
+- 5-15分: Green（最小実装）
+- 15-20分: Refactor（7行以内に）
+
+開始時刻を記録して、GO！
