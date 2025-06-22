@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { AudioLibrary, AudioTrack, AudioCategory, AudioMood } from '@/lib/audio-library'
+import { AudioLibrary, AudioTrack, AudioCategory, AudioMood } from '../../lib/audio-library'
 import { VideoSegment } from '@/types'
 
 interface AudioLibraryPanelProps {

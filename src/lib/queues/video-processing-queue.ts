@@ -1,10 +1,10 @@
 import { Queue, Worker, Job, Redis, getQueueConfig } from '../queue-wrapper'
-import { supabaseAdmin } from '@/lib/supabase'
-import { getVideoProcessor } from '@/lib/video-processor'
-import { getThumbnailGenerator } from '@/lib/thumbnail-generator'
-import { getVideoMetadataExtractor } from '@/lib/video-metadata-extractor'
-import { getVideoChunkOptimizer } from '@/lib/video-chunk-optimizer'
-import { webhookService } from '@/lib/services/webhook-service'
+import { supabaseAdmin } from '../../lib/supabase'
+import { getVideoProcessor } from '../../lib/video-processor'
+import { getThumbnailGenerator } from '../../lib/thumbnail-generator'
+import { getVideoMetadataExtractor } from '../../lib/video-metadata-extractor'
+import { getVideoChunkOptimizer } from '../../lib/video-chunk-optimizer'
+import { webhookService } from '../../lib/services/webhook-service'
 
 // Job data interfaces
 interface VideoProcessingJobData {

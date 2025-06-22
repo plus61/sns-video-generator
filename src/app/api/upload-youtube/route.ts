@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "../../../utils/supabase/server"
 
-import { supabaseAdmin } from '@/lib/supabase'
+import { supabaseAdmin } from '../../../lib/supabase'
 import { v4 as uuidv4 } from 'uuid'
-import { getYouTubeDownloader } from '@/lib/youtube-downloader-dynamic'
-import { DownloadErrorType } from '@/lib/youtube-downloader'
-import { YouTubeAPIService, YouTubeAPIErrorType } from '@/lib/youtube-api-service'
+import { getYouTubeDownloader } from '../../../lib/youtube-downloader-dynamic'
+import { DownloadErrorType } from '../../../lib/youtube-downloader'
+import { YouTubeAPIService, YouTubeAPIErrorType } from '../../../lib/youtube-api-service'
 
 export async function POST(request: NextRequest) {
   try {

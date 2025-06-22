@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Header } from '@/components/ui/Header'
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { useAuth } from '@/hooks/useAuth'
-import { VideoProjectCard } from '@/components/ui/VideoProjectCard'
-import { VideoUploadCard } from '@/components/ui/VideoUploadCard'
-import { UsageCard } from '@/components/ui/UsageCard'
-import type { VideoProject, VideoUpload } from '@/types'
+import { Header } from '../../components/ui/Header'
+import { ProtectedRoute } from '../../components/auth/ProtectedRoute'
+import { useAuth } from '../../hooks/useAuth'
+import { VideoProjectCard } from '../../components/ui/VideoProjectCard'
+import { VideoUploadCard } from '../../components/ui/VideoUploadCard'
+import { UsageCard } from '../../components/ui/UsageCard'
+import type { VideoProject, VideoUpload } from '../../types'
 
 interface UserUsage {
   videos_generated: number
@@ -35,10 +35,10 @@ function DashboardContent() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (status === 'authenticated') {
+    if (user) {
       fetchData()
     }
-  }, [status])
+  }, [user])
 
   const fetchData = async () => {
     try {
@@ -92,7 +92,7 @@ function DashboardContent() {
             Dashboard
           </h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            Welcome back, {session?.user?.name || session?.user?.email}!
+            Welcome back, {user?.email}!
           </p>
         </div>
 

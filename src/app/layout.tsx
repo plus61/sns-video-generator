@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 // Temporarily disable Google Fonts to fix build issues
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { GlobalErrorBoundary } from "@/components/error/GlobalErrorBoundary";
+import { GlobalErrorBoundary } from "../components/error/GlobalErrorBoundary";
 
 // Temporarily disable font configurations
 // const geistSans = Geist({

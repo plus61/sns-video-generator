@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { VideoProject } from '@/types'
+import type { VideoProject } from '../../types'
 
 interface VideoProjectCardProps {
   project: VideoProject

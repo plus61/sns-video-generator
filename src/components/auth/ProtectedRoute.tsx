@@ -1,7 +1,7 @@
 'use client'
 
-import { useAuth } from '@/hooks/useAuth'
-import { Header } from '@/components/ui/Header'
+import { useAuth } from '../../hooks/useAuth'
+import { Header } from '../ui/Header'
 import { useRouter } from 'next/navigation'
 
 interface ProtectedRouteProps {
@@ -70,3 +70,5 @@ export function ProtectedRoute({
   // Render protected content
   return <>{children}</>
 }
+
+export default ProtectedRoute

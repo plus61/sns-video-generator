@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "../../../utils/supabase/server"
 
-import { getVideoProject, updateVideoProject, getVideoTemplates } from '@/lib/database'
+import { getVideoProject, updateVideoProject, getVideoTemplates } from '../../../lib/database'
 
 export async function POST(request: NextRequest) {
   try {

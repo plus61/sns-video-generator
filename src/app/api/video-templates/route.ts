@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getVideoTemplates } from '@/lib/database'
+import { getVideoTemplates } from '../../../lib/database'
 
 export async function GET() {
   try {

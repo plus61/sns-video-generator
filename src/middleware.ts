@@ -1,12 +1,14 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { updateSession } from '@/utils/supabase/middleware'
+import { updateSession } from './utils/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
   // Allow health checks and other public API routes to bypass authentication
   if (
     request.nextUrl.pathname.startsWith('/api/health') ||
     request.nextUrl.pathname.startsWith('/api/test-supabase') ||
-    request.nextUrl.pathname.startsWith('/api/queue/stats')
+    request.nextUrl.pathname.startsWith('/api/queue/stats') ||
+    request.nextUrl.pathname.startsWith('/test') ||
+    request.nextUrl.pathname.startsWith('/api/split-video')
   ) {
     return NextResponse.next()
   }

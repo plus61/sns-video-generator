@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ttsService, type TTSOptions } from '@/lib/tts'
+import { ttsService, type TTSOptions } from '../../lib/tts'
 
 interface TTSControlsProps {
   text: string

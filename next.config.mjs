@@ -20,7 +20,6 @@ const nextConfig = {
   transpilePackages: ['@supabase/ssr'],
   
   // Railway optimization
-  swcMinify: true,
   compress: true,
   productionBrowserSourceMaps: false,
   

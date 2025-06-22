@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "../../../utils/supabase/server"
 
-import { createVideoAnalysisService } from '@/lib/video-analysis-service'
-import { DEFAULT_SEGMENT_CRITERIA, HIGH_QUALITY_SEGMENT_CRITERIA } from '@/lib/vision-analyzer'
-import { supabaseAdmin } from '@/lib/supabase'
+import { createVideoAnalysisService } from '../../../lib/video-analysis-service'
+import { DEFAULT_SEGMENT_CRITERIA, HIGH_QUALITY_SEGMENT_CRITERIA } from '../../../lib/vision-analyzer'
+import { supabaseAdmin } from '../../../lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {

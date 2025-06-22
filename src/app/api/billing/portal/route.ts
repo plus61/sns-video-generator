@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "../../../../utils/supabase/server"
 
-import { billingService } from '@/lib/billing-service'
+import { billingService } from '../../../../lib/billing-service'
 
 export async function POST(request: NextRequest) {
   try {

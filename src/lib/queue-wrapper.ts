@@ -13,22 +13,29 @@ let RedisImpl: any
 
 if (isVercel || isBuildTime) {
   // Vercel/Build: Use mock implementations
-  const mockModule = require('./queues/video-processing-queue-vercel')
-  QueueImpl = mockModule.MockQueue || class MockQueue {
-    constructor(name: string) {
-      console.log(`📝 Fallback MockQueue: ${name}`)
+  try {
+    const mockModule = require('./queues/video-processing-queue-vercel')
+    QueueImpl = mockModule.MockQueue
+    WorkerImpl = mockModule.MockWorker
+    RedisImpl = mockModule.mockRedis
+  } catch (error) {
+    // Fallback implementations if module import fails
+    QueueImpl = class MockQueue {
+      constructor(name: string) {
+        console.log(`📝 Fallback MockQueue: ${name}`)
+      }
+      async add() { return { id: 'mock', data: {} } }
+      async getJob() { return null }
+      async getJobCounts() { return { waiting: 0, active: 0, completed: 0, failed: 0 } }
+      on() {}
     }
-    async add() { return { id: 'mock', data: {} } }
-    async getJob() { return null }
-    async getJobCounts() { return { waiting: 0, active: 0, completed: 0, failed: 0 } }
-    on() {}
+    WorkerImpl = class MockWorker {
+      constructor() { console.log('👷 Fallback MockWorker') }
+      on() {}
+      async close() {}
+    }
+    RedisImpl = { disconnect: async () => {} }
   }
-  WorkerImpl = mockModule.MockWorker || class MockWorker {
-    constructor() { console.log('👷 Fallback MockWorker') }
-    on() {}
-    async close() {}
-  }
-  RedisImpl = mockModule.mockRedis || { disconnect: async () => {} }
 } else {
   // Railway/Production: Use real BullMQ only if not in Vercel-like environment
   try {

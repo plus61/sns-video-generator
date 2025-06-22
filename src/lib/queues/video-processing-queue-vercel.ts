@@ -187,23 +187,43 @@ class MockWorker {
   async close(): Promise<void> {
     console.log(`🛑 MockWorker closed: ${this.queueName}`)
   }
+
+  async disconnect(): Promise<void> {
+    console.log(`🔌 MockWorker disconnected: ${this.queueName}`)
+  }
 }
 
 // Environment detection
 const isVercel = process.env.VERCEL === '1' || process.env.DISABLE_BULLMQ === 'true'
 const isRailway = !!process.env.REDIS_URL && !isVercel
 
+// Import real queue for non-Vercel environments
+let realQueue: any
+let RealWorker: any
+
+if (!isVercel) {
+  try {
+    const queueModule = require('./video-processing-queue')
+    realQueue = queueModule.videoProcessingQueue
+    const bullmq = require('bullmq')
+    RealWorker = bullmq.Worker
+  } catch (error) {
+    console.error('Failed to load BullMQ dependencies:', error)
+    // Fallback to mock implementation
+    realQueue = new MockQueue('video-processing')
+  }
+}
+
 // Export appropriate implementation based on environment
 export const videoProcessingQueue = isVercel 
   ? new MockQueue('video-processing')
-  : require('./video-processing-queue').videoProcessingQueue
+  : (realQueue || new MockQueue('video-processing'))
 
 export const createWorker = (queueName: string, processor: Function, options: any = {}) => {
-  if (isVercel) {
+  if (isVercel || !RealWorker) {
     return new MockWorker(queueName, processor, options)
   } else {
-    const { Worker } = require('bullmq')
-    return new Worker(queueName, processor, options)
+    return new RealWorker(queueName, processor, options)
   }
 }
 
@@ -221,4 +241,9 @@ console.log(`   DISABLE_BULLMQ: ${process.env.DISABLE_BULLMQ}`)
 console.log(`   REDIS_URL: ${process.env.REDIS_URL ? 'Set' : 'Not set'}`)
 console.log(`   Using: ${isVercel ? 'Mock Queue (Vercel)' : 'BullMQ (Railway)'}`)
 
-export default isVercel ? new MockWorker('video-processing', () => {}, {}) : null
+// Export classes for queue-wrapper to use
+export { MockQueue, MockWorker }
+
+// Default export for compatibility
+const defaultExport = isVercel ? new MockWorker('video-processing', () => {}, {}) : null
+export default defaultExport

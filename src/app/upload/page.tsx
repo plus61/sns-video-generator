@@ -1,134 +1,178 @@
 'use client'
 
-import { useState, Suspense, useEffect } from 'react'
-import { Header } from '@/components/ui/Header'
-import { VideoUploader } from '@/components/ui/VideoUploader'
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { useAuth } from '@/hooks/useAuth'
-import { measureComponentRender } from '@/lib/performance-monitor'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import VideoUpload from '../../components/VideoUpload'
 
-function UploadContent() {
-  useAuth({ required: true })
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [isUploading, setIsUploading] = useState(false)
-
-  useEffect(() => {
-    const stopMeasurement = measureComponentRender('UploadPage')
-    return stopMeasurement
-  }, [])
+export default function UploadPage() {
+  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState(false)
 
   const handleUploadComplete = (videoId: string) => {
-    // Navigate to analysis page with video ID
-    window.location.href = `/analyze/${videoId}`
+    setSuccess(true)
+    setError(null)
+    
+    // Redirect to analyze page after 2 seconds
+    setTimeout(() => {
+      router.push(`/analyze/${videoId}`)
+    }, 2000)
   }
 
-  const handleUploadProgress = (progress: number) => {
-    setUploadProgress(progress)
+  const handleError = (errorMessage: string) => {
+    setError(errorMessage)
+    setSuccess(false)
   }
-
-  // Protected route handles authentication automatically
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header />
-      
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
             動画をアップロード
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            長尺動画をアップロードして、AIがエンゲージメントの高いショート動画を自動抽出します
+          <p className="text-lg text-gray-600">
+            ローカルファイルまたはYouTube URLから動画をインポート
           </p>
         </div>
 
-        <VideoUploader
-          onUploadComplete={handleUploadComplete}
-          onUploadProgress={handleUploadProgress}
-          onUploadStart={() => setIsUploading(true)}
-          onUploadEnd={() => setIsUploading(false)}
-        />
-
-        {isUploading && (
-          <div className="mt-8 max-w-md mx-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                アップロード中...
-              </h3>
-              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                <div
-                  className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
+        {/* Error Alert */}
+        {error && (
+          <div className="mb-6 max-w-2xl mx-auto bg-red-50 border-l-4 border-red-400 p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                {Math.round(uploadProgress)}% 完了
-              </p>
+              <div className="ml-3">
+                <p className="text-sm text-red-700">{error}</p>
+              </div>
             </div>
           </div>
         )}
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Success Alert */}
+        {success && (
+          <div className="mb-6 max-w-2xl mx-auto bg-green-50 border-l-4 border-green-400 p-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-green-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-green-700">
+                  アップロード成功！解析ページへ移動します...
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Video Upload Component */}
+        <VideoUpload
+          onUploadComplete={handleUploadComplete}
+          onError={handleError}
+        />
+
+        {/* Features */}
+        <div className="mt-16 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-600 text-white mx-auto">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              1. 動画をアップロード
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              高速アップロード
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              ローカルファイルまたはYouTube URLから動画をアップロード
+            <p className="mt-2 text-sm text-gray-500">
+              最大500MBの動画を高速でアップロード
             </p>
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-600 text-white mx-auto">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              2. AI解析
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              YouTube対応
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              音声認識と映像解析でコンテンツを自動分析
+            <p className="mt-2 text-sm text-gray-500">
+              YouTube URLから直接インポート可能
             </p>
           </div>
 
           <div className="text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-purple-100 dark:bg-purple-900/20 rounded-full flex items-center justify-center">
-              <svg className="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            <div className="flex items-center justify-center h-12 w-12 rounded-md bg-blue-600 text-white mx-auto">
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              3. ショート動画生成
+            <h3 className="mt-4 text-lg font-medium text-gray-900">
+              AI自動解析
             </h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              エンゲージメントの高いセグメントを自動抽出
+            <p className="mt-2 text-sm text-gray-500">
+              アップロード後、自動でAI解析開始
             </p>
           </div>
         </div>
-      </main>
+      </div>
     </div>
-  )
-}
-
-export default function Upload() {
-  return (
-    <ProtectedRoute>
-      <Suspense fallback={
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-          <Header />
-          <div className="flex items-center justify-center min-h-[60vh]">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
-          </div>
-        </div>
-      }>
-        <UploadContent />
-      </Suspense>
-    </ProtectedRoute>
   )
 }

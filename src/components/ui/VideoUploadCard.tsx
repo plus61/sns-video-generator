@@ -1,8 +1,8 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { VideoUpload } from '@/types'
-import { AnalysisData } from '@/types/analysis-data'
+import { VideoUpload } from '../../types'
+import { AnalysisData } from '../../types/analysis-data'
 
 interface VideoUploadCardProps {
   upload: VideoUpload

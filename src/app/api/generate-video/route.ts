@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "../../../utils/supabase/server"
 
-import { generateVideoScript, generateVideoTitle } from '@/lib/openai'
-import { createVideoProject, checkUserCanGenerate, incrementUserUsage } from '@/lib/database'
+import { generateVideoScript, generateVideoTitle } from '../../../lib/openai'
+import { createVideoProject, checkUserCanGenerate, incrementUserUsage } from '../../../lib/database'
 
 export async function POST(request: NextRequest) {
   try {

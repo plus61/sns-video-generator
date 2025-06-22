@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
-import { videoProcessingQueue } from '@/lib/queues/video-processing-queue'
+import { supabaseAdmin } from '../../../lib/supabase'
+import { videoProcessingQueue } from '../../../lib/queues/video-processing-queue'
 
 interface HealthCheckResponse {
   status: 'healthy' | 'degraded' | 'unhealthy'

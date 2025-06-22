@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "../../../utils/supabase/server"
 
-import { supabaseAdmin } from '@/lib/supabase'
-import { videoProcessingQueue } from '@/lib/queues/video-processing-queue'
-import { webhookService } from '@/lib/services/webhook-service'
+import { supabaseAdmin } from '../../../lib/supabase'
+import { videoProcessingQueue } from '../../../lib/queues/video-processing-queue'
+import { webhookService } from '../../../lib/services/webhook-service'
 import { v4 as uuidv4 } from 'uuid'
 
 interface ProcessVideoRequest {

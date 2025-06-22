@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { Header } from '@/components/ui/Header'
+import { createClient } from '../../utils/supabase/client'
+import { Header } from '../../components/ui/Header'
 
 interface TestResult {
   test: string

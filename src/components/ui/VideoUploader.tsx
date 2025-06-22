@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { performanceMonitor } from '@/lib/performance-monitor'
+import { performanceMonitor } from '../../lib/performance-monitor'
 import { ProgressBar } from './ProgressBar'
 import { ErrorAlert } from './ErrorAlert'
 

@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { SocialPlatform, PostContent, SocialMediaAccount, PostTemplate } from '@/types/social-platform'
-import { PLATFORM_CONFIGS } from '@/lib/social-publisher'
-import { PostTemplateManager } from '@/lib/post-template-manager'
-import { PostScheduler, OptimalPostingTime } from '@/lib/post-scheduler'
+import { PLATFORM_CONFIGS } from '../../lib/social-publisher'
+import { PostTemplateManager } from '../../lib/post-template-manager'
+import { PostScheduler, OptimalPostingTime } from '../../lib/post-scheduler'
 import { ErrorAlert } from '@/components/ui/ErrorAlert'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 
@@ -193,7 +193,7 @@ export function SocialPublishPanel({
         }])
       } else {
         // 即座に投稿
-        const { SocialPublisher } = await import('@/lib/social-publisher')
+        const { SocialPublisher } = await import('../../lib/social-publisher')
         const publisher = SocialPublisher.getInstance()
 
         // 進捗更新をシミュレート

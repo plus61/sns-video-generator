@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { TextElement, TextStyle, TextAnimation } from '@/lib/video-text-editor'
+import { TextElement, TextStyle, TextAnimation } from '../../lib/video-text-editor'
 
 interface TextEditorPanelProps {
   elements: TextElement[]

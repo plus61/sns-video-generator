@@ -1,4 +1,4 @@
-import { PlatformOptimizedSegment } from '@/lib/segment-extractor'
+import { PlatformOptimizedSegment } from '../lib/segment-extractor'
 
 export interface PlatformOptimizations {
   tiktok: PlatformOptimizedSegment[]

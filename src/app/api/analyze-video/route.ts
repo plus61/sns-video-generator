@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "../../../utils/supabase/server"
 
-import { supabaseAdmin } from '@/lib/supabase'
-import { whisperService, type ContentSegment, type TranscriptionResult } from '@/lib/whisper'
-import { gpt4vService, type EnhancedSegment } from '@/lib/gpt4v'
-import { SegmentExtractor } from '@/lib/segment-extractor'
-import { AnalysisResult } from '@/types/analysis-result'
-import { PlatformOptimizations } from '@/types/platform-optimization'
+import { supabaseAdmin } from '../../../lib/supabase'
+import { whisperService, type ContentSegment, type TranscriptionResult } from '../../../lib/whisper'
+import { gpt4vService, type EnhancedSegment } from '../../../lib/gpt4v'
+import { SegmentExtractor } from '../../../lib/segment-extractor'
+import { AnalysisResult } from '../../../types/analysis-result'
+import { PlatformOptimizations } from '../../../types/platform-optimization'
 import OpenAI from 'openai'
 
 interface AnalyzedSegment extends ContentSegment {

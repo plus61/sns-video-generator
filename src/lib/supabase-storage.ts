@@ -105,6 +105,9 @@ export class SupabaseStorageService {
       // Extract video metadata
       const metadata = await this.extractVideoMetadata(file)
 
+      // Generate thumbnail
+      const thumbnailUrl = await this.generateAndUploadThumbnail(file, videoId)
+
       // Update database with success status
       const { error: updateError } = await supabaseAdmin
         .from('video_uploads')
@@ -112,6 +115,7 @@ export class SupabaseStorageService {
           storage_path: storagePath,
           public_url: publicUrl,
           duration: metadata.duration,
+          thumbnail_url: thumbnailUrl,
           status: 'ready_for_analysis',
           updated_at: new Date().toISOString()
         })
@@ -270,9 +274,14 @@ export class SupabaseStorageService {
   }
 
   /**
-   * Extract video metadata using Web APIs
+   * Extract video metadata using Web APIs (client-side only)
    */
   private async extractVideoMetadata(file: File): Promise<Partial<VideoMetadata>> {
+    // Skip metadata extraction on server side
+    if (typeof window === 'undefined') {
+      return {}
+    }
+
     return new Promise((resolve) => {
       const video = document.createElement('video')
       const url = URL.createObjectURL(file)
@@ -339,6 +348,104 @@ export class SupabaseStorageService {
         success: false,
         error: error instanceof Error ? error.message : 'Delete failed'
       }
+    }
+  }
+
+  /**
+   * Generate and upload video thumbnail
+   */
+  private async generateAndUploadThumbnail(file: File, videoId: string): Promise<string | null> {
+    try {
+      // Skip thumbnail generation on server side
+      if (typeof window === 'undefined') {
+        return null
+      }
+
+      return new Promise((resolve) => {
+        const video = document.createElement('video')
+        const canvas = document.createElement('canvas')
+        const url = URL.createObjectURL(file)
+
+        video.onloadeddata = async () => {
+          // Seek to 10% of video duration for thumbnail
+          video.currentTime = video.duration * 0.1
+        }
+
+        video.onseeked = async () => {
+          // Set canvas dimensions
+          canvas.width = 1280
+          canvas.height = 720
+
+          const ctx = canvas.getContext('2d')
+          if (!ctx) {
+            URL.revokeObjectURL(url)
+            resolve(null)
+            return
+          }
+
+          // Draw video frame to canvas
+          const aspectRatio = video.videoWidth / video.videoHeight
+          let drawWidth = canvas.width
+          let drawHeight = canvas.height
+
+          if (aspectRatio > canvas.width / canvas.height) {
+            drawHeight = canvas.width / aspectRatio
+          } else {
+            drawWidth = canvas.height * aspectRatio
+          }
+
+          const x = (canvas.width - drawWidth) / 2
+          const y = (canvas.height - drawHeight) / 2
+
+          ctx.fillStyle = '#000'
+          ctx.fillRect(0, 0, canvas.width, canvas.height)
+          ctx.drawImage(video, x, y, drawWidth, drawHeight)
+
+          // Convert canvas to blob
+          canvas.toBlob(async (blob) => {
+            if (!blob) {
+              URL.revokeObjectURL(url)
+              resolve(null)
+              return
+            }
+
+            // Upload thumbnail
+            const thumbnailPath = `${this.userId}/${videoId}_thumbnail.jpg`
+            const { error } = await supabaseClient.storage
+              .from(this.bucketName)
+              .upload(thumbnailPath, blob, {
+                contentType: 'image/jpeg',
+                cacheControl: '3600',
+                upsert: true
+              })
+
+            URL.revokeObjectURL(url)
+
+            if (error) {
+              console.error('Thumbnail upload error:', error)
+              resolve(null)
+              return
+            }
+
+            // Get public URL
+            const { data: { publicUrl } } = supabaseClient.storage
+              .from(this.bucketName)
+              .getPublicUrl(thumbnailPath)
+
+            resolve(publicUrl)
+          }, 'image/jpeg', 0.8)
+        }
+
+        video.onerror = () => {
+          URL.revokeObjectURL(url)
+          resolve(null)
+        }
+
+        video.src = url
+      })
+    } catch (error) {
+      console.error('Thumbnail generation error:', error)
+      return null
     }
   }
 

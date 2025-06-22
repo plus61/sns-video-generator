@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
-import { stripe, STRIPE_CONFIG } from '@/lib/stripe-config'
-import { billingService } from '@/lib/billing-service'
+import { stripe, STRIPE_CONFIG } from '../../../../lib/stripe-config'
+import { billingService } from '../../../../lib/billing-service'
 
 export async function POST(request: NextRequest) {
   // Return early if Stripe is not configured

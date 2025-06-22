@@ -6,7 +6,7 @@ import {
   PostData, 
   PostResult,
   PLATFORM_CONFIGS 
-} from '@/lib/social-media-integration'
+} from '../../lib/social-media-integration'
 
 interface SocialMediaPostPanelProps {
   videoFile?: File | Blob

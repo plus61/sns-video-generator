@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/utils/supabase/server'
-import { downloadYouTubeVideo, youtubeDownloader } from '@/lib/youtube-downloader-enhanced'
+import { createClient } from '../../../utils/supabase/server'
+import { downloadYouTubeVideo, youtubeDownloader } from '../../../lib/youtube-downloader-enhanced'
 
 export async function POST(request: NextRequest) {
   try {

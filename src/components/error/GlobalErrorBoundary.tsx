@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { ErrorBoundary } from './ErrorBoundary'
-import { errorReporter } from '@/lib/error-reporting'
+import { errorReporter } from '../../lib/error-reporting'
 
 interface GlobalErrorBoundaryProps {
   children: React.ReactNode

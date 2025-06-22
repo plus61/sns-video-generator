@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import SignInClient from './signin-client'
-import { Header } from '@/components/ui/Header'
+import { Header } from '../../../components/ui/Header'
 
 function SignInFallback() {
   return (

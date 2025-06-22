@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { login, signup } from '../actions'
-import { createClient } from '@/utils/supabase/client'
-import { Header } from '@/components/ui/Header'
+import { createClient } from '../../../utils/supabase/client'
+import { Header } from '../../../components/ui/Header'
 
 export default function SignInClient() {
   const router = useRouter()

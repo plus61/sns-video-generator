@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { Header } from '@/components/ui/Header'
+import { Header } from '../ui/Header'
 import { NavigationMenu } from '@/components/ui/NavigationMenu'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 

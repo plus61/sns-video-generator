@@ -1,0 +1,175 @@
+{
+  "summary": {
+    "totalDuration": 6606.8989181518555,
+    "averageDuration": 1321.379783630371,
+    "maxDuration": 2002.2664589881897,
+    "minDuration": 101.60941696166992,
+    "peakMemoryUsage": 13624,
+    "operationCount": 5
+  },
+  "results": [
+    {
+      "operation": "video-upload",
+      "duration": 101.60941696166992,
+      "memoryUsage": {
+        "start": {
+          "rss": 74678272,
+          "heapTotal": 12435456,
+          "heapUsed": 9148872,
+          "external": 1613799,
+          "arrayBuffers": 91321
+        },
+        "end": {
+          "rss": 74694656,
+          "heapTotal": 12435456,
+          "heapUsed": 9162496,
+          "external": 1613839,
+          "arrayBuffers": 91321
+        },
+        "delta": {
+          "heapUsed": 13624,
+          "heapTotal": 0,
+          "external": 40,
+          "arrayBuffers": 0
+        }
+      },
+      "metadata": {
+        "filePath": "/tmp/synthetic-video.mp4",
+        "fileSize": 52428800
+      },
+      "timestamp": 1750524407358
+    },
+    {
+      "operation": "video-transcoding",
+      "duration": 1001.2805831432343,
+      "memoryUsage": {
+        "start": {
+          "rss": 74711040,
+          "heapTotal": 12435456,
+          "heapUsed": 9168456,
+          "external": 1613839,
+          "arrayBuffers": 91321
+        },
+        "end": {
+          "rss": 74792960,
+          "heapTotal": 12435456,
+          "heapUsed": 9171472,
+          "external": 1613839,
+          "arrayBuffers": 91321
+        },
+        "delta": {
+          "heapUsed": 3016,
+          "heapTotal": 0,
+          "external": 0,
+          "arrayBuffers": 0
+        }
+      },
+      "metadata": {
+        "inputPath": "/tmp/synthetic-video.mp4",
+        "outputPath": "/tmp/output.mp4",
+        "resolution": "720p"
+      },
+      "timestamp": 1750524408359
+    },
+    {
+      "operation": "ai-analysis",
+      "duration": 2002.2664589881897,
+      "memoryUsage": {
+        "start": {
+          "rss": 74874880,
+          "heapTotal": 12435456,
+          "heapUsed": 9174952,
+          "external": 1613839,
+          "arrayBuffers": 91321
+        },
+        "end": {
+          "rss": 74940416,
+          "heapTotal": 12435456,
+          "heapUsed": 9177824,
+          "external": 1613839,
+          "arrayBuffers": 91321
+        },
+        "delta": {
+          "heapUsed": 2872,
+          "heapTotal": 0,
+          "external": 0,
+          "arrayBuffers": 0
+        }
+      },
+      "metadata": {
+        "videoPath": "/tmp/synthetic-video.mp4",
+        "analysisType": "whisper-transcription"
+      },
+      "timestamp": 1750524410362
+    },
+    {
+      "operation": "ai-analysis",
+      "duration": 2000.8123750686646,
+      "memoryUsage": {
+        "start": {
+          "rss": 74940416,
+          "heapTotal": 12435456,
+          "heapUsed": 9181296,
+          "external": 1613839,
+          "arrayBuffers": 91321
+        },
+        "end": {
+          "rss": 74956800,
+          "heapTotal": 12435456,
+          "heapUsed": 9184312,
+          "external": 1613839,
+          "arrayBuffers": 91321
+        },
+        "delta": {
+          "heapUsed": 3016,
+          "heapTotal": 0,
+          "external": 0,
+          "arrayBuffers": 0
+        }
+      },
+      "metadata": {
+        "videoPath": "/tmp/synthetic-video.mp4",
+        "analysisType": "gpt4v-scene-analysis"
+      },
+      "timestamp": 1750524412364
+    },
+    {
+      "operation": "segment-extraction",
+      "duration": 1500.930083990097,
+      "memoryUsage": {
+        "start": {
+          "rss": 74956800,
+          "heapTotal": 12435456,
+          "heapUsed": 9187800,
+          "external": 1613839,
+          "arrayBuffers": 91321
+        },
+        "end": {
+          "rss": 75005952,
+          "heapTotal": 12435456,
+          "heapUsed": 9191040,
+          "external": 1613839,
+          "arrayBuffers": 91321
+        },
+        "delta": {
+          "heapUsed": 3240,
+          "heapTotal": 0,
+          "external": 0,
+          "arrayBuffers": 0
+        }
+      },
+      "metadata": {
+        "videoPath": "/tmp/synthetic-video.mp4",
+        "segmentCount": 10
+      },
+      "timestamp": 1750524413866
+    }
+  ],
+  "metadata": {
+    "platform": "darwin",
+    "nodeVersion": "v18.20.4",
+    "cpuCount": 8,
+    "totalMemory": 25769803776,
+    "timestamp": 1750524413885
+  }
+}

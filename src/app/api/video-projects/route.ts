@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "../../../utils/supabase/server"
 
-import { getVideoProjects } from '@/lib/database'
+import { getVideoProjects } from '../../../lib/database'
 
 export async function GET() {
   try {

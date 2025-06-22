@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from "@/utils/supabase/server"
+import { createClient } from "../../../../utils/supabase/server"
 
-import { billingService } from '@/lib/billing-service'
+import { billingService } from '../../../../lib/billing-service'
 
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
     const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (!session?.user?.id || !session?.user?.email) {
+    if (!user?.id || !user?.email) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

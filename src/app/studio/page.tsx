@@ -2,16 +2,16 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Header } from '@/components/ui/Header'
-import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
-import { useAuth } from '@/hooks/useAuth'
-import { VideoTemplateSelector } from '@/components/ui/VideoTemplateSelector'
-import { VideoPreview } from '@/components/ui/VideoPreview'
-import { VideoGenerator } from '@/components/ui/VideoGenerator'
-import { VideoDownloader } from '@/components/ui/VideoDownloader'
-import { TTSControls } from '@/components/ui/TTSControls'
-import { SocialMediaPostPanel } from '@/components/ui/SocialMediaPostPanel'
-import type { VideoTemplate } from '@/types'
+import { Header } from '../../components/ui/Header'
+import { ProtectedRoute } from '../../components/auth/ProtectedRoute'
+import { useAuth } from '../../hooks/useAuth'
+import { VideoTemplateSelector } from '../../components/ui/VideoTemplateSelector'
+import { VideoPreview } from '../../components/ui/VideoPreview'
+import { VideoGenerator } from '../../components/ui/VideoGenerator'
+import { VideoDownloader } from '../../components/ui/VideoDownloader'
+import { TTSControls } from '../../components/ui/TTSControls'
+import { SocialMediaPostPanel } from '../../components/ui/SocialMediaPostPanel'
+import type { VideoTemplate } from '../../types'
 
 function StudioContent() {
   useAuth({ required: true })
