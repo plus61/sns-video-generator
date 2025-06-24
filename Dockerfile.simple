@@ -1,0 +1,52 @@
+# Simple Single-Stage Dockerfile for Railway
+FROM node:18-slim
+
+# Install only essential system dependencies
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    python3 \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install ALL dependencies for build
+RUN npm ci
+
+# Copy all source files
+COPY . .
+
+# Set environment variables
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+ENV HOSTNAME="0.0.0.0"
+ENV PORT=3000
+
+# Create build-time env file with dummy values
+RUN echo "NEXT_PUBLIC_SUPABASE_URL=https://dummy.supabase.co" > .env.production && \
+    echo "NEXT_PUBLIC_SUPABASE_ANON_KEY=dummy-anon-key" >> .env.production && \
+    echo "SUPABASE_SERVICE_ROLE_KEY=dummy-service-role-key" >> .env.production && \
+    echo "OPENAI_API_KEY=dummy-openai-api-key" >> .env.production
+
+# Build the application
+RUN npm run build
+
+# Remove dev dependencies after build
+RUN npm prune --production
+
+# Create necessary directories
+RUN mkdir -p /tmp/video-uploads /tmp/video-analysis
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/api/health || exit 1
+
+# Use the default Next.js server
+CMD ["npm", "start"]
