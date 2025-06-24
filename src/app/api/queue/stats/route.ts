@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from "../../../../utils/supabase/server"
 
-import { videoProcessingQueue } from '../../../../lib/queues/video-processing-queue'
+import { videoProcessingQueue } from '../../../../lib/queues/video-processing-queue-vercel'
 
 interface QueueStatsResponse {
   success: boolean

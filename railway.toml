@@ -1,10 +1,13 @@
 [build]
-builder = "DOCKERFILE"
+builder = "nixpacks"
+buildCommand = "npm ci && npm run build"
 
 [deploy]
-# Dockerfileで定義されたCMDを使用（standaloneビルド対応）
-# startCommandを指定しないことで、DockerfileのCMDが使われる
-healthcheckPath = "/api/health/simple"
+startCommand = "npm start"
+healthcheckPath = "/api/health"
+healthcheckTimeout = 300
+restartPolicyType = "on-failure"
+port = 3000
 
 [env]
 NODE_ENV = "production"
