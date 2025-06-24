@@ -15,7 +15,10 @@ const allowedOrigins = [
   'http://localhost:3001',
   'http://localhost:3000',
   'https://sns-video-generator.up.railway.app',
-  'https://sns-video-generator-production.up.railway.app'
+  'https://sns-video-generator-production.up.railway.app',
+  'https://sns-video-express-api.onrender.com',
+  'https://*.glitch.me',  // Glitch用ワイルドカード
+  'https://sns-video-generator.glitch.me'  // 具体的なGlitch URL
 ];
 
 app.use(cors({

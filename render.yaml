@@ -8,8 +8,6 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-      - key: EXPRESS_PORT
-        value: 3002
       - key: CORS_ORIGIN
         sync: false # Set in Render dashboard
     healthCheckPath: /health
