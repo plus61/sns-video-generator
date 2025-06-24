@@ -1,0 +1,16 @@
+# Render.com deployment configuration for Express API
+services:
+  - type: web
+    name: sns-video-express-api
+    runtime: node
+    buildCommand: npm install
+    startCommand: node express-api-simple.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: EXPRESS_PORT
+        value: 3002
+      - key: CORS_ORIGIN
+        sync: false # Set in Render dashboard
+    healthCheckPath: /health
+    autoDeploy: false
