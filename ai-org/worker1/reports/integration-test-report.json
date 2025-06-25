@@ -1,0 +1,60 @@
+{
+  "timestamp": "2025-06-24T01:25:50.467Z",
+  "totalTests": 3,
+  "successCount": 3,
+  "successRate": "100%",
+  "averageTime": "2.49",
+  "details": [
+    {
+      "video": "教育コンテンツ",
+      "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+      "steps": {
+        "process": {
+          "success": true,
+          "videoId": "demo-jNQXAC9IVRw-1750728344970",
+          "segmentsCount": 3
+        },
+        "split": {
+          "success": false,
+          "error": "videoPath is required"
+        }
+      },
+      "success": true,
+      "totalTime": "2.02"
+    },
+    {
+      "video": "エンタメ動画",
+      "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      "steps": {
+        "process": {
+          "success": true,
+          "videoId": "demo-dQw4w9WgXcQ-1750728348690",
+          "segmentsCount": 3
+        },
+        "split": {
+          "success": false,
+          "error": "videoPath is required"
+        }
+      },
+      "success": true,
+      "totalTime": "3.71"
+    },
+    {
+      "video": "テック解説",
+      "url": "https://www.youtube.com/watch?v=9bZkp7q19f0",
+      "steps": {
+        "process": {
+          "success": true,
+          "videoId": "demo-9bZkp7q19f0-1750728350443",
+          "segmentsCount": 3
+        },
+        "split": {
+          "success": false,
+          "error": "videoPath is required"
+        }
+      },
+      "success": true,
+      "totalTime": "1.75"
+    }
+  ]
+}

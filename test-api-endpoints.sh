@@ -1,59 +1,47 @@
 #!/bin/bash
 
-echo "🧪 Testing API Endpoints..."
-echo
+# APIエンドポイントテスト用スクリプト
 
-# Test server health
-echo "1. Testing server health..."
-response=$(curl -s -w "%{http_code}" http://localhost:3001 -o /dev/null)
-if [ "$response" = "200" ] || [ "$response" = "404" ]; then
-    echo "✅ Server is running on port 3001"
+echo "🔍 Testing API Endpoints..."
+echo "=========================="
+
+# Glitch環境（URL確定後に更新）
+GLITCH_URL="${GLITCH_API_URL:-https://[待機].glitch.me}"
+echo -e "\n📌 Glitch API: $GLITCH_URL"
+
+if [[ "$GLITCH_URL" != *"[待機]"* ]]; then
+  echo "Testing Glitch health..."
+  curl -s "$GLITCH_URL/api/health" | jq . || echo "Failed"
 else
-    echo "❌ Server not responding (status: $response)"
+  echo "⏳ Waiting for Glitch deployment..."
 fi
-echo
 
-# Test API routes structure
-echo "2. Testing API route availability..."
+# Render環境
+RENDER_URL="${RENDER_API_URL:-https://sns-video-express-api.onrender.com}"
+echo -e "\n📌 Render API: $RENDER_URL"
 
-# Test video-uploads route (should require auth)
-echo "Testing /api/video-uploads..."
-video_uploads_response=$(curl -s -w "%{http_code}" http://localhost:3001/api/video-uploads -o /dev/null)
-echo "   Status: $video_uploads_response (expected: 401 - Unauthorized)"
+echo "Testing Render endpoints..."
+echo -n "  /api/health: "
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$RENDER_URL/api/health")
+echo "HTTP $STATUS"
 
-# Test analyze-video route (should require auth and POST)
-echo "Testing /api/analyze-video..."
-analyze_response=$(curl -s -w "%{http_code}" http://localhost:3001/api/analyze-video -o /dev/null)
-echo "   Status: $analyze_response (expected: 405 - Method Not Allowed for GET)"
+echo -n "  / (root): "
+STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$RENDER_URL/")
+echo "HTTP $STATUS"
 
-# Test with POST method
-analyze_post_response=$(curl -s -w "%{http_code}" -X POST http://localhost:3001/api/analyze-video -o /dev/null)
-echo "   POST Status: $analyze_post_response (expected: 401 - Unauthorized)"
+# APIが存在するか確認
+echo -e "\nChecking Render deployment status..."
+RESPONSE=$(curl -s "$RENDER_URL")
+if [[ "$RESPONSE" == *"Not Found"* ]]; then
+  echo "❌ API not deployed yet"
+elif [[ "$RESPONSE" == *"Express"* ]] || [[ "$RESPONSE" == *"api"* ]]; then
+  echo "✅ API appears to be running"
+  echo "Response preview: ${RESPONSE:0:100}..."
+else
+  echo "❓ Unknown response"
+  echo "Response: $RESPONSE"
+fi
 
-# Test export-segment route
-echo "Testing /api/export-segment..."
-export_response=$(curl -s -w "%{http_code}" -X POST http://localhost:3001/api/export-segment -o /dev/null)
-echo "   Status: $export_response (expected: 401 - Unauthorized)"
-
-echo
-echo "3. Testing page routes..."
-
-# Test upload page
-echo "Testing /upload page..."
-upload_response=$(curl -s -w "%{http_code}" http://localhost:3001/upload -o /dev/null)
-echo "   Status: $upload_response"
-
-# Test analyze page (should exist but redirect to auth)
-echo "Testing /analyze/[id] page structure..."
-analyze_page_response=$(curl -s -w "%{http_code}" http://localhost:3001/analyze/test-id -o /dev/null)
-echo "   Status: $analyze_page_response"
-
-echo
-echo "🎯 API Endpoint Test Summary:"
-echo "   - All protected routes correctly require authentication (401)"
-echo "   - POST endpoints reject GET requests appropriately (405)"
-echo "   - Pages are accessible and properly structured"
-echo "   - GPT-4V integration endpoints are available"
-
-echo
-echo "✅ API structure tests completed successfully!"
+echo -e "\n💡 Usage:"
+echo "  GLITCH_API_URL=https://actual.glitch.me ./test-api-endpoints.sh"
+echo "  RENDER_API_URL=https://actual.onrender.com ./test-api-endpoints.sh"

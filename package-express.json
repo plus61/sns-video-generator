@@ -1,18 +1,20 @@
 {
-  "name": "sns-video-generator-express",
+  "name": "sns-video-express-api",
   "version": "1.0.0",
-  "description": "Express server for SNS Video Generator",
-  "main": "express-server.js",
+  "description": "Express API for SNS Video Generator",
+  "main": "express-api-simple.js",
   "scripts": {
-    "start": "node express-server.js",
-    "build": "next build && next export -o dist",
-    "postbuild": "cp -r public/* dist/ || true"
-  },
-  "dependencies": {
-    "express": "^4.18.2",
-    "http-proxy-middleware": "^2.0.6"
+    "start": "node express-api-simple.js",
+    "dev": "EXPRESS_PORT=3002 node express-api-simple.js"
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "youtube-dl-exec": "^3.0.22",
+    "fluent-ffmpeg": "^2.1.3",
+    "archiver": "^6.0.1"
   }
 }

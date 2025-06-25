@@ -29,6 +29,7 @@ interface ChunkedUploadOptions {
   chunkSize?: number
   maxRetries?: number
   onProgress?: (progress: number) => void
+  videoId?: string // Allow passing pre-generated video ID
 }
 
 export class SupabaseStorageService {
@@ -52,8 +53,8 @@ export class SupabaseStorageService {
         return { success: false, error: validation.error }
       }
 
-      // Generate unique video ID and storage path
-      const videoId = crypto.randomUUID()
+      // Use provided videoId or generate new one
+      const videoId = options.videoId || crypto.randomUUID()
       const fileExtension = file.name.split('.').pop() || 'mp4'
       const fileName = `${videoId}.${fileExtension}`
       const storagePath = `${this.userId}/${fileName}`

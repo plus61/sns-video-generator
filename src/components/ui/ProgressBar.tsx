@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 
 interface ProgressBarProps {
   progress: number
-  status: 'idle' | 'uploading' | 'processing' | 'analyzing' | 'completed' | 'error'
+  status: 'idle' | 'uploading' | 'processing' | 'analyzing' | 'completed' | 'error' | 'ready' | 'ready_for_analysis'
   message?: string
   showPercentage?: boolean
   animated?: boolean
@@ -40,15 +40,17 @@ export function ProgressBar({
   const getStatusColor = () => {
     switch (status) {
       case 'uploading':
-        return 'bg-blue-500'
+        return 'bg-gradient-to-r from-blue-400 to-blue-600'
       case 'processing':
-        return 'bg-yellow-500'
+        return 'bg-gradient-to-r from-yellow-400 to-orange-500'
       case 'analyzing':
-        return 'bg-purple-500'
+      case 'ready_for_analysis':
+        return 'bg-gradient-to-r from-purple-400 to-pink-500'
       case 'completed':
-        return 'bg-green-500'
+      case 'ready':
+        return 'bg-gradient-to-r from-green-400 to-emerald-500'
       case 'error':
-        return 'bg-red-500'
+        return 'bg-gradient-to-r from-red-400 to-red-600'
       default:
         return 'bg-gray-400'
     }
@@ -61,8 +63,10 @@ export function ProgressBar({
       case 'processing':
         return '⚙️'
       case 'analyzing':
+      case 'ready_for_analysis':
         return '🧠'
       case 'completed':
+      case 'ready':
         return '✅'
       case 'error':
         return '❌'
@@ -81,7 +85,10 @@ export function ProgressBar({
         return '動画を処理中...'
       case 'analyzing':
         return 'AI解析中...'
+      case 'ready_for_analysis':
+        return '解析準備中...'
       case 'completed':
+      case 'ready':
         return '完了しました！'
       case 'error':
         return 'エラーが発生しました'
@@ -121,16 +128,23 @@ export function ProgressBar({
       </div>
 
       {/* Progress Bar Container */}
-      <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden ${sizeClasses[size]}`}>
-        <div
-          className={`${sizeClasses[size]} rounded-full transition-all duration-300 ease-out ${getStatusColor()} ${
-            animated && status !== 'completed' && status !== 'error' ? 'animate-pulse' : ''
-          }`}
-          style={{ 
-            width: `${Math.max(0, Math.min(100, displayProgress))}%`,
-            transition: animated ? 'width 0.3s ease-out' : 'none'
-          }}
-        />
+      <div className={`w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden ${sizeClasses[size]} shadow-inner`}>
+        <div className="relative w-full h-full">
+          <div
+            className={`absolute inset-0 ${sizeClasses[size]} rounded-full transition-all duration-500 ease-out ${getStatusColor()} ${
+              animated && status !== 'completed' && status !== 'error' && status !== 'ready' ? 'animate-pulse' : ''
+            } shadow-lg`}
+            style={{ 
+              width: `${Math.max(0, Math.min(100, displayProgress))}%`,
+              transition: animated ? 'width 0.5s ease-out' : 'none'
+            }}
+          >
+            {/* Glow effect */}
+            {animated && status !== 'idle' && status !== 'error' && (
+              <div className="absolute inset-0 rounded-full bg-white/20 animate-pulse" />
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Processing Animation for Indeterminate States */}

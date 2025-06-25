@@ -49,7 +49,28 @@ export default function SignInClient() {
       }
     } catch (error: any) {
       console.error('Auth error:', error)
-      setError(error.message || '認証に失敗しました')
+      // エラーメッセージをより具体的に
+      let errorMessage = '🔐 認証に失敗しました'
+      
+      if (error.message) {
+        if (error.message.includes('Invalid login credentials')) {
+          errorMessage = '❌ メールアドレスまたはパスワードが正しくありません\n\n✅ 確認事項：\n• メールアドレスの入力ミスがないか\n• パスワードの大文字・小文字が正しいか\n• Caps Lockがオンになっていないか'
+        } else if (error.message.includes('Email not confirmed')) {
+          errorMessage = '📧 メールアドレスの確認が必要です\n\nアカウント作成時に送信された確認メールをご確認ください。\n\n✅ メールが見つからない場合：\n• 迷惑メールフォルダを確認\n• 再送信をリクエスト'
+        } else if (error.message.includes('User already registered')) {
+          errorMessage = '👤 このメールアドレスは既に登録されています\n\n✅ 対処法：\n• サインインを選択してください\n• パスワードを忘れた場合は、パスワードリセットを利用'
+        } else if (error.message.includes('Password should be at least')) {
+          errorMessage = '🔒 パスワードが短すぎます\n\n✅ パスワードの要件：\n• 6文字以上\n• 英数字を推奨\n• 記号を含めるとより安全'
+        } else if (error.message.includes('network') || error.message.includes('fetch')) {
+          errorMessage = '🌐 ネットワークエラーが発生しました\n\n✅ 確認事項：\n• インターネット接続を確認\n• VPNを一時的にオフ\n• しばらく待ってから再試行'
+        } else if (error.message.includes('rate limit')) {
+          errorMessage = '⏱️ アクセス制限中です\n\n短時間に多くのリクエストがありました。\n\n✅ 対処法：5分ほど待ってから再度お試しください'
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -94,7 +115,7 @@ export default function SignInClient() {
                   <span className="text-red-500">❌</span>
                 </div>
                 <div className="ml-3">
-                  <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
+                  <p className="text-red-800 dark:text-red-200 text-sm whitespace-pre-line">{error}</p>
                 </div>
               </div>
             </div>

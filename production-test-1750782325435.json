@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-06-24T16:25:25.434Z",
+  "environment": {
+    "ui_url": "https://sns-video-generator-production.up.railway.app",
+    "api_url": "https://express-api-xxxx.onrender.com"
+  },
+  "results": {
+    "production": {
+      "connectivity": {
+        "ui": true,
+        "api": false,
+        "cors": false
+      }
+    },
+    "local": {
+      "connectivity": {
+        "ui": true,
+        "api": false,
+        "cors": false
+      }
+    }
+  },
+  "evidence": {
+    "screenshot_instruction": "Take screenshots of:",
+    "items": [
+      "1. Browser showing https://sns-video-generator-production.up.railway.app",
+      "2. API health check response",
+      "3. Video processing success",
+      "4. Downloaded segment file"
+    ]
+  }
+}

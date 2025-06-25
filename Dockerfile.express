@@ -1,0 +1,33 @@
+# Express API用 Dockerfile
+FROM node:18-slim
+
+# FFmpeg インストール
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    python3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# 作業ディレクトリ設定
+WORKDIR /app
+
+# package.json をコピー
+COPY package-express.json package.json
+
+# 依存関係インストール
+RUN npm install --production
+
+# アプリケーションファイルをコピー
+COPY express-api-simple.js .
+
+# 一時ファイル用ディレクトリ作成
+RUN mkdir -p /app/temp
+
+# ポート公開
+EXPOSE 3002
+
+# ヘルスチェック
+HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
+  CMD node -e "require('http').get('http://localhost:3002/health', (res) => process.exit(res.statusCode === 200 ? 0 : 1))"
+
+# アプリケーション起動
+CMD ["node", "express-api-simple.js"]

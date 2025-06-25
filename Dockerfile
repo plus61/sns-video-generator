@@ -111,11 +111,12 @@ USER nextjs
 # Environment
 ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
-EXPOSE 3000
+ENV PORT=${PORT:-3000}
+EXPOSE ${PORT}
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=60s --retries=3 \
-  CMD curl -f http://localhost:3000/api/health || exit 1
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:${PORT}/api/health || exit 1
 
 # Start the server with the wrapper
 CMD ["node", "server-wrapper.js"]

@@ -9,6 +9,16 @@ create_task() {
     local priority="$1"  # high, medium, low
     local category="$2"  # infrastructure, code, testing, documentation
     local description="$3"
+    
+    # タスク重複チェック
+    if [ -f "./task-deduplication-system.sh" ]; then
+        ./task-deduplication-system.sh check "$description"
+        if [ $? -eq 0 ]; then
+            echo "⚠️  タスク作成スキップ: 既に同じ内容のタスクが存在します"
+            return 1
+        fi
+    fi
+    
     local task_id=$(date +%s)
     
     cat > "$TASK_DIR/$task_id.task" << EOF

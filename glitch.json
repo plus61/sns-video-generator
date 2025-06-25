@@ -1,0 +1,11 @@
+{
+  "install": {
+    "include": ["^package\\.json$"]
+  },
+  "start": {
+    "include": ["^express-api-simple\\.js$"]
+  },
+  "watch": {
+    "throttle": 1000
+  }
+}

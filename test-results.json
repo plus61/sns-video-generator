@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-06-22T09:26:16.762Z",
+  "mocksDisabled": {
+    "USE_MOCK": false,
+    "DISABLE_BULLMQ": false
+  },
+  "tests": [
+    {
+      "name": "Health Check",
+      "endpoint": "/api/health",
+      "error": "Unexpected token < in JSON at position 0"
+    },
+    {
+      "name": "File Upload",
+      "endpoint": "/api/upload-file",
+      "error": "Unexpected token < in JSON at position 0"
+    },
+    {
+      "name": "YouTube Download",
+      "endpoint": "/api/upload-youtube",
+      "status": 401,
+      "success": false,
+      "data": {
+        "error": "Unauthorized"
+      }
+    }
+  ],
+  "errors": [
+    "Health check error: Unexpected token < in JSON at position 0",
+    "File upload error: Unexpected token < in JSON at position 0",
+    "YouTube download failed: 401 - Unauthorized"
+  ],
+  "summary": {
+    "totalTests": 3,
+    "errors": 3,
+    "success": false
+  }
+}

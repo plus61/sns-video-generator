@@ -1,0 +1,8 @@
+[start]
+cmd = "cd .next/standalone && node server.js"
+
+[phases.setup]
+nixPkgs = ["nodejs", "npm", "ffmpeg", "python3"]
+
+[phases.build]
+cmds = ["npm ci", "npm run build"]

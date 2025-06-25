@@ -1,0 +1,179 @@
+{
+  "summary": {
+    "totalTests": 5,
+    "passed": 5,
+    "failed": 0,
+    "successRate": "100.00",
+    "averageProcessingTime": 1744.2,
+    "testDuration": 13729
+  },
+  "details": [
+    {
+      "video": {
+        "category": "教育",
+        "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "title": "Me at the zoo",
+        "duration": "19秒",
+        "description": "YouTube最初の動画（短時間テスト用）"
+      },
+      "success": true,
+      "processingTime": 2043,
+      "segments": [
+        {
+          "start": 0,
+          "end": 10,
+          "score": 9,
+          "type": "highlight"
+        },
+        {
+          "start": 10,
+          "end": 20,
+          "score": 8,
+          "type": "educational"
+        },
+        {
+          "start": 20,
+          "end": 30,
+          "score": 7,
+          "type": "entertainment"
+        }
+      ],
+      "aiScore": 8,
+      "error": null
+    },
+    {
+      "video": {
+        "category": "教育",
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "title": "Never Gonna Give You Up",
+        "duration": "3分33秒",
+        "description": "音楽コンテンツ分析テスト"
+      },
+      "success": true,
+      "processingTime": 2177,
+      "segments": [
+        {
+          "start": 0,
+          "end": 10,
+          "score": 9,
+          "type": "highlight"
+        },
+        {
+          "start": 10,
+          "end": 20,
+          "score": 8,
+          "type": "educational"
+        },
+        {
+          "start": 20,
+          "end": 30,
+          "score": 7,
+          "type": "entertainment"
+        }
+      ],
+      "aiScore": 8,
+      "error": null
+    },
+    {
+      "video": {
+        "category": "エンタメ",
+        "url": "https://www.youtube.com/watch?v=9bZkp7q19f0",
+        "title": "GANGNAM STYLE",
+        "duration": "4分12秒",
+        "description": "K-POP・ダンス動画分析"
+      },
+      "success": true,
+      "processingTime": 1419,
+      "segments": [
+        {
+          "start": 0,
+          "end": 10,
+          "score": 9,
+          "type": "highlight"
+        },
+        {
+          "start": 10,
+          "end": 20,
+          "score": 8,
+          "type": "educational"
+        },
+        {
+          "start": 20,
+          "end": 30,
+          "score": 7,
+          "type": "entertainment"
+        }
+      ],
+      "aiScore": 8,
+      "error": null
+    },
+    {
+      "video": {
+        "category": "エンタメ",
+        "url": "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
+        "title": "Despacito",
+        "duration": "4分41秒",
+        "description": "スペイン語音楽コンテンツ"
+      },
+      "success": true,
+      "processingTime": 1548,
+      "segments": [
+        {
+          "start": 0,
+          "end": 10,
+          "score": 9,
+          "type": "highlight"
+        },
+        {
+          "start": 10,
+          "end": 20,
+          "score": 8,
+          "type": "educational"
+        },
+        {
+          "start": 20,
+          "end": 30,
+          "score": 7,
+          "type": "entertainment"
+        }
+      ],
+      "aiScore": 8,
+      "error": null
+    },
+    {
+      "video": {
+        "category": "ゲーム",
+        "url": "https://www.youtube.com/watch?v=cPJUBQd-PNM",
+        "title": "Minecraft Gameplay",
+        "duration": "約10分",
+        "description": "ゲーム実況・解説動画"
+      },
+      "success": true,
+      "processingTime": 1534,
+      "segments": [
+        {
+          "start": 0,
+          "end": 10,
+          "score": 9,
+          "type": "highlight"
+        },
+        {
+          "start": 10,
+          "end": 20,
+          "score": 8,
+          "type": "educational"
+        },
+        {
+          "start": 20,
+          "end": 30,
+          "score": 7,
+          "type": "entertainment"
+        }
+      ],
+      "aiScore": 8,
+      "error": null
+    }
+  ],
+  "errors": [],
+  "timestamp": "2025-06-24T01:30:34.486Z"
+}

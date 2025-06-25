@@ -1,0 +1,105 @@
+{
+  "summary": {
+    "totalTests": 5,
+    "passed": 0,
+    "failed": 5,
+    "successRate": "0.00",
+    "averageProcessingTime": 5.8,
+    "testDuration": 5039
+  },
+  "details": [
+    {
+      "video": {
+        "category": "教育",
+        "url": "https://www.youtube.com/watch?v=jNQXAC9IVRw",
+        "title": "Me at the zoo",
+        "duration": "19秒",
+        "description": "YouTube最初の動画（短時間テスト用）"
+      },
+      "success": false,
+      "processingTime": 19,
+      "segments": [],
+      "aiScore": null,
+      "error": "fetch failed"
+    },
+    {
+      "video": {
+        "category": "教育",
+        "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "title": "Never Gonna Give You Up",
+        "duration": "3分33秒",
+        "description": "音楽コンテンツ分析テスト"
+      },
+      "success": false,
+      "processingTime": 4,
+      "segments": [],
+      "aiScore": null,
+      "error": "fetch failed"
+    },
+    {
+      "video": {
+        "category": "エンタメ",
+        "url": "https://www.youtube.com/watch?v=9bZkp7q19f0",
+        "title": "GANGNAM STYLE",
+        "duration": "4分12秒",
+        "description": "K-POP・ダンス動画分析"
+      },
+      "success": false,
+      "processingTime": 1,
+      "segments": [],
+      "aiScore": null,
+      "error": "fetch failed"
+    },
+    {
+      "video": {
+        "category": "エンタメ",
+        "url": "https://www.youtube.com/watch?v=kJQP7kiw5Fk",
+        "title": "Despacito",
+        "duration": "4分41秒",
+        "description": "スペイン語音楽コンテンツ"
+      },
+      "success": false,
+      "processingTime": 3,
+      "segments": [],
+      "aiScore": null,
+      "error": "fetch failed"
+    },
+    {
+      "video": {
+        "category": "ゲーム",
+        "url": "https://www.youtube.com/watch?v=cPJUBQd-PNM",
+        "title": "Minecraft Gameplay",
+        "duration": "約10分",
+        "description": "ゲーム実況・解説動画"
+      },
+      "success": false,
+      "processingTime": 2,
+      "segments": [],
+      "aiScore": null,
+      "error": "fetch failed"
+    }
+  ],
+  "errors": [
+    {
+      "video": "Me at the zoo",
+      "error": "fetch failed"
+    },
+    {
+      "video": "Never Gonna Give You Up",
+      "error": "fetch failed"
+    },
+    {
+      "video": "GANGNAM STYLE",
+      "error": "fetch failed"
+    },
+    {
+      "video": "Despacito",
+      "error": "fetch failed"
+    },
+    {
+      "video": "Minecraft Gameplay",
+      "error": "fetch failed"
+    }
+  ],
+  "timestamp": "2025-06-24T01:29:17.431Z"
+}

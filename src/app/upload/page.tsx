@@ -19,7 +19,9 @@ export default function UploadPage() {
     }, 2000)
   }
 
-  const handleError = (errorMessage: string) => {
+  const handleError = (error: Error | string) => {
+    // エラーメッセージを処理
+    const errorMessage = error instanceof Error ? error.message : error
     setError(errorMessage)
     setSuccess(false)
   }
@@ -54,7 +56,7 @@ export default function UploadPage() {
                 </svg>
               </div>
               <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="text-sm text-red-700 whitespace-pre-line">{error}</p>
               </div>
             </div>
           </div>

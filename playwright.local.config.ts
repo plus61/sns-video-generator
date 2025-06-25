@@ -43,7 +43,7 @@ export default defineConfig({
   /* Shared settings for all projects */
   use: {
     /* Base URL for local development */
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:3001',
     
     /* Browser context options */
     viewport: { width: 1280, height: 720 },
@@ -159,7 +159,7 @@ export default defineConfig({
   /* Run local dev server before starting tests */
   webServer: {
     command: 'npm run dev',
-    url: 'http://127.0.0.1:3000',
+    url: 'http://127.0.0.1:3001',
     reuseExistingServer: true, // Don't restart if already running
     timeout: 180 * 1000, // 3 minutes timeout for server startup
     stdout: 'pipe',

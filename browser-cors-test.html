@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORS Browser Test - Worker3 QA</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .status.pending { background: #ffc107; color: #000; }
+        .status.success { background: #28a745; color: white; }
+        .status.error { background: #dc3545; color: white; }
+        .log {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        .config {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .config input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 4px;
+        }
+        .error { color: #dc3545; }
+        .success { color: #28a745; }
+        .warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 CORS Browser Test Suite</h1>
+        <p>Test Cross-Origin Resource Sharing from Railway UI to API endpoints</p>
+        
+        <div class="config">
+            <div>
+                <label>Glitch API URL:</label>
+                <input type="text" id="glitchUrl" placeholder="https://[project].glitch.me" />
+            </div>
+            <div>
+                <label>Render API URL:</label>
+                <input type="text" id="renderUrl" value="https://sns-video-express-api.onrender.com" />
+            </div>
+        </div>
+        
+        <button onclick="runAllTests()" id="runButton">Run All CORS Tests</button>
+        
+        <div id="tests"></div>
+        <div id="summary" class="summary" style="display:none;"></div>
+    </div>
+
+    <script>
+        const railwayOrigin = window.location.origin;
+        const testResults = [];
+
+        async function testCORS(apiName, apiUrl) {
+            const testId = `test-${apiName.toLowerCase()}`;
+            const testDiv = document.getElementById(testId);
+            const logDiv = testDiv.querySelector('.log');
+            const statusDiv = testDiv.querySelector('.status');
+            
+            statusDiv.textContent = 'Testing...';
+            statusDiv.className = 'status pending';
+            logDiv.textContent = '';
+            
+            const log = (msg) => {
+                logDiv.textContent += msg + '\n';
+                logDiv.scrollTop = logDiv.scrollHeight;
+            };
+            
+            log(`Testing ${apiName} API: ${apiUrl}`);
+            log(`Origin: ${railwayOrigin}\n`);
+            
+            try {
+                // 1. Simple GET request
+                log('1. Testing simple GET request...');
+                const getResponse = await fetch(`${apiUrl}/api/health`);
+                const getData = await getResponse.json();
+                log(`   Status: ${getResponse.status}`);
+                log(`   Response: ${JSON.stringify(getData).substring(0, 100)}...`);
+                
+                // 2. Check CORS headers
+                log('\n2. Checking CORS headers...');
+                const corsResponse = await fetch(`${apiUrl}/api/health`, {
+                    method: 'GET',
+                    headers: {
+                        'Origin': railwayOrigin
+                    }
+                });
+                
+                // Note: Browser won't show CORS headers in response for security
+                log(`   Response status: ${corsResponse.status}`);
+                
+                // 3. POST request test
+                log('\n3. Testing POST request...');
+                const postResponse = await fetch(`${apiUrl}/api/download-video`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        url: 'https://www.youtube.com/watch?v=jNQXAC9IVRw'
+                    })
+                });
+                
+                if (postResponse.ok) {
+                    const postData = await postResponse.json();
+                    log(`   POST successful: ${postResponse.status}`);
+                    log(`   Video ID: ${postData.videoId || 'N/A'}`);
+                } else {
+                    log(`   POST status: ${postResponse.status}`);
+                }
+                
+                // Success
+                statusDiv.textContent = 'Success';
+                statusDiv.className = 'status success';
+                log('\n✅ CORS test passed!');
+                
+                testResults.push({
+                    api: apiName,
+                    status: 'success',
+                    corsEnabled: true
+                });
+                
+            } catch (error) {
+                statusDiv.textContent = 'Failed';
+                statusDiv.className = 'status error';
+                
+                if (error.message.includes('CORS')) {
+                    log('\n❌ CORS Error detected!');
+                    log('The API needs to add this origin to allowed origins:');
+                    log(`   ${railwayOrigin}`);
+                } else if (error.message.includes('Failed to fetch')) {
+                    log('\n❌ Connection failed!');
+                    log('Possible causes:');
+                    log('- API is not deployed or running');
+                    log('- Network error');
+                    log('- CORS blocking the request');
+                } else {
+                    log(`\n❌ Error: ${error.message}`);
+                }
+                
+                testResults.push({
+                    api: apiName,
+                    status: 'failed',
+                    corsEnabled: false,
+                    error: error.message
+                });
+            }
+        }
+
+        async function runAllTests() {
+            const glitchUrl = document.getElementById('glitchUrl').value;
+            const renderUrl = document.getElementById('renderUrl').value;
+            const button = document.getElementById('runButton');
+            const testsDiv = document.getElementById('tests');
+            
+            button.disabled = true;
+            button.textContent = 'Testing...';
+            testsDiv.innerHTML = '';
+            testResults.length = 0;
+            
+            // Create test sections
+            const apis = [];
+            if (glitchUrl) apis.push({ name: 'Glitch', url: glitchUrl });
+            if (renderUrl) apis.push({ name: 'Render', url: renderUrl });
+            
+            apis.forEach(api => {
+                testsDiv.innerHTML += `
+                    <div class="test-section" id="test-${api.name.toLowerCase()}">
+                        <div class="test-header">
+                            <h3>${api.name} API Test</h3>
+                            <span class="status pending">Pending</span>
+                        </div>
+                        <div class="log"></div>
+                    </div>
+                `;
+            });
+            
+            // Run tests
+            for (const api of apis) {
+                await testCORS(api.name, api.url);
+            }
+            
+            // Show summary
+            showSummary();
+            
+            button.disabled = false;
+            button.textContent = 'Run All CORS Tests';
+        }
+
+        function showSummary() {
+            const summaryDiv = document.getElementById('summary');
+            const successCount = testResults.filter(r => r.status === 'success').length;
+            const totalCount = testResults.length;
+            
+            let summaryHTML = '<h3>📊 Test Summary</h3>';
+            summaryHTML += `<p>Tests passed: ${successCount}/${totalCount}</p>`;
+            
+            if (successCount === totalCount) {
+                summaryHTML += '<p class="success">✅ All CORS tests passed! APIs are properly configured.</p>';
+            } else {
+                summaryHTML += '<p class="error">❌ Some tests failed. Fix CORS configuration:</p>';
+                summaryHTML += '<ol>';
+                testResults.filter(r => r.status === 'failed').forEach(result => {
+                    summaryHTML += `<li>Add <code>${railwayOrigin}</code> to ${result.api} API allowed origins</li>`;
+                });
+                summaryHTML += '</ol>';
+            }
+            
+            summaryHTML += '<h4>Next Steps:</h4>';
+            summaryHTML += '<ul>';
+            summaryHTML += '<li>Open browser DevTools (F12) → Network tab for detailed CORS headers</li>';
+            summaryHTML += '<li>Check Console for any additional errors</li>';
+            summaryHTML += '<li>Update express-api-simple.js with correct allowed origins</li>';
+            summaryHTML += '</ul>';
+            
+            summaryDiv.innerHTML = summaryHTML;
+            summaryDiv.style.display = 'block';
+        }
+
+        // Auto-detect current origin
+        document.addEventListener('DOMContentLoaded', () => {
+            const info = document.createElement('p');
+            info.className = 'warning';
+            info.textContent = `Current origin: ${railwayOrigin}`;
+            document.querySelector('.config').before(info);
+        });
+    </script>
+</body>
+</html>

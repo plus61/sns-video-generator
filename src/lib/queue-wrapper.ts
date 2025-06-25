@@ -44,7 +44,8 @@ if (isVercel || isBuildTime) {
       const ioredis = require('ioredis')
       QueueImpl = bullmq.Queue
       WorkerImpl = bullmq.Worker
-      RedisImpl = ioredis.default || ioredis
+      // ioredisモジュールの正しい取得方法
+      RedisImpl = ioredis.Redis || ioredis.default || ioredis
     } else {
       throw new Error('Using mock implementation for serverless environment')
     }
@@ -150,7 +151,7 @@ export const getQueueConfig = () => {
     }
 
     return {
-      connection: new RedisImpl(redisConfig),
+      connection: RedisImpl ? new RedisImpl(redisConfig) : redisConfig,
       defaultJobOptions: {
         removeOnComplete: 100, // 増量（パフォーマンス分析用）
         removeOnFail: 50, // 最適化

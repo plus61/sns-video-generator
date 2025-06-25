@@ -37,12 +37,21 @@ export default function VideoUpload({ onUploadComplete, onError }: VideoUploadPr
         setStatusMessage('Upload complete!')
         onUploadComplete?.(result.videoId)
       } else {
-        throw new Error(result.error || 'Upload failed')
+        const errorMessage = result.error || 'Upload failed'
+        if (errorMessage.includes('file too large') || errorMessage.includes('size')) {
+          throw new Error('📦 ファイルサイズが大きすぎます\n\n✅ 対処法：\n• 最大500MBまでの動画をアップロード\n• 動画を圧縮してから再試行\n• より短い動画を選択')
+        } else if (errorMessage.includes('format') || errorMessage.includes('type')) {
+          throw new Error('🎬 対応していないファイル形式です\n\n✅ 対応形式：\n• MP4 (推奨)\n• MOV\n• AVI\n• MKV\n\n動画変換ツールで形式を変更してください')
+        } else if (errorMessage.includes('network') || errorMessage.includes('connection')) {
+          throw new Error('🌐 ネットワークエラー\n\n✅ 確認事項：\n• インターネット接続を確認\n• ファイルが大きい場合は安定した接続で再試行\n• VPNを使用中の場合は一時的にオフ')
+        }
+        throw new Error(result.error || '⚠️ アップロードに失敗しました\n\n再度お試しください')
       }
     } catch (error) {
       console.error('Upload error:', error)
       setStatusMessage('Upload failed')
-      onError?.(error instanceof Error ? error : new Error('Upload failed'))
+      const errorToReport = error instanceof Error ? error : new Error('⚠️ アップロードに失敗しました\n\n予期しないエラーが発生しました。\n時間をおいて再度お試しください。')
+      onError?.(errorToReport)
     } finally {
       setIsUploading(false)
     }
@@ -65,7 +74,17 @@ export default function VideoUpload({ onUploadComplete, onError }: VideoUploadPr
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'YouTube download failed')
+        const errorMessage = data.error || 'YouTube download failed'
+        if (errorMessage.includes('Invalid URL') || errorMessage.includes('not found')) {
+          throw new Error('🔍 動画が見つかりません\n\n✅ 確認事項：\n• URLが正しくコピーされているか\n• 動画が公開されているか\n• 地域制限がないか\n\n例: https://www.youtube.com/watch?v=XXXXXXXXXXX')
+        } else if (errorMessage.includes('private') || errorMessage.includes('restricted')) {
+          throw new Error('🔒 アクセス制限された動画です\n\n✅ 対処法：\n• 公開動画のURLを使用\n• プライベート動画は事前にダウンロード\n• 年齢制限のない動画を選択')
+        } else if (errorMessage.includes('too long') || errorMessage.includes('duration')) {
+          throw new Error('⏱️ 動画が長すぎます\n\n✅ 対処法：\n• 60分以内の動画を選択\n• 長い動画は分割してからアップロード\n• ハイライト部分のみを使用')
+        } else if (errorMessage.includes('quota') || errorMessage.includes('limit')) {
+          throw new Error('📊 利用制限に達しました\n\n✅ 対処法：\n• 1日のダウンロード制限に達しています\n• 24時間後に再試行\n• プレミアムプランへのアップグレードを検討')
+        }
+        throw new Error(data.error || '❌ YouTube動画のダウンロードに失敗しました\n\nURLを確認して再度お試しください')
       }
 
       setStatusMessage('Download started! Processing video...')
@@ -73,7 +92,8 @@ export default function VideoUpload({ onUploadComplete, onError }: VideoUploadPr
     } catch (error) {
       console.error('YouTube upload error:', error)
       setStatusMessage('YouTube download failed')
-      onError?.(error instanceof Error ? error : new Error('YouTube download failed'))
+      const errorToReport = error instanceof Error ? error : new Error('❌ YouTube動画のダウンロードに失敗しました\n\n予期しないエラーが発生しました。\n時間をおいて再度お試しください。')
+      onError?.(errorToReport)
     } finally {
       setIsUploading(false)
     }

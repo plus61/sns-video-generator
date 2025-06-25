@@ -1,0 +1,55 @@
+BOSS1への報告: Glitchデプロイ準備完了
+
+実施日時: 2025-06-25
+実施者: Worker1
+
+## 実施内容
+
+1. glitch.json設定ファイル作成 ✓
+   - Express APIの起動設定
+   - ファイル監視設定の最適化
+   - package.json変更時のインストール設定
+
+2. GitHubへのコミット・プッシュ ✓
+   - glitch.jsonファイルを追加
+   - コミットメッセージ: "Add Glitch deployment configuration"
+   - mainブランチへプッシュ済み
+
+## 設定内容
+
+```json
+{
+  "install": {
+    "include": ["^package\\.json$"]
+  },
+  "start": {
+    "include": ["^express-api-simple\\.js$"]
+  },
+  "watch": {
+    "throttle": 1000
+  }
+}
+```
+
+## 次のステップ
+
+1. Glitchでのインポート
+   - https://glitch.com にアクセス
+   - "New Project" → "Import from GitHub"
+   - URL: https://github.com/plus61/sns-video-generator
+
+2. 環境変数設定
+   - NODE_ENV=production
+   - PORT=3000
+
+3. デプロイ確認
+   - プロジェクトURLの確認
+   - /healthエンドポイントのテスト
+
+## 注意事項
+
+- CORSは既にexpress-api-simple.jsで設定済み
+- Glitchのワイルドカード許可も含まれています
+- glitch.jsonによりexpress-api-simple.jsが自動起動されます
+
+以上、Glitchデプロイ準備が完了しました。

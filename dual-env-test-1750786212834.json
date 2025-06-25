@@ -1,0 +1,113 @@
+{
+  "timestamp": "2025-06-24T17:30:12.832Z",
+  "environments": {
+    "glitch": {
+      "name": "Glitch Demo",
+      "apiUrl": "https://sns-video-generator.glitch.me",
+      "uiUrl": "https://sns-video-generator-production.up.railway.app",
+      "expectedReadyTime": "5分後",
+      "targetPerformance": 10000
+    },
+    "render": {
+      "name": "Render Production",
+      "apiUrl": "https://sns-video-express-api.onrender.com",
+      "uiUrl": "https://sns-video-generator-production.up.railway.app",
+      "expectedReadyTime": "30分後",
+      "targetPerformance": 5000
+    }
+  },
+  "results": {
+    "glitch": {
+      "tests": [
+        {
+          "name": "Health Check",
+          "success": false,
+          "elapsed": 365
+        },
+        {
+          "name": "Video Download",
+          "success": false,
+          "elapsed": 393
+        },
+        {
+          "name": "UI Integration",
+          "success": true,
+          "elapsed": 628
+        }
+      ],
+      "metrics": [
+        {
+          "test": "UI Integration",
+          "elapsed": 628
+        }
+      ],
+      "errors": [
+        {
+          "test": "Health Check",
+          "error": "Unexpected token < in JSON at position 0"
+        },
+        {
+          "test": "Video Download",
+          "error": "Unexpected token < in JSON at position 0"
+        }
+      ]
+    },
+    "render": {
+      "tests": [
+        {
+          "name": "Health Check",
+          "success": false,
+          "elapsed": 555
+        },
+        {
+          "name": "Video Download",
+          "success": false,
+          "elapsed": 189
+        },
+        {
+          "name": "UI Integration",
+          "success": true,
+          "elapsed": 154
+        }
+      ],
+      "metrics": [
+        {
+          "test": "UI Integration",
+          "elapsed": 154
+        }
+      ],
+      "errors": [
+        {
+          "test": "Health Check",
+          "error": "Unexpected token N in JSON at position 0"
+        },
+        {
+          "test": "Video Download",
+          "error": "Unexpected token N in JSON at position 0"
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "glitch": {
+      "environment": "Glitch Demo",
+      "testsRun": 3,
+      "testsSucceeded": 1,
+      "successRate": "33.3%",
+      "averageTime": 628,
+      "errors": 2
+    },
+    "render": {
+      "environment": "Render Production",
+      "testsRun": 3,
+      "testsSucceeded": 1,
+      "successRate": "33.3%",
+      "averageTime": 154,
+      "errors": 2
+    }
+  },
+  "recommendation": {
+    "demo": null,
+    "production": null
+  }
+}

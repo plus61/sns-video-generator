@@ -1,0 +1,83 @@
+{
+  "timestamp": "2025-06-24T16:47:19.687Z",
+  "environments": {
+    "glitch": {
+      "name": "Glitch Demo",
+      "apiUrl": "https://[待機].glitch.me",
+      "uiUrl": "https://sns-video-generator-production.up.railway.app",
+      "expectedReadyTime": "5分後",
+      "targetPerformance": 10000
+    },
+    "render": {
+      "name": "Render Production",
+      "apiUrl": "https://sns-video-express-api.onrender.com",
+      "uiUrl": "https://sns-video-generator-production.up.railway.app",
+      "expectedReadyTime": "30分後",
+      "targetPerformance": 5000
+    }
+  },
+  "results": {
+    "glitch": {
+      "tests": [],
+      "metrics": [],
+      "errors": []
+    },
+    "render": {
+      "tests": [
+        {
+          "name": "Health Check",
+          "success": false,
+          "elapsed": 233
+        },
+        {
+          "name": "Video Download",
+          "success": false,
+          "elapsed": 175
+        },
+        {
+          "name": "UI Integration",
+          "success": true,
+          "elapsed": 139
+        }
+      ],
+      "metrics": [
+        {
+          "test": "UI Integration",
+          "elapsed": 139
+        }
+      ],
+      "errors": [
+        {
+          "test": "Health Check",
+          "error": "Unexpected token N in JSON at position 0"
+        },
+        {
+          "test": "Video Download",
+          "error": "Unexpected token N in JSON at position 0"
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "glitch": {
+      "environment": "Glitch Demo",
+      "testsRun": 0,
+      "testsSucceeded": 0,
+      "successRate": "N/A",
+      "averageTime": 0,
+      "errors": 0
+    },
+    "render": {
+      "environment": "Render Production",
+      "testsRun": 3,
+      "testsSucceeded": 1,
+      "successRate": "33.3%",
+      "averageTime": 139,
+      "errors": 2
+    }
+  },
+  "recommendation": {
+    "demo": null,
+    "production": null
+  }
+}

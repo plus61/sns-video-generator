@@ -5,6 +5,7 @@ import { useDropzone } from 'react-dropzone'
 import { performanceMonitor } from '../../lib/performance-monitor'
 import { ProgressBar } from './ProgressBar'
 import { ErrorAlert } from './ErrorAlert'
+import { useVideoUpload } from '@/hooks/useVideoUpload'
 
 interface VideoUploaderProps {
   onUploadComplete: (videoId: string) => void
@@ -21,81 +22,55 @@ export function VideoUploader({
 }: VideoUploaderProps) {
   const [youtubeUrl, setYoutubeUrl] = useState('')
   const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file')
-  const [isUploading, setIsUploading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [uploadProgress, setUploadProgress] = useState(0)
-  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'processing' | 'analyzing' | 'completed' | 'error'>('idle')
   const [dragActive, setDragActive] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // useVideoUploadフックで統合
+  const {
+    uploadFile,
+    cancelUpload,
+    isUploading,
+    progress,
+    status,
+    error,
+    message
+  } = useVideoUpload({
+    onSuccess: (response) => {
+      onUploadComplete(response.videoId)
+    },
+    onError: (error) => {
+      console.error('Upload error:', error)
+    },
+    onProgress: (progress) => {
+      onUploadProgress?.(progress)
+    }
+  })
+  
+  // ステータスマッピング
+  const uploadStatus = status || 'idle'
+  const uploadProgress = progress
 
   const handleFileUpload = useCallback(async (file: File) => {
     if (!file) return
 
-    setIsUploading(true)
-    setError(null)
-    setUploadProgress(0)
-    setUploadStatus('uploading')
+    // ファイルタイプ検証
+    if (!file.type.startsWith('video/')) {
+      return
+    }
+
     onUploadStart?.()
 
     try {
       await performanceMonitor.measureAsyncOperation('video_upload', async () => {
-        // Validate file
-        if (!file.type.startsWith('video/')) {
-          throw new Error('選択されたファイルは動画ファイルではありません')
-        }
-
-        // Create FormData
-        const formData = new FormData()
-        formData.append('video', file)
-        formData.append('filename', file.name)
-        formData.append('filesize', file.size.toString())
-
-        // Upload with progress tracking using Promise wrapper
-        return new Promise<void>((resolve, reject) => {
-          const xhr = new XMLHttpRequest()
-
-          xhr.upload.addEventListener('progress', (event) => {
-            if (event.lengthComputable) {
-              const progress = Math.round((event.loaded / event.total) * 100)
-              setUploadProgress(progress)
-              onUploadProgress?.(progress)
-            }
-          })
-
-          xhr.addEventListener('load', () => {
-            if (xhr.status === 200) {
-              const response = JSON.parse(xhr.responseText)
-              setUploadProgress(100)
-              setUploadStatus('processing')
-              setTimeout(() => {
-                setUploadStatus('completed')
-                onUploadComplete(response.videoId)
-              }, 1000)
-              resolve()
-            } else {
-              setUploadStatus('error')
-              reject(new Error('アップロードに失敗しました'))
-            }
-          })
-
-          xhr.addEventListener('error', () => {
-            reject(new Error('ネットワークエラーが発生しました'))
-          })
-
-          xhr.open('POST', '/api/upload-video')
-          xhr.send(formData)
-        })
+        await uploadFile(file)
       }, { fileSize: file.size.toString(), fileName: file.name })
-
     } catch (error) {
+      // エラーはuseVideoUploadフック内で処理される
       console.error('Upload error:', error)
-      setError(error instanceof Error ? error.message : 'アップロードエラーが発生しました')
-      setUploadStatus('error')
     } finally {
-      setIsUploading(false)
       onUploadEnd?.()
     }
-  }, [onUploadComplete, onUploadProgress, onUploadStart, onUploadEnd])
+  }, [uploadFile, onUploadStart, onUploadEnd])
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -117,14 +92,9 @@ export function VideoUploader({
 
   const handleYouTubeUpload = async () => {
     if (!youtubeUrl.trim()) {
-      setError('YouTube URLを入力してください')
       return
     }
 
-    setIsUploading(true)
-    setError(null)
-    setUploadProgress(0)
-    setUploadStatus('processing')
     onUploadStart?.()
 
     try {
@@ -147,16 +117,14 @@ export function VideoUploader({
         if (data.error) {
           throw new Error(data.error)
         }
-        setUploadStatus('completed')
+        
         onUploadComplete(data.videoId)
+        setYoutubeUrl('')
       }, { url: youtubeUrl })
 
     } catch (error) {
       console.error('YouTube upload error:', error)
-      setError(error instanceof Error ? error.message : 'YouTube動画の処理でエラーが発生しました')
-      setUploadStatus('error')
     } finally {
-      setIsUploading(false)
       onUploadEnd?.()
     }
   }
@@ -193,13 +161,18 @@ export function VideoUploader({
 
       {/* Progress Bar */}
       {(isUploading || uploadStatus !== 'idle') && (
-        <div className="mb-6">
+        <div className="mb-6 space-y-2">
           <ProgressBar 
             progress={uploadProgress}
             status={uploadStatus}
             size="md"
             animated={true}
           />
+          {message && (
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center animate-pulse">
+              {message}
+            </p>
+          )}
         </div>
       )}
 
@@ -211,15 +184,10 @@ export function VideoUploader({
             variant="error"
             title="アップロードエラー"
             onClose={() => {
-              setError(null)
-              setUploadStatus('idle')
-              setUploadProgress(0)
+              // エラーはフック内で管理
             }}
             actionLabel="再試行"
             onAction={() => {
-              setError(null)
-              setUploadStatus('idle')
-              setUploadProgress(0)
               // Re-trigger upload if we have a file
               if (uploadMode === 'file' && fileInputRef.current?.files?.[0]) {
                 handleFileUpload(fileInputRef.current.files[0])
@@ -298,13 +266,24 @@ export function VideoUploader({
             </div>
           </div>
 
-          <button
-            onClick={handleFileSelect}
-            disabled={isUploading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
-          >
-            {isUploading ? 'アップロード中...' : 'ファイルを選択してアップロード'}
-          </button>
+          {isUploading ? (
+            <button
+              onClick={cancelUpload}
+              className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              アップロードをキャンセル
+            </button>
+          ) : (
+            <button
+              onClick={handleFileSelect}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
+            >
+              ファイルを選択してアップロード
+            </button>
+          )}
         </div>
       ) : (
         /* YouTube URL Mode */

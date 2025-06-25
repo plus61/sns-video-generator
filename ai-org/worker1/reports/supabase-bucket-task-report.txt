@@ -1,0 +1,86 @@
+【Supabaseバケット作成タスク報告】
+
+Worker1よりBOSSへ報告します。
+
+## タスク内容
+Supabase Storage に videos バケットを作成
+
+## 準備完了事項
+
+### 1. SQL ファイル確認 ✅
+- /create-storage-bucket.sql を確認
+- 以下の内容を含む:
+  - videos バケット作成 (public設定)
+  - 4つのRLSポリシー設定
+  - 認証ユーザーへの権限付与
+
+### 2. 実行手順確認 ✅
+- Supabase SQL Editor での実行手順を確認
+- バケット設定の確認方法を把握
+
+## 手動実行が必要な作業
+
+Supabaseダッシュボードへのアクセスが必要なため、
+以下の手動作業をお願いします:
+
+1. Supabase SQL Editor で create-storage-bucket.sql を実行
+2. Storage セクションで videos バケットの作成を確認
+3. 4つのRLSポリシーが適用されていることを確認
+
+## SQLコマンド（コピー用）
+
+```sql
+-- Supabase Storage: videos バケット作成とRLS設定
+-- Execute in Supabase SQL Editor
+
+-- 1. Create videos storage bucket
+INSERT INTO storage.buckets (id, name, public) 
+VALUES ('videos', 'videos', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Create RLS policies for videos bucket
+-- Policy 1: Users can upload to their own folder
+CREATE POLICY "Users can upload videos to own folder" ON storage.objects
+  FOR INSERT WITH CHECK (
+    bucket_id = 'videos' AND
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- Policy 2: Users can view their own videos
+CREATE POLICY "Users can view own videos" ON storage.objects
+  FOR SELECT USING (
+    bucket_id = 'videos' AND
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- Policy 3: Users can update their own videos
+CREATE POLICY "Users can update own videos" ON storage.objects
+  FOR UPDATE USING (
+    bucket_id = 'videos' AND
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- Policy 4: Users can delete their own videos
+CREATE POLICY "Users can delete own videos" ON storage.objects
+  FOR DELETE USING (
+    bucket_id = 'videos' AND
+    auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- 3. Grant storage permissions to authenticated users
+GRANT ALL ON storage.objects TO authenticated;
+GRANT ALL ON storage.buckets TO authenticated;
+
+-- 4. Verification message
+DO $$
+BEGIN
+    RAISE NOTICE 'Videos storage bucket created successfully!';
+    RAISE NOTICE 'RLS policies applied for user-specific folder access';
+    RAISE NOTICE 'Ready for video upload implementation!';
+END $$;
+```
+
+準備作業は完了しました。
+Supabaseでの実行をお待ちしています。
+
+Worker1
