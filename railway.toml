@@ -1,11 +1,11 @@
 [build]
 builder = "DOCKERFILE"
-dockerfilePath = "Dockerfile"
+dockerfilePath = "Dockerfile.simple"
 buildCommand = "npm run build"
 
 [deploy]
-startCommand = "node server-wrapper.js"
-healthcheckPath = "/api/health"
+# startCommand is defined in Dockerfile.simple CMD
+healthcheckPath = "/api/health/simple-health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
 port = 3000
