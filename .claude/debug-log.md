@@ -1,5 +1,22 @@
 # Debug Log
 
+## [2025-06-25] Railway pip3 install yt-dlp失敗
+**症状**: `pip3 install --no-cache-dir yt-dlp` がexit code 1で失敗
+**環境**: Railway deployment, node:18-slim Docker image
+**再現手順**: Dockerfileでpip3経由でyt-dlpをインストール
+**試行錯誤**: 
+- apt-getコマンドを分割 → 失敗
+- Pythonとpipを別々にインストール → 失敗
+- node:18-slimにはビルドツールが不足していることが判明
+**最終解決方法**: 
+```dockerfile
+# Pythonを使わず、yt-dlpバイナリを直接ダウンロード
+RUN curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /usr/local/bin/yt-dlp \
+    && chmod a+rx /usr/local/bin/yt-dlp
+```
+**根本原因**: node:18-slimイメージにはPythonパッケージのコンパイルに必要なビルドツールが不足
+**予防策**: シンプリシティ原則に従い、プリビルドバイナリを使用
+
 ## [2025-06-25] Railway Healthcheck failure解決
 **症状**: Deployment failed during network process - Healthcheck failure
 **環境**: Railway deployment - Network > Healthcheck段階
