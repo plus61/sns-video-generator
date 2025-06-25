@@ -4,7 +4,7 @@ dockerfilePath = "Dockerfile"
 buildCommand = "npm run build"
 
 [deploy]
-startCommand = "cd .next/standalone && node server.js"
+startCommand = "node server-wrapper.js"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
