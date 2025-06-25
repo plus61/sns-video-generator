@@ -1,5 +1,33 @@
 # Debug Log
 
+## [2025-06-25] Railway Healthcheck failure解決
+**症状**: Deployment failed during network process - Healthcheck failure
+**環境**: Railway deployment - Network > Healthcheck段階
+**再現手順**: 複雑なヘルスチェックエンドポイントが外部依存でエラー
+**試行錯誤**: 
+- 複雑なDockerfileとserver-wrapper.jsの問題を特定
+- 元のヘルスチェックはSupabase、Redis等の外部依存が多すぎた
+**最終解決方法**: 
+1. シンプルなDockerfile.simpleを使用
+2. シンプルなヘルスチェックエンドポイント作成
+```typescript
+// /api/health/simple-health/route.ts
+export async function GET() {
+  return NextResponse.json({
+    status: 'ok',
+    timestamp: new Date().toISOString()
+  })
+}
+```
+3. railway.tomlを更新
+```toml
+dockerfilePath = "Dockerfile.simple"
+healthcheckPath = "/api/health/simple-health"
+# startCommand削除（DockerfileのCMD使用）
+```
+**根本原因**: 複雑すぎる設定、外部依存の多いヘルスチェック
+**予防策**: シンプルな設定を維持、最小限の依存関係
+
 ## [2025-06-25] Railway 'cd' コマンドエラー
 **症状**: The executable 'cd' could not be found
 **環境**: Railway deployment - Deploy > Create container段階

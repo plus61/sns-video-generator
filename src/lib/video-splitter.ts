@@ -2,8 +2,10 @@ import ffmpeg from 'fluent-ffmpeg'
 import { promises as fs } from 'fs'
 import path from 'path'
 
-// FFmpegのパスを設定
-ffmpeg.setFfmpegPath('/opt/homebrew/bin/ffmpeg')
+// FFmpegのパスを設定（環境に応じて）
+const ffmpegPath = process.env.FFMPEG_PATH || 
+  (process.platform === 'darwin' ? '/opt/homebrew/bin/ffmpeg' : '/usr/bin/ffmpeg')
+ffmpeg.setFfmpegPath(ffmpegPath)
 
 interface SegmentOptions {
   start: number

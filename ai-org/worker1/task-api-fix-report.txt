@@ -1,0 +1,116 @@
+TASK-20240625-API-FIX 調査報告書
+
+タスクID: TASK-20240625-API-FIX
+実行者: Worker1
+実行日時: 2025-06-25 17:00
+優先度: 🟡 MEDIUM
+
+## 調査結果サマリー
+
+全APIエンドポイントの500エラーの根本原因を特定しました。
+
+## 問題の詳細
+
+### 1. エラーが発生しているエンドポイント
+- `/api/upload-youtube`
+- `/api/youtube-download`
+- `/api/process-simple`
+
+### 2. 根本原因
+
+**主要原因**: YouTube動画ダウンロードライブラリの実行環境問題
+
+1. **youtube-dl-exec (yt-dlp) の問題**
+   - エラー: `ENOENT: spawn /path/to/.next/server/bin/yt-dlp`
+   - 原因: yt-dlpバイナリが本番環境に存在しない
+   - 詳細: youtube-dl-execはyt-dlpバイナリに依存するが、Dockerイメージに含まれていない
+
+2. **ytdl-core フォールバックの問題**
+   - エラー: `Could not extract functions`
+   - 原因: YouTubeの仕様変更により、ytdl-coreが動画情報を抽出できない
+   - 詳細: ytdl-coreはYouTubeのHTML/JSを解析するが、頻繁に変更される
+
+### 3. 環境差異
+
+**ローカル環境**
+- 開発環境では問題なく動作（yt-dlpがインストール済み）
+- エラーログ: `/api/process-simple` 500エラー（ytdl-core失敗時）
+
+**本番環境（Railway）**
+- yt-dlpバイナリが存在しない
+- Dockerfile.simpleにffmpegは含まれているが、yt-dlpは含まれていない
+
+### 4. 影響範囲
+- YouTube関連の全機能が使用不可
+- 動画アップロード・処理機能が完全に停止
+- ユーザー体験に重大な影響
+
+## 解決策
+
+### 短期的解決策（推奨）
+
+1. **Express API サーバーの利用**
+   - 既に作成済みの`express-api-simple.js`を別途デプロイ
+   - YouTube ダウンロードをExpress API経由で実行
+   - メリット: 即座に解決可能、安定性が高い
+
+2. **実装方法**
+   ```javascript
+   // Next.js APIからExpress APIを呼び出す
+   const response = await fetch(`${EXPRESS_API_URL}/download-youtube`, {
+     method: 'POST',
+     body: JSON.stringify({ url })
+   })
+   ```
+
+### 中期的解決策
+
+1. **Dockerfile.simpleの修正**
+   ```dockerfile
+   # yt-dlpをインストール
+   RUN apt-get update && apt-get install -y \
+       ffmpeg \
+       python3 \
+       python3-pip \
+       curl \
+       && pip3 install yt-dlp \
+       && apt-get clean
+   ```
+
+2. **環境変数の追加**
+   - `YOUTUBE_DL_PATH=/usr/local/bin/yt-dlp`
+
+### 長期的解決策
+
+1. **YouTube API v3の利用**
+   - 公式APIを使用（ダウンロードは不可）
+   - メタデータ取得のみ
+
+2. **別サービスアーキテクチャ**
+   - 動画処理専用のマイクロサービス
+   - キューベースの非同期処理
+
+## 推奨アクション
+
+1. **即時対応**（Worker2/3と協力）
+   - Express APIサーバーのデプロイ確認
+   - Next.js APIからExpress APIへのリダイレクト実装
+
+2. **環境変数確認**
+   - EXPRESS_API_URL の設定
+   - CORSの適切な設定
+
+3. **テスト**
+   - ローカルでExpress API連携テスト
+   - 本番環境での動作確認
+
+## 付加情報
+
+- ミドルウェアは正しく設定されている（認証バイパス済み）
+- 環境変数（OPENAI_API_KEY, SUPABASE等）は別途確認が必要
+- 他のAPIエンドポイント（/api/health等）は正常動作の可能性
+
+以上、API 500エラーの調査結果を報告します。
+Express APIサーバーの活用が最も現実的な解決策です。
+
+Worker1

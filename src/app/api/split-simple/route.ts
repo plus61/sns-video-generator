@@ -4,8 +4,10 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import os from 'os'
 
-// FFmpegのパスを明示的に設定
-ffmpeg.setFfmpegPath('/opt/homebrew/bin/ffmpeg')
+// FFmpegのパスを環境に応じて設定
+const ffmpegPath = process.env.FFMPEG_PATH || 
+  (process.platform === 'darwin' ? '/opt/homebrew/bin/ffmpeg' : '/usr/bin/ffmpeg')
+ffmpeg.setFfmpegPath(ffmpegPath)
 
 // ディスク容量チェック関数
 const checkDiskSpace = async (requiredMB: number = 100): Promise<boolean> => {
