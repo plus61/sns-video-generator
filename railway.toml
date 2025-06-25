@@ -6,7 +6,7 @@ buildCommand = "npm run build"
 startCommand = "cd .next/standalone && node server.js"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 300
-restartPolicyType = "on-failure"
+restartPolicyType = "ON_FAILURE"
 port = 3000
 
 [env]
