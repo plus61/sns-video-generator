@@ -21,7 +21,10 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/api/process-full-simple') ||
     request.nextUrl.pathname.startsWith('/api/preview-segment') ||
     request.nextUrl.pathname.startsWith('/api/download-segments') ||
-    request.nextUrl.pathname.startsWith('/simple')
+    request.nextUrl.pathname.startsWith('/simple') ||
+    request.nextUrl.pathname.startsWith('/api/youtube/process') ||
+    request.nextUrl.pathname.startsWith('/api/youtube/test') ||
+    request.nextUrl.pathname.startsWith('/demo')
   ) {
     return NextResponse.next()
   }

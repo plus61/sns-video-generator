@@ -7,12 +7,54 @@ import { exec } from 'child_process'
 import { promisify } from 'util'
 import path from 'path'
 import fs from 'fs/promises'
+import { existsSync } from 'fs'
 
 const execAsync = promisify(exec)
 
-// FFmpegパス（環境に応じて設定）
-const FFMPEG_PATH = process.env.FFMPEG_PATH || '/opt/homebrew/bin/ffmpeg'
-const FFPROBE_PATH = process.env.FFPROBE_PATH || '/opt/homebrew/bin/ffprobe'
+// FFmpegパスを動的に検索
+function findFFmpegPath(): string {
+  const possiblePaths = [
+    process.env.FFMPEG_PATH,
+    '/usr/local/bin/ffmpeg',
+    '/opt/homebrew/bin/ffmpeg',
+    '/usr/bin/ffmpeg',
+    'ffmpeg' // PATHにある場合
+  ].filter(Boolean) as string[]
+  
+  for (const ffmpegPath of possiblePaths) {
+    if (ffmpegPath === 'ffmpeg' || existsSync(ffmpegPath)) {
+      return ffmpegPath
+    }
+  }
+  
+  // デフォルト（PATHから探す）
+  return 'ffmpeg'
+}
+
+function findFFprobePath(): string {
+  const possiblePaths = [
+    process.env.FFPROBE_PATH,
+    '/usr/local/bin/ffprobe',
+    '/opt/homebrew/bin/ffprobe',
+    '/usr/bin/ffprobe',
+    'ffprobe' // PATHにある場合
+  ].filter(Boolean) as string[]
+  
+  for (const ffprobePath of possiblePaths) {
+    if (ffprobePath === 'ffprobe' || existsSync(ffprobePath)) {
+      return ffprobePath
+    }
+  }
+  
+  // デフォルト（PATHから探す）
+  return 'ffprobe'
+}
+
+const FFMPEG_PATH = findFFmpegPath()
+const FFPROBE_PATH = findFFprobePath()
+
+console.log('Using FFmpeg path:', FFMPEG_PATH)
+console.log('Using FFprobe path:', FFPROBE_PATH)
 
 export interface VideoInfo {
   duration: number
