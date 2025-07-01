@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Vercel build script with environment detection
 

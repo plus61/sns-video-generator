@@ -1,6 +1,6 @@
 {
   "framework": "nextjs",
-  "buildCommand": "bash vercel-build.sh",
+  "buildCommand": "sh vercel-build.sh",
   "outputDirectory": ".next",
   "installCommand": "npm install --force",
   "env": {
